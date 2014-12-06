@@ -213,14 +213,18 @@
             type: "POST",
             dataType: 'json',
             contentType: 'application/json',
-            url: '/Email/HandleSend',
+            url: '/Email/ProcessSend',
             data: JSON.stringify(data)
         })
             .success(function (result) {
-                Kwasant.IFrame.CloseMe(result);
-            })
-            .fail(function () {
-                alert('An error occured on the server. Your changes have not been saved.');
+                if(result.Name == 'Error')
+                {
+                    alert("the server returned an error: " + result.Message);
+                }
+                else
+                {
+                    Kwasant.IFrame.CloseMe(result);
+                }
             })
             .always(function () {
                 if (spinner !== null) {

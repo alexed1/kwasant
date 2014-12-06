@@ -92,29 +92,32 @@
                 data: JSON.stringify(negotiation)
             })
             .success(function(result) {
-                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
+               
+                if(result.Name == 'Error')
                 {
-                    horizontalAlign: 'middle',
-                    height: 815,
-                    width: 815,
-                    modal: true,
-                    callback: function (res) {
-                        var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
-                        if (res) {
-                            negotiationMessage += ' and emails have been dispatched';
-                        }
-                        Kwasant.IFrame.CloseMe({ 
-                            message: negotiationMessage,
-                            negotiationID: result.negotiationID
-                        });
+                    alert("the server returned an error: " + result.Message);
+                }
+                else
+                {
+                    Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
+                       {
+                           horizontalAlign: 'middle',
+                           height: 815,
+                           width: 815,
+                           modal: true,
+                           callback: function (res) {
+                               var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
+                               if (res) {
+                                   negotiationMessage += ' and emails have been dispatched';
+                               }
+                               Kwasant.IFrame.CloseMe({ 
+                                   message: negotiationMessage,
+                                   negotiationID: result.negotiationID
+                               });
                         
-                    }
-                });
-
-                
-            })
-            .fail(function() {
-                alert('An error occured on the server. Your changes have not been saved.');
+                           }
+                       });
+                }
             })
             .always(function() {
                 if (spinner !== null) {

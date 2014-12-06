@@ -79,11 +79,15 @@
                 url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
                 data: JSON.stringify(negotiation)
             })
-            .success(function(negotiationID) {
-                Kwasant.IFrame.CloseMe(negotiationID);
-            })
-            .fail(function() {
-                alert('An error occured on the server. Your changes have not been saved.');
+            .success(function(result) {
+                if(result.Name == 'Error')
+                {
+                    alert("the server returned an error: " + result.Message);
+                }
+                else
+                {
+                    Kwasant.IFrame.CloseMe(result.negotiationID);
+                }
             })
             .always(function() {
                 if (spinner !== null) {
