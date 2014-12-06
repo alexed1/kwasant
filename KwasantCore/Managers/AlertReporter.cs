@@ -39,7 +39,6 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
             AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
@@ -61,7 +60,6 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertBookingRequestMarkedProcessed -= ProcessBRMarkedProcessed;
             AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
@@ -173,7 +171,7 @@ namespace KwasantCore.Managers
             {
                 var incidentDO = new IncidentDO
                 {
-                    ObjectId = emailID,
+                    ObjectId = emailID.ToString(),
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "Conversation",
                     Notes = logMessage
@@ -229,7 +227,6 @@ namespace KwasantCore.Managers
             {
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "User",
                         SecondaryCategory = "",
                         Activity = "Created",
@@ -252,7 +249,6 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "Email",
                         SecondaryCategory = "",
                         Activity = "Received",
@@ -270,7 +266,6 @@ namespace KwasantCore.Managers
         {
             FactDO curAction = new FactDO
                 {
-                    Name = "",
                     PrimaryCategory = "Event",
                     SecondaryCategory = "",
                     Activity = "Booked",
@@ -283,7 +278,6 @@ namespace KwasantCore.Managers
         {
             FactDO curAction = new FactDO
                 {
-                    Name = "",
                     PrimaryCategory = "Email",
                     SecondaryCategory = "",
                     Activity = "Sent",
@@ -304,7 +298,6 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "",
                         Activity = "Created",
@@ -347,7 +340,6 @@ namespace KwasantCore.Managers
             {
                 FactDO curFactDO = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "User",
                         SecondaryCategory = "",
                         Activity = "Registered",
@@ -370,7 +362,10 @@ namespace KwasantCore.Managers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var bookerDO = uow.UserRepository.GetByKey(bookerId);
+                if (bookerDO == null)
+                    throw new EntityNotFoundException<UserDO>(bookerId);
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
                     {
@@ -378,41 +373,16 @@ namespace KwasantCore.Managers
                         SecondaryCategory = "Ownership",
                         Activity = "Change",
                         CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
+                        ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
                         BookerId = bookerId,
                         Status = status,
-                    Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
+                        Data = string.Format(
+                            "BookingRequest ID :{0}, Booker EmailAddress: {1}",
+                            bookingRequestDO.Id,
+                            bookerDO.EmailAddress.Address)
                     };
 
                 AddFact(uow, curAction);
-                uow.SaveChanges();
-
-            }
-        }
-
-        public void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                FactDO curAction = new FactDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "BookerAction",
-                    Activity = "MarkedAsProcessed",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(),
-                    BookerId = bookerId,
-                };
-
-                var br = ObjectFactory.GetInstance<BookingRequest>();
-                int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
-
-                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-
-                uow.FactRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }

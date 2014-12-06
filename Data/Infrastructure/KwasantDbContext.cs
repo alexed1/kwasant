@@ -256,8 +256,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
-            modelBuilder.Entity<FactDO>().ToTable("Facts");
-            modelBuilder.Entity<IncidentDO>().ToTable("Incidents");
+            modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
             modelBuilder.Entity<AnswerDO>().ToTable("Answers");

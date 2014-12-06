@@ -69,6 +69,9 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
+        public delegate void UserRegistrationErrorHandler(Exception ex);
+        public static event UserRegistrationErrorHandler AlertUserRegistrationError;
+
         public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
 
@@ -204,6 +207,12 @@ namespace Data.Infrastructure
                 AlertUserRegistration(curUser);
         }
 
+        public static void UserRegistrationError(Exception ex)
+        {
+            UserRegistrationErrorHandler handler = AlertUserRegistrationError;
+            if (handler != null) handler(ex);
+        }
+
         public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestCheckedOut != null)
@@ -250,4 +259,5 @@ namespace Data.Infrastructure
 
         #endregion
     }
+
 }
