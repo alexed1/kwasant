@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
@@ -257,6 +258,12 @@ namespace KwasantCore.Managers
                 uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
+        }
+
+        public void ProcessSubmittedNote(int bookingRequestId, string note)
+        {
+            var incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
+            incidentReporter.ProcessSubmittedNote(bookingRequestId, note);
         }
     }
 

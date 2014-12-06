@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -119,20 +120,21 @@ namespace KwasantCore.Services
         }
 
         private object ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange, int start,
-            int length, out int count)
+           int length, out int count)
         {
-            var incidentDO = uow.IncidentRepository.GetAll().Skip(start)
-                    .Take(length).OrderByDescending(x => x.CreateDate).Take(5);
+            var incidentDO = uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateDate).Take(5);
 
             count = incidentDO.Count();
             return incidentDO.Select(
                         f => new
                         {
+                            Id = f.Id,
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
+
                         }).ToList();
 
         }
@@ -157,7 +159,9 @@ namespace KwasantCore.Services
 
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
         {
-            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId.ToString())
+            var strBookingRequestId = bookingRequestId.ToString(CultureInfo.InvariantCulture);
+            return uow.FactRepository.GetQuery().Where(e => e.ObjectId == strBookingRequestId).AsEnumerable()
+                .Union<IReportItemDO>(uow.IncidentRepository.GetQuery().Where(e => e.ObjectId == bookingRequestId).AsEnumerable())
                     .OrderByDescending(e => e.CreateDate)
                     .Select(
                         e =>

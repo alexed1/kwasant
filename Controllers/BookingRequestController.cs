@@ -94,42 +94,42 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult MarkAsProcessed(int id)
+        public ActionResult MarkAsProcessed(int curBRId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //call to VerifyOwnership 
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                //call to VerifyOwnership 
-                var currBooker = this.GetUserId();
-                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyBooker != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
+                    bookingRequestDO.State = BookingRequestState.Resolved;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.State = BookingRequestState.Resolved;
-                uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-
-                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                }
             }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
-        public ActionResult Invalidate(int id)
+        public ActionResult Invalidate(int curBRId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //call to VerifyOwnership
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                //call to VerifyOwnership
-                var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
-
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.State = BookingRequestState.Invalid;
-                uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
+                    bookingRequestDO.State = BookingRequestState.Invalid;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                }
             }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
@@ -334,6 +334,7 @@ namespace KwasantWeb.Controllers
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
                     Body = "",
+                    BookingRequestId = bookingRequestDO.Id
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
@@ -411,26 +412,35 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Search(string queryPeriod, bool includeInvalid, int id)
+        public PartialViewResult Search(int id, bool searchAllEmail, string subject, string body, string emailStatus, string bookingStatus)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_jsonPackager.Pack(_br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+                List<BRSearchResultVM> result = _br.Search(uow, id, searchAllEmail, subject, body, Convert.ToInt32(emailStatus), Convert.ToInt32(bookingStatus)).Select(e => new
+                BRSearchResultVM
                 {
-                    id = e.Id,
-                    subject = e.Subject,
-                    fromAddress = e.From.Address,
-                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                    body =
-                        e.HTMLText.Trim().Length > 400
-                            ? e.HTMLText.Trim().Substring(0, 400)
-                            : e.HTMLText.Trim()
-                })
-                ));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                    Id = e.Id,
+                    Subject = e.Subject,
+                    From = e.From.Address,
+                    DateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    BookingRequestStatus = FilterUtility.GetState(new BookingRequestState().GetType(), e.State.Value),
+                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(), e.EmailStatus.Value)
+                }).ToList();
+                return PartialView("SearchResult", result);
             }
+        }
+
+        public ActionResult AddNote(int bookingRequestId)
+        {
+            return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
+        }
+
+        [HttpPost]
+        public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
+        {
+            var communticationManager = ObjectFactory.GetInstance<CommunicationManager>();
+            communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
+            return Json(true);
         }
     }
 }

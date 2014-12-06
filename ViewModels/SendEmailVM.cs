@@ -48,6 +48,8 @@ namespace KwasantWeb.ViewModels
             SubjectEditable = true;
         }
 
+        public int BookingRequestId { get; set; }
+
         public String CallbackToken { get; set; }
 
         public IList<String> ToAddresses { get; set; }
