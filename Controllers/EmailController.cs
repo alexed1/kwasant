@@ -47,7 +47,7 @@ namespace KwasantWeb.Controllers
                 EmailDO curEmail;
 
                 List<EmailDO> conversationEmails = new List<EmailDO>();
-                
+
                 var emailDO = uow.EmailRepository.GetByKey(emailId);
 
                 var bookingRequestDO = emailDO as BookingRequestDO;
@@ -91,7 +91,7 @@ namespace KwasantWeb.Controllers
                             booker = bookingRequestDO.Booker.FirstName;
                     }
                 }
-                
+
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
                     Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e =>
@@ -154,32 +154,43 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult HandleSend(SendEmailVM vm)
+        public ActionResult ProcessSend(SendEmailVM vm)
         {
             var cachedCallback = GetCachedCallback(vm.CallbackToken);
             if (cachedCallback != null)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var emailDO = new EmailDO();
+                    try
+                    {
+                        var emailDO = new EmailDO();
 
-                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-                    
-                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                    foreach (var to in vm.ToAddresses)
-                        emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
-                    foreach (var cc in vm.CCAddresses)
-                        emailDO.AddEmailRecipient(EmailParticipantType.Cc, uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
-                    foreach (var bcc in vm.BCCAddresses)
-                        emailDO.AddEmailRecipient(EmailParticipantType.Bcc, uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
+                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                        string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                    emailDO.HTMLText = vm.Body;
-                    emailDO.PlainText = vm.Body;
-                    emailDO.Subject = vm.Subject;
+                        emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                        foreach (var to in vm.ToAddresses)
+                            emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
+                        foreach (var cc in vm.CCAddresses)
+                            emailDO.AddEmailRecipient(EmailParticipantType.Cc, uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
+                        foreach (var bcc in vm.BCCAddresses)
+                            emailDO.AddEmailRecipient(EmailParticipantType.Bcc, uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
 
-                    uow.EmailRepository.Add(emailDO);
-                    return cachedCallback(uow, emailDO);
+                        emailDO.HTMLText = vm.Body;
+                        emailDO.PlainText = vm.Body;
+                        emailDO.Subject = vm.Subject;
+
+                        uow.EmailRepository.Add(emailDO);
+                        return cachedCallback(uow, emailDO);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new KwasantPackagedMessage
+                        {
+                            Name = "Error",
+                            Message = " Time: " + DateTime.UtcNow 
+                        });
+                    }
                 }
             }
 
@@ -211,7 +222,7 @@ namespace KwasantWeb.Controllers
                 Body = "Some text..",
             }, Send);
         }
-        
+
         [HttpPost]
         public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)
         {
