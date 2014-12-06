@@ -11,7 +11,7 @@ namespace KwasantTest.Fixtures
             {
                 AppCreds = "",
                 AuthType = ServiceAuthorizationType.OAuth2,
-                CalDAVEndPoint = "https://test_caldav_endpoint",
+                EndPoint = "https://test_caldav_endpoint",
                 Name = "Test CalDAV provider"
             };
         }

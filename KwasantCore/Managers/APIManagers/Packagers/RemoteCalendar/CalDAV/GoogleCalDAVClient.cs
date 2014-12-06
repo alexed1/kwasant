@@ -6,7 +6,7 @@ using Data.Interfaces;
 using KwasantCore.Managers.APIManagers.Transmitters.Http;
 using Newtonsoft.Json;
 
-namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
+namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
 {
     class GoogleCalDAVClient : CalDAVClient
     {

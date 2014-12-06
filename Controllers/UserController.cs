@@ -58,26 +58,25 @@ namespace KwasantWeb.Controllers
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
-            var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-            var result = await authorizer.AuthorizeAsync(
+            var authorizer = ObjectFactory.GetNamedInstance<IRemoteCalendarServiceAuthorizer>(providerName);
+            var result = await authorizer.GrantAccessAsync(
                 this.GetUserId(),
                 this.GetUserName(),
                 GetCallbackUrl(providerName),
                 Request.RawUrl,
                 CancellationToken.None);
 
-            if (result.IsAuthorized)
+            if (!result.IsAuthorized && !string.IsNullOrEmpty(result.RedirectUri))
             {
-                // don't wait for this, run it async and return response to the user.
-                return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
+                return new RedirectResult(result.RedirectUri);
             }
-            return new RedirectResult(result.RedirectUri);
+            return RedirectToAction("MyAccount", new {remoteCalendarAccessGranted = providerName});
         }
 
         public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
         {
-            var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-            await authorizer.RevokeAccessTokenAsync(this.GetUserId(), CancellationToken.None);
+            var authorizer = ObjectFactory.GetNamedInstance<IRemoteCalendarServiceAuthorizer>(providerName);
+            await authorizer.RevokeAccessAsync(this.GetUserId(), CancellationToken.None);
             return RedirectToAction("MyAccount", new { remoteCalendarAccessForbidden = providerName });
         }
 

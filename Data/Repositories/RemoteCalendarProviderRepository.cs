@@ -22,8 +22,10 @@ namespace Data.Repositories
 
         public void CreateRemoteCalendarProviders(IConfigRepository configRepository)
         {
-            var clientID = configRepository.Get("GoogleCalendarClientId");
-            var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
+            var googleClientId = configRepository.Get("GoogleCalendarClientId");
+            var googleClientSecret = configRepository.Get("GoogleCalendarClientSecret");
+            var microsoftClientId = configRepository.Get("MicrosoftCalendarClientId");
+            var microsoftClientSecret = configRepository.Get("MicrosoftCalendarClientSecret");
             var providers = new[]
                 {
                     new RemoteCalendarProviderDO
@@ -33,12 +35,27 @@ namespace Data.Repositories
                             AppCreds = JsonConvert.SerializeObject(
                                 new
                                     {
-                                        ClientId = clientID,
-                                        ClientSecret = clientSecret,
+                                        ClientId = googleClientId,
+                                        ClientSecret = googleClientSecret,
                                         Scopes = "https://www.googleapis.com/auth/calendar,email"
                                     }),
-                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
-                        }
+                            Interface = RemoteCalendarServiceInterface.CalDAV,
+                            EndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                        },
+                    new RemoteCalendarProviderDO
+                        {
+                            Name = "Microsoft",
+                            AuthType = ServiceAuthorizationType.OAuth2,
+                            AppCreds = JsonConvert.SerializeObject(
+                                new
+                                    {
+                                        ClientId = microsoftClientId,
+                                        ClientSecret = microsoftClientSecret,
+                                        Resource = "https://www.googleapis.com/auth/calendar,email"
+                                    }),
+                            Interface = RemoteCalendarServiceInterface.CalDAV,
+                            EndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                        },
                 };
             foreach (var provider in providers)
             {
@@ -51,7 +68,7 @@ namespace Data.Repositories
                 {
                     existingRow.AuthType = provider.AuthType;
                     existingRow.AppCreds = provider.AppCreds;
-                    existingRow.CalDAVEndPoint = provider.CalDAVEndPoint;
+                    existingRow.EndPoint = provider.EndPoint;
                 }
             }
         }
