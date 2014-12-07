@@ -55,7 +55,7 @@ namespace KwasantTest.Services
                 // EXECUTE
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(_curEmailDO,
                     templateName,
-                    new Dictionary<string, string>()
+                    new Dictionary<string, object>()
                     {{"test_key", "test_value"}});
 
                 uow.SaveChanges();
