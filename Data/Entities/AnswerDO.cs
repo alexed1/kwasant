@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States.Templates;
-using Utilities;
 
 namespace Data.Entities
 {
-    public class AnswerDO : BaseDO, ICreateHook, IDeleteHook
+    public class AnswerDO : BaseDO, IDeleteHook
     {
         [Key]
         public int Id { get; set; }
@@ -31,9 +31,30 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public void OnDelete(DbPropertyValues originalValues)
+        public override void BeforeSave(IDBContext context)
         {
-
+            base.BeforeSave(context);
+            SetBookingRequestLastUpdated(context);
         }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
+        {
+            base.OnModify(originalValues, currentValues, context);
+            SetBookingRequestLastUpdated(context);
+        }
+
+        public void OnDelete(DbPropertyValues originalValues, IDBContext context)
+        {
+            SetBookingRequestLastUpdated(context);
+        }
+
+        private void SetBookingRequestLastUpdated(IDBContext context)
+        {
+            using (var uow = new UnitOfWork(context))
+            {
+                var br = uow.BookingRequestRepository.GetByKey(Question.Negotiation.BookingRequestID);
+                br.LastUpdated = DateTime.Now;
+            }
+        }
+
     }
 }

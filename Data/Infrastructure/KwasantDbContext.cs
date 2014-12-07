@@ -92,25 +92,24 @@ namespace Data.Infrastructure
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
-                entity.Entity.BeforeSave();
+                entity.Entity.BeforeSave(this);
             }
 
             foreach (DbEntityEntry<IModifyHook> entity in ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified))
             {
-                
-                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues);
+
+                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues, this);
             }
 
             foreach (DbEntityEntry<IDeleteHook> entity in ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted))
             {
-                entity.Entity.OnDelete(entity.OriginalValues);
+                entity.Entity.OnDelete(entity.OriginalValues, this);
             }
 
             //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
             //so we have to build a little list of entities that will have their AfterCreate hook called.
             var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
-            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
-.Where(u => u.State.HasFlag(EntityState.Added)))
+            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>() .Where(u => u.State.HasFlag(EntityState.Added)))
             {
                createdEntityList.Add(entity);
             }

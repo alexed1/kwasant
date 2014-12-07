@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
+using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
 using Utilities;
@@ -57,9 +58,9 @@ namespace Data.Entities
             base.AfterCreate();
         }
 
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
         {
-            base.OnModify(currentValues, originalValues);
+            base.OnModify(currentValues, originalValues, context);
 
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);

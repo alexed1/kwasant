@@ -22,9 +22,9 @@ namespace Data.Entities
         [NotMapped]
         public bool IsHighPriority { get { return Priority >= 5; } }
 
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
         {
-            base.OnModify(originalValues, currentValues);
+            base.OnModify(originalValues, currentValues, context);
 
             var reflectionHelper = new ReflectionHelper<IncidentDO>();
             var priorityPropertyName = reflectionHelper.GetPropertyName(i => i.Priority);

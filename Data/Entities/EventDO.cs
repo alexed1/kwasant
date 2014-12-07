@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 using System.Reflection;
+using Data.Infrastructure;
+using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class EventDO : BaseDO
+    public class EventDO : BaseDO, IDeleteHook
     {
         public EventDO()
         {
@@ -78,6 +81,31 @@ namespace Data.Entities
             foreach (PropertyInfo prop in props)
             {
                 prop.SetValue(this, prop.GetValue(eventDO));
+            }
+        }
+
+        public override void BeforeSave(IDBContext context)
+        {
+            base.BeforeSave(context);
+            SetBookingRequestLastUpdated(context);
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
+        {
+            base.OnModify(originalValues, currentValues, context);
+            SetBookingRequestLastUpdated(context);
+        }
+
+        public void OnDelete(DbPropertyValues originalValues, IDBContext context)
+        {
+            SetBookingRequestLastUpdated(context);
+        }
+
+        private void SetBookingRequestLastUpdated(IDBContext context)
+        {
+            using (var uow = new UnitOfWork(context))
+            {
+                var br = uow.BookingRequestRepository.GetByKey(BookingRequestID);
+                br.LastUpdated = DateTime.Now;
             }
         }
     }

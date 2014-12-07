@@ -8,15 +8,13 @@ using Data.Infrastructure;
 using Data.States;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
-
 using Data.Interfaces;
 using StructureMap;
-using System.ComponentModel.DataAnnotations;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUserDO, ICreateHook, IBaseDO, ISaveHook, IModifyHook
+    public class UserDO : IdentityUser, IUserDO, ICreateHook, ISaveHook, IModifyHook
     {
         [NotMapped]
         IEmailAddressDO IUserDO.EmailAddress
@@ -73,13 +71,13 @@ namespace Data.Entities
                      r.HasAccessToken());
         }
 
-        void ICreateHook.BeforeCreate()
+        public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
                 CreateDate = DateTimeOffset.Now;
         }
 
-        void ICreateHook.AfterCreate()
+        public void AfterCreate()
         {
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
@@ -92,12 +90,12 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
-        void ISaveHook.BeforeSave()
+        public void BeforeSave(IDBContext context)
         {
             LastUpdated = DateTimeOffset.Now;
         }
 
-        void IModifyHook.OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
         {
             this.DetectStateUpdates(originalValues, currentValues);
         }
