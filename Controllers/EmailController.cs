@@ -166,14 +166,29 @@ namespace KwasantWeb.Controllers
             return Session[token] as Func<IUnitOfWork, EmailDO, ActionResult>;
         }
 
+        /// <summary>
+        /// This method allows you to display a popup-email form.
+        /// </summary>
+        /// <param name="session">Always pass 'Session' - a property available to all controllers.</param>
+        /// <param name="emailVM">Configuration of the email dialog</param>
+        /// <param name="callback">A callback function which takes IUnitOfWork and EmailDO. The emailDO passed will be pre-populated with the data the user entered. 
+        /// You must use the unit of work provided to you in the callback (Do not create a new one, or use a previously declared one). </param>
+        /// <returns>Returns a ViewResult. You should simply return the value of this method from your controller</returns>
         public ViewResult DisplayEmail(HttpSessionStateBase session, CreateEmailVM emailVM, Func<IUnitOfWork, EmailDO, ActionResult> callback)
         {
             var token = Guid.NewGuid().ToString();
+            
+            //This caches a function pointer in memory. It allows us to easily display email forms which contain different logic.
+            //When a user clicks 'OK' on the dialog, the passed callback will be executed.
             emailVM.CallbackToken = token;
             SetCachedCallback(session, token, callback);
             return View("~/Views/Email/Send.cshtml", emailVM);
         }
 
+        /// <summary>
+        /// This is the callback method when a user clicks 'Ok' on the email dialog.
+        /// Populates an emailDO, and passes it to the supplied callback function
+        /// </summary>
         [HttpPost]
         public ActionResult ProcessSend(SendEmailVM vm)
         {
