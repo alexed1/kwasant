@@ -89,7 +89,7 @@ namespace Utilities
         /// <returns>New query</returns>
         /// <example>
         /// var thisYearDateRange = new DateRange() { StartTime = DateTimeOffset.UtcNow.AddYears(-1), EndTime = DateTimeOffset.UtcNow }
-        /// var incidentsOfThisYear = uow.IncidentRepository.GetQuery().WhereInDateRange(thisYearDateRange).ToList();
+        /// var incidentsOfThisYear = uow.IncidentRepository.GetQuery().WhereInDateRange(i => i.CreateDate, thisYearDateRange).ToList();
         /// </example>
         public static IQueryable<T> WhereInDateRange<T>(this IQueryable<T> query, Expression<Func<T, DateTimeOffset>> dateTimeField, DateRange range, bool inclusive = false)
         {
