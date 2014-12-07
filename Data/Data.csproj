@@ -498,14 +498,6 @@
     <Compile Include="Migrations\201412061448191_Sync.Rob.06.12.2014.Designer.cs">
       <DependentUpon>201412061448191_Sync.Rob.06.12.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201412062049034_MoveTemplateDescriptionsToMemory.cs" />
-    <Compile Include="Migrations\201412062049034_MoveTemplateDescriptionsToMemory.Designer.cs">
-      <DependentUpon>201412062049034_MoveTemplateDescriptionsToMemory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412061448191_Sync.Rob.06.12.2014.cs" />
-    <Compile Include="Migrations\201412061448191_Sync.Rob.06.12.2014.Designer.cs">
-      <DependentUpon>201412061448191_Sync.Rob.06.12.2014.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -1463,12 +1455,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412061340546_AddTemplateDescriptions.resx">
       <DependentUpon>201412061340546_AddTemplateDescriptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412061448191_Sync.Rob.06.12.2014.resx">
-      <DependentUpon>201412061448191_Sync.Rob.06.12.2014.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412062049034_MoveTemplateDescriptionsToMemory.resx">
-      <DependentUpon>201412062049034_MoveTemplateDescriptionsToMemory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412061448191_Sync.Rob.06.12.2014.resx">
       <DependentUpon>201412061448191_Sync.Rob.06.12.2014.cs</DependentUpon>

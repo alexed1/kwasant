@@ -13,6 +13,20 @@ namespace Data.Repositories
 {
     public class EnvelopeRepository : GenericRepository<EnvelopeDO>, IEnvelopeRepository
     {
+        private static readonly IConfigRepository _ConfigRepository = ObjectFactory.GetInstance<IConfigRepository>();
+        public static readonly Dictionary<String, String> TemplateDescriptionMapping = new Dictionary<string, string>
+        {
+            { _ConfigRepository.Get("welcome_to_kwasant_template"), "Welcome to Kwasant" },
+            { _ConfigRepository.Get("CR_template_for_creator"), "Negotiation request" },
+            { _ConfigRepository.Get("CR_template_for_precustomer"), "Negotiation request" },
+            { _ConfigRepository.Get("ForgotPassword_template"), "Forgot Password" },
+            { _ConfigRepository.Get("User_Settings_Notification"), "User Settings Notification" },
+            { _ConfigRepository.Get("user_credentials"), "User Credentials" },
+            { _ConfigRepository.Get("InvitationInitial_template"), "Event Invitation" },
+            { _ConfigRepository.Get("InvitationUpdate_template"), "Event Invitation Update" },
+            { _ConfigRepository.Get("SimpleEmail_template"), "Simple Email" },
+        };
+        
         private readonly EnvelopeValidator _validator;
 
         internal EnvelopeRepository(IUnitOfWork uow) : base(uow)
@@ -53,6 +67,9 @@ namespace Data.Repositories
                 Handler = handler
             };
 
+            if (!String.IsNullOrEmpty(templateName) && TemplateDescriptionMapping.ContainsKey(templateName))
+                envelope.TemplateDescription = TemplateDescriptionMapping[templateName];
+           
             if (mergeData == null)
                 mergeData = new Dictionary<string, object>();
             
