@@ -8,7 +8,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class IncidentDO : BaseDO, IReportItemDO
+    public class IncidentDO : HistoryItemDO
     {
         public IncidentDO()
         {
@@ -16,18 +16,8 @@ namespace Data.Entities
             Notes = "No additional notes";
         }
 
-        [Key]
-        public int Id { get; set; }
-        public String PrimaryCategory { get; set; }
-        public String SecondaryCategory { get; set; }
-        public String Activity { get; set; }
         public int Priority { get; set; }
         public string Notes { get; set; }
-        public int ObjectId { get; set; }
-        public string CustomerId { get; set; }
-        public string BookerId { get; set; }
-        public string Data { get; set; }
-        public string Status { get; set; }
 
         [NotMapped]
         public bool IsHighPriority { get { return Priority >= 5; } }

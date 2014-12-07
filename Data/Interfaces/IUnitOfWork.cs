@@ -57,6 +57,7 @@ namespace Data.Interfaces
         RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
+        HistoryRepository HistoryRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

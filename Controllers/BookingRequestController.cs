@@ -105,7 +105,6 @@ namespace KwasantWeb.Controllers
                     BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
                     bookingRequestDO.State = BookingRequestState.Resolved;
                     uow.SaveChanges();
-                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
                     return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
                 }
@@ -125,7 +124,6 @@ namespace KwasantWeb.Controllers
                     BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
                     bookingRequestDO.State = BookingRequestState.Invalid;
                     uow.SaveChanges();
-                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                     return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
                 }
             }

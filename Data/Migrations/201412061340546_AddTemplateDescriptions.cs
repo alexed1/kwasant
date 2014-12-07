@@ -10,11 +10,6 @@ namespace Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Envelopes", "TemplateDescription", c => c.String());
-            const string sqlFormat = @"UPDATE dbo.Envelopes SET TemplateDescription = '{0}' WHERE TemplateName = '{1}'";
-            foreach (var kvp in EnvelopeRepository.TemplateDescriptionMapping)
-            {
-                Sql(String.Format(sqlFormat, kvp.Value, kvp.Key));
-            }
         }
         
         public override void Down()
