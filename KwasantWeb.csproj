@@ -797,9 +797,7 @@
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\BookingRequest\Index.cshtml" />
-    <Content Include="Views\ClarificationResponse\New.cshtml" />
     <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
-    <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\Negotiation\Edit.cshtml" />
