@@ -101,7 +101,7 @@ SELECT [PrimaryCategory]
       ,[Status]
   FROM [dbo].[History]
   WHERE [Discriminator] = 'IncidentDO'");
-            
+            Sql("DELETE [dbo].[History] WHERE [Discriminator] = 'IncidentDO'");
             AddColumn("dbo.Logs", "Date", c => c.DateTime(nullable: false));
             Sql("UPDATE dbo.Logs SET [Date] = [CreateDate]");
             AddColumn("dbo.History", "AdminId", c => c.Int(nullable: false));

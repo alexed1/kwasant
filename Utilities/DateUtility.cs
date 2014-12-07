@@ -78,11 +78,24 @@ namespace Utilities
 
     public static class DateRangeExtensions
     {
-        public static IQueryable<T> WhereInDateRange<T>(this IQueryable<T> query, Expression<Func<T, DateTimeOffset>> expression, DateRange range, bool inclusive = false)
+        /// <summary>
+        /// Alias for Where filter over date range
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="query">Source query</param>
+        /// <param name="dateTimeField">Expression for navigating date time field to filter against</param>
+        /// <param name="range">Date range</param>
+        /// <param name="inclusive">To include range ends in filter</param>
+        /// <returns>New query</returns>
+        /// <example>
+        /// var thisYearDateRange = new DateRange() { StartTime = DateTimeOffset.UtcNow.AddYears(-1), EndTime = DateTimeOffset.UtcNow }
+        /// var incidentsOfThisYear = uow.IncidentRepository.GetQuery().WhereInDateRange(thisYearDateRange).ToList();
+        /// </example>
+        public static IQueryable<T> WhereInDateRange<T>(this IQueryable<T> query, Expression<Func<T, DateTimeOffset>> dateTimeField, DateRange range, bool inclusive = false)
         {
-            var memberExpression = expression.Body as MemberExpression;
+            var memberExpression = dateTimeField.Body as MemberExpression;
             if (memberExpression == null)
-                throw new ArgumentException("Expression should point a member", "expression");
+                throw new ArgumentException("Expression should point a member", "dateTimeField");
             var memberName = memberExpression.Member.Name;
             var entityExpression = Expression.Parameter(typeof(T));
             Expression whereExpression;
