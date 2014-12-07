@@ -90,12 +90,12 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
-        public void BeforeSave(IDBContext context)
+        public void BeforeSave(IUnitOfWork uow)
         {
             LastUpdated = DateTimeOffset.Now;
         }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
+        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
         {
             this.DetectStateUpdates(originalValues, currentValues);
         }
@@ -116,6 +116,7 @@ namespace Data.Entities
 
         public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
+
     }
 }
 

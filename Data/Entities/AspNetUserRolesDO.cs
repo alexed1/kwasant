@@ -15,13 +15,13 @@ namespace Data.Entities
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
 
-        public void BeforeCreate(IDBContext context)
+        public void BeforeCreate(IUnitOfWork uow)
         {
             if (CreateDate == default(DateTimeOffset))
                 CreateDate = DateTimeOffset.Now;
         }
 
-        public void BeforeSave(IDBContext context)
+        public void BeforeSave(IUnitOfWork uow)
         {
             LastUpdated = DateTimeOffset.Now;
         }

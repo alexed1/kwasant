@@ -31,30 +31,26 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public override void BeforeSave(IDBContext context)
+        public override void BeforeSave(IUnitOfWork uow)
         {
-            base.BeforeSave(context);
-            SetBookingRequestLastUpdated(context);
+            base.BeforeSave(uow);
+            SetBookingRequestLastUpdated(uow);
         }
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IDBContext context)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
         {
-            base.OnModify(originalValues, currentValues, context);
-            SetBookingRequestLastUpdated(context);
-        }
-
-        public void OnDelete(DbPropertyValues originalValues, IDBContext context)
-        {
-            SetBookingRequestLastUpdated(context);
+            base.OnModify(originalValues, currentValues, uow);
+            SetBookingRequestLastUpdated(uow);
         }
 
-        private void SetBookingRequestLastUpdated(IDBContext context)
+        public void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow)
         {
-            using (var uow = new UnitOfWork(context))
-            {
-                var br = uow.BookingRequestRepository.GetByKey(Question.Negotiation.BookingRequestID);
-                br.LastUpdated = DateTime.Now;
-            }
+            SetBookingRequestLastUpdated(uow);
         }
 
+        private void SetBookingRequestLastUpdated(IUnitOfWork uow)
+        {
+            var br = uow.BookingRequestRepository.GetByKey(Question.Negotiation.BookingRequestID);
+            br.LastUpdated = DateTime.Now;
+        }
     }
 }

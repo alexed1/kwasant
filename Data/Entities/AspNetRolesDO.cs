@@ -17,7 +17,7 @@ namespace Data.Entities
                 CreateDate = DateTimeOffset.Now;
         }
 
-        public void BeforeSave(IDBContext context)
+        public void BeforeSave(IUnitOfWork uow)
         {
             LastUpdated = DateTimeOffset.Now;
         }

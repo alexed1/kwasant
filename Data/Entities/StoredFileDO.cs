@@ -64,10 +64,10 @@ namespace Data.Entities
             }
         }
 
-        public override void BeforeSave(IDBContext context)
+        public override void BeforeSave(IUnitOfWork uow)
         {
             FileManager.SaveFile(this);
-            base.BeforeSave(context);
+            base.BeforeSave(uow);
         }
     }
 }
