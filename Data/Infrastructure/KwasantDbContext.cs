@@ -88,29 +88,34 @@ namespace Data.Infrastructure
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
             List<object> modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified).Select(e => e.Entity).ToList();
             List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
-            List<object> others = ChangeTracker.Entries().Where(e => e.State != EntityState.Deleted && e.State != EntityState.Added).Select(e => e.Entity).ToList();
+            List<object> all = ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged).Select(e => e.Entity).ToList();
 
-            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
+            List<DbEntityEntry<ICreateHook>> addHooks = ChangeTracker.Entries<ICreateHook>().Where(u => u.State.HasFlag(EntityState.Added)).ToList();
+            List<DbEntityEntry<IModifyHook>> modifyHooks = ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified).ToList();
+            List<DbEntityEntry<IDeleteHook>> deleteHooks = ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted).ToList();
+            List<DbEntityEntry<ISaveHook>> allHooks = ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged).ToList();
+
+            var uow = new UnitOfWork(this);
+
+            foreach (DbEntityEntry<ISaveHook> entity in allHooks)
             {
-                entity.Entity.BeforeSave();
+                entity.Entity.BeforeSave(uow);
             }
 
-            foreach (DbEntityEntry<IModifyHook> entity in ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified))
+            foreach (DbEntityEntry<IModifyHook> entity in modifyHooks)
             {
-                
-                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues);
+                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues, uow);
             }
 
-            foreach (DbEntityEntry<IDeleteHook> entity in ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted))
+            foreach (DbEntityEntry<IDeleteHook> entity in deleteHooks)
             {
-                entity.Entity.OnDelete(entity.OriginalValues);
+                entity.Entity.OnDelete(entity.OriginalValues, uow);
             }
 
             //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
             //so we have to build a little list of entities that will have their AfterCreate hook called.
             var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
-            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
-.Where(u => u.State.HasFlag(EntityState.Added)))
+            foreach (DbEntityEntry<ICreateHook> entity in addHooks)
             {
                createdEntityList.Add(entity);
             }
@@ -124,16 +129,9 @@ namespace Data.Infrastructure
 
             var saveResult = base.SaveChanges();
 
-
             foreach (var createdEntity in createdEntityList)
             {
                 createdEntity.Entity.AfterCreate();
-            }
-         
-            //alex: I think this is unnecessary, because I think SaveChanges is resetting all entitystates to unchanged.
-            foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
-            {
-                entity.State = EntityState.Unchanged;
             }
             
             return saveResult;
@@ -256,8 +254,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
-            modelBuilder.Entity<FactDO>().ToTable("Facts");
-            modelBuilder.Entity<IncidentDO>().ToTable("Incidents");
+            modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
             modelBuilder.Entity<AnswerDO>().ToTable("Answers");

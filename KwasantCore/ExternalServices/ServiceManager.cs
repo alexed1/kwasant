@@ -387,8 +387,11 @@ namespace KwasantCore.ExternalServices
                 currException = currException.InnerException;
             }
 
-            exceptionMessages.Add("*** Stacktrace ***");
-            exceptionMessages.Add(ex.StackTrace);
+            if (ex != null)
+            {
+                exceptionMessages.Add("*** Stacktrace ***");
+                exceptionMessages.Add(ex.StackTrace);
+            }
 
             var exceptionMessage = String.Join(Environment.NewLine, exceptionMessages);
 

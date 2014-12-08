@@ -165,3 +165,35 @@ function minutesToStr(minutes) {
 function leftPad(number) {
     return ((number < 10 && number >= 0) ? '0' : '') + number;
 }
+
+function ShowBookerOwnershipAlert(bookingRequestBooker, Id) {
+    if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
+        $.ajax({
+            url: "/BookingRequest/ProcessBookerChange",
+            type: "GET",
+            data: { bookingRequestId: Id },
+            success: function (response) {
+                alert(response);
+            }
+        });
+    }
+}
+
+function SubmitNegotiationForm(spinner, negotiation, callback) {
+     $.ajax({
+        type: "POST",
+        dataType: 'json',
+        contentType: 'application/json',
+        url: '/Negotiation/ProcessSubmittedForm',
+        data: JSON.stringify(negotiation)
+    })
+    .success(callback)
+    .fail(function () {
+        alert('An error occured on the server. Your changes have not been saved.');
+    })
+    .always(function () {
+        if (spinner !== null) {
+            spinner.hide();
+        }
+    });
+}

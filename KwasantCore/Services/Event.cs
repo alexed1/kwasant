@@ -82,7 +82,8 @@ namespace KwasantCore.Services
                 {
                     var oldStatus = eventDO.EventStatus;
                     eventDO.EventStatus = EventState.Deleted;
-                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
+                    var hasSentEmails = eventDO.Emails.Any(e => e.EmailStatus == EmailState.Sent);
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted && hasSentEmails)
                     {
                         GenerateInvitations(uow, eventDO);
                     }
@@ -110,7 +111,6 @@ namespace KwasantCore.Services
                 invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
                 invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
             }
-            
             return invitations;
         }
 
