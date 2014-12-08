@@ -166,6 +166,19 @@ function leftPad(number) {
     return ((number < 10 && number >= 0) ? '0' : '') + number;
 }
 
+function ShowBookerOwnershipAlert(bookingRequestBooker, Id) {
+    if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
+        $.ajax({
+            url: "/BookingRequest/ProcessBookerChange",
+            type: "GET",
+            data: { bookingRequestId: Id },
+            success: function (response) {
+                alert(response);
+            }
+        });
+    }
+}
+
 function SubmitNegotiationForm(spinner, negotiation, callback) {
      $.ajax({
         type: "POST",

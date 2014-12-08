@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces
 {
-    public interface IReportItemDO : IBaseDO
+    public interface IHistoryItemDO : IBaseDO
     {
         String PrimaryCategory { get; set; }
         String SecondaryCategory { get; set; }
         String Activity { get; set; }
         String Data { get; set; }
         String Status { get; set; }
+        string ObjectId { get; set; }
+        string BookerId { get; set; }
+        string CustomerId { get; set; }
     }
 }
