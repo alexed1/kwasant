@@ -220,8 +220,8 @@ namespace KwasantCore.Services
             int length, out int count)
         {
             Booker _booker = new Booker();
-            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
-"BookingRequest" && e.Activity == "MarkedProcessed").Skip(start).Take(length).GroupBy(e => e.BookerId);
+            var incidentDO = uow.IncidentRepository.GetQuery().ToList().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
+"BookingRequest" && e.Activity == "MarkedProcessed").OrderByDescending(e => e.CreateDate).Skip(start).Take(length).GroupBy(e => e.BookerId);
 
             count = incidentDO.Count();
 
@@ -237,7 +237,7 @@ namespace KwasantCore.Services
             int length, out int count)
         {
             Booker _booker = new Booker();
-            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
+            var incidentDO = uow.IncidentRepository.GetQuery().ToList().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
  "BookingRequest" && e.Activity == "Checkout").Skip(start).Take(length);
             count = incidentDO.Count();
             return incidentDO.Select(

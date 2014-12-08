@@ -69,7 +69,7 @@ namespace KwasantCore.Services
             int length, string userid)
         {
             return
-                curBookingRequestRepository.GetAll()
+                curBookingRequestRepository.GetQuery()
                     .Where(e => e.Customer.Id == userid).OrderByDescending(e => e.LastUpdated)
                     .Skip(start)
                     .Take(length)
@@ -98,7 +98,7 @@ namespace KwasantCore.Services
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                uow.BookingRequestRepository.GetQuery()
+                uow.BookingRequestRepository.GetQuery().ToList()
                     .Where(e => (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
@@ -184,7 +184,7 @@ namespace KwasantCore.Services
                 .Where(e => e.BookingRequestID == bookingRequestId);
             //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
             var invitationResponses = uow.InvitationResponseRepository
-                .GetAll()
+                .GetQuery().ToList()
                 .Where(e => e.Attendee != null && e.Attendee.Event != null &&
                             e.Attendee.Event.BookingRequestID == bookingRequestId);
             return Enumerable.Union<object>(events, invitationResponses);
