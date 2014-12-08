@@ -3,7 +3,9 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Web.UI;
 using Data.Entities;
+using Newtonsoft.Json.Linq;
 using SendGrid;
 
 namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
@@ -73,9 +75,9 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                     mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyToAddress, email.ReplyToName) };
                 }
 
-                mailMessage.To = email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.Name)).ToArray();
-                mailMessage.Bcc = email.BCC.Select( bcc => new MailAddress(bcc.Address, bcc.Name)).ToArray();
-                mailMessage.Cc = email.CC.Select(cc => new MailAddress(cc.Address, cc.Name)).ToArray();
+                mailMessage.To = email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.NameOrAddress())).ToArray();
+                mailMessage.Bcc = email.BCC.Select(bcc => new MailAddress(bcc.Address, bcc.NameOrAddress())).ToArray();
+                mailMessage.Cc = email.CC.Select(cc => new MailAddress(cc.Address, cc.NameOrAddress())).ToArray();
 
                 mailMessage.Subject = email.Subject;
 
@@ -114,10 +116,32 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                     mailMessage.EnableTemplateEngine(envelope.TemplateName);//Now TemplateName will be TemplateId on Sendgrid.
                     if (envelope.MergeData != null)
                     {
+                        //Now, we need to do some magic.
+                        //Basically - we need the length of each substitution to match the length of recipients
+                        //In our case, most of the time, all the substitutions are the same, except for token-related fields
+                        //To make it easier to use, we attempt to pad out the substition arrays if they lengths don't match
+                        //We only do that if we're given a string value. In any other case, we allow sengrid to fail.
+                        var subs = new Dictionary<String, List<String>>();
                         foreach (var pair in envelope.MergeData)
                         {
-                            mailMessage.AddSubstitution(pair.Key, new List<string>() { pair.Value ?? String.Empty });
+
+                            var arrayType = pair.Value as JArray;
+                            List<String> listVal;
+                            if (arrayType != null)
+                            {
+                                listVal = arrayType.Select(a => a.ToString()).ToList();
+                            }
+                            else
+                            {
+                                listVal = new List<string>();
+                                for (var i = 0; i < email.Recipients.Count(); i++) //Pad out the substitution
+                                    listVal.Add(pair.Value == null ? String.Empty : pair.Value.ToString());
+                            }
+                            subs.Add(pair.Key, listVal);
+                            
                         }
+                        foreach(var sub in subs)
+                            mailMessage.AddSubstitution(sub.Key, sub.Value);
                     }
                 }
 

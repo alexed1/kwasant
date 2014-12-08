@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -38,8 +39,7 @@ namespace KwasantCore.Services
                     return ShowAllIncidents(uow, dateRange, start,
             length, out recordcount);
                 case "fiveRecentIncident":
-                    return ShowMostRecent5Incidents(uow, dateRange, start,
-             length, out recordcount);
+                    return ShowMostRecent5Incidents(uow, out recordcount);
                 case "showBookerThroughput":
                     return ShowBookerThroughput(uow, dateRange, start,
              length, out recordcount);
@@ -50,18 +50,21 @@ namespace KwasantCore.Services
             return this;
         }
 
-        private List<object> ShowAllLogs(IUnitOfWork uow, DateRange dateRange, int start,
+        private IList ShowAllLogs(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
         {
-            var logDO = uow.LogRepository.GetAll()
-                .Where(e => e.Date > dateRange.StartTime && e.Date < dateRange.EndTime);
+            var logs = uow.LogRepository.GetQuery().WhereInDateRange(e => e.CreateDate, dateRange);
 
-            count = logDO.Count();
+            count = logs.Count();
 
-            return logDO.Skip(start).Take(length).OrderByDescending(e => e.Date)
-                .Select(l => (object)new
+            return logs
+                .OrderByDescending(e => e.CreateDate)
+                .Skip(start)
+                .Take(length)
+                .AsEnumerable()
+                .Select(l => new
                 {
-                    Date = l.Date.ToString(DateStandardFormat),
+                    Date = l.CreateDate.ToString(DateStandardFormat),
                     l.Name,
                     l.Level,
                     l.Message
@@ -78,12 +81,15 @@ namespace KwasantCore.Services
             _dataUrlMappings.Add("User", "/User/Details?userID=");
 
           
-            var factDO = uow.FactRepository.GetAll()
-                    .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+            var factDO = uow.FactRepository.GetQuery().WhereInDateRange(e => e.CreateDate, dateRange);
 
             count = factDO.Count();
 
-            return factDO.Skip(start).Take(length)
+            return factDO
+                .OrderByDescending(e => e.CreateDate)
+                .Skip(start)
+                .Take(length)
+                .AsEnumerable()
                     .Select(
                         f => new
                         {
@@ -93,59 +99,67 @@ namespace KwasantCore.Services
                             Status = f.Status,
                             Data = AddClickability(f.Data),
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
-                        }).ToList();
+                        })
+                .ToList();
 
         }
 
-        private object ShowAllIncidents(IUnitOfWork uow, DateRange dateRange, int start,
+        private IList ShowAllIncidents(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
         {
-            var incidentDO = uow.IncidentRepository.GetQuery().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
 
             count = incidentDO.Count();
 
-            return incidentDO.OrderByDescending(e => e.CreateDate)
-                    .Skip(start)
-                    .Take(length)
-                    .AsEnumerable()
-                    .Select(
+            return incidentDO
+                .OrderByDescending(e => e.CreateDate)
+                .Skip(start)
+                .Take(length)
+                .AsEnumerable()
+                .Select(
                         f => new
                         {
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                             ObjectId = f.ObjectId
-
-                        });
-
+                            
+                        }).ToList();
 
         }
 
-        private object ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange, int start,
-            int length, out int count)
+        private IList ShowMostRecent5Incidents(IUnitOfWork uow, out int count)
         {
-            var incidentDO = uow.IncidentRepository.GetAll().Skip(start)
-                    .Take(length).OrderByDescending(x => x.CreateDate).Take(5);
+            var incidentDO = uow.IncidentRepository.GetQuery().OrderByDescending(x => x.CreateDate).Take(5);
 
             count = incidentDO.Count();
-            return incidentDO.Select(
+            return incidentDO
+                .AsEnumerable()
+                .Select(
                         f => new
                         {
+                            Id = f.Id,
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
-                        }).ToList();
+
+                        })
+                .ToList();
 
         }
         
-        public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)
+        public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string strBookingRequestId)
         {
-            return uow.FactRepository.GetAll()
-                .Where(e => e.PrimaryCategory == primaryCategory && (e.ObjectId == bookingRequestId) && e.CreateDate >= dateRange.StartTime && e.CreateDate <= dateRange.EndTime).OrderByDescending(e => e.CreateDate)
+            return uow.HistoryRepository.GetQuery()
+                .Where(e => e.ObjectId == strBookingRequestId
+                            && e.PrimaryCategory == primaryCategory)
+                .WhereInDateRange(e => e.CreateDate, dateRange)
+                .OrderByDescending(e => e.CreateDate)
+                .AsEnumerable()
                .Select(
                         e =>
                             new
@@ -163,9 +177,10 @@ namespace KwasantCore.Services
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
         {
             var strBookingRequestId = bookingRequestId.ToString(CultureInfo.InvariantCulture);
-            return uow.FactRepository.GetQuery().Where(e => e.ObjectId == strBookingRequestId).AsEnumerable()
-                .Union<IReportItemDO>(uow.IncidentRepository.GetQuery().Where(e => e.ObjectId == bookingRequestId).AsEnumerable())
+            return uow.HistoryRepository.GetQuery()
+                .Where(e => e.ObjectId == strBookingRequestId)
                     .OrderByDescending(e => e.CreateDate)
+                .AsEnumerable()
                     .Select(
                         e =>
                             new
@@ -220,16 +235,19 @@ namespace KwasantCore.Services
             int length, out int count)
         {
             Booker _booker = new Booker();
-            var incidentDO = uow.IncidentRepository.GetQuery().ToList().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
-"BookingRequest" && e.Activity == "MarkedProcessed").OrderByDescending(e => e.CreateDate).Skip(start).Take(length).GroupBy(e => e.BookerId);
+            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
+"BookingRequest" && e.Activity == "MarkedProcessed").Skip(start).Take(length).GroupBy(e => e.BookerId);
 
             count = incidentDO.Count();
 
-            return incidentDO.Select(
-                                    e => new
+            return incidentDO
+                .AsEnumerable()
+                .Select(e => new
                                     {
-                                        BRNameAndCount = _booker.GetName(uow, e.FirstOrDefault().BookerId) + " marked as processed " + e.Count() + " distinct BRs",
-                                    }).ToList();
+                        BRNameAndCount =
+                                 string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
+                    })
+                .ToList();
 
         }
 
@@ -237,18 +255,17 @@ namespace KwasantCore.Services
             int length, out int count)
         {
             Booker _booker = new Booker();
-            var incidentDO = uow.IncidentRepository.GetQuery().ToList().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
+            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
  "BookingRequest" && e.Activity == "Checkout").Skip(start).Take(length);
             count = incidentDO.Count();
-            return incidentDO.Select(
-            e => new
+            return incidentDO
+                .AsEnumerable()
+                .Select(e => new
             {
                 ObjectId = e.ObjectId,
                 TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
-            }
-
-            ).ToList();
-
+                    })
+                .ToList();
         }
     }
 }

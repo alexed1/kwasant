@@ -72,24 +72,18 @@
                 return;
             }
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
-                data: JSON.stringify(negotiation)
-            })
-            .success(function(negotiationID) {
-                Kwasant.IFrame.CloseMe(negotiationID);
-            })
-            .fail(function() {
-                alert('An error occured on the server. Your changes have not been saved.');
-            })
-            .always(function() {
-                if (spinner !== null) {
-                    spinner.hide();
+           
+            SubmitNegotiationForm(
+                spinner,
+                negotiation,
+                function(negotiationID) {
+                    Kwasant.IFrame.CloseMe(negotiationID);
+                    
                 }
-            });
+                
+             );
+
+            
         }
     </script>
 }

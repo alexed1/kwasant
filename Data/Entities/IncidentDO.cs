@@ -8,33 +8,23 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class IncidentDO : BaseDO, IReportItemDO
+    public class IncidentDO : HistoryItemDO
     {
         public IncidentDO()
         {
             Priority = 1;
-            Notes = "No additional notes";
+            //Notes = "No additional notes";
         }
 
-        [Key]
-        public int Id { get; set; }
-        public String PrimaryCategory { get; set; }
-        public String SecondaryCategory { get; set; }
-        public String Activity { get; set; }
         public int Priority { get; set; }
-        public string Notes { get; set; }
-        public int ObjectId { get; set; }
-        public string CustomerId { get; set; }
-        public string BookerId { get; set; }
-        public string Data { get; set; }
-        public string Status { get; set; }
+        
 
         [NotMapped]
         public bool IsHighPriority { get { return Priority >= 5; } }
 
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
         {
-            base.OnModify(originalValues, currentValues);
+            base.OnModify(originalValues, currentValues, uow);
 
             var reflectionHelper = new ReflectionHelper<IncidentDO>();
             var priorityPropertyName = reflectionHelper.GetPropertyName(i => i.Priority);

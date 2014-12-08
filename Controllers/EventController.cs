@@ -310,6 +310,7 @@ namespace KwasantWeb.Controllers
                         BodyPromptText = "Enter some additional text for your recipients",
                         Body = "",
                         BodyRequired = false,
+                        BookingRequestId = curEventVM.BookingRequestID.Value
                     };
 
                     return emailController.DisplayEmail(Session, currCreateEmailVM,
