@@ -122,7 +122,7 @@ namespace KwasantCore.Services
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                             ObjectId = f.ObjectId
 
@@ -144,7 +144,7 @@ namespace KwasantCore.Services
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
 
                         })
