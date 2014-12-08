@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Infrastructure;
 using KwasantCore.Interfaces;
 using StructureMap;
 using Utilities;
@@ -27,6 +28,11 @@ namespace KwasantCore.Services
                                                                     //Not adding the AddDays() would mean we're never in the time frame (after 8pm and before 4am on the same dame).
             var currentTime = DateTimeOffset.Now;
             return (currentTime > startTime && currentTime < endTime);
+        }
+
+        public void Generate(string userId, string message, TimeSpan expiresIn = default(TimeSpan))
+        {
+            AlertManager.UserNotification(userId, message, expiresIn);
         }
     }
 }
