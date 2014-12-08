@@ -187,11 +187,7 @@ namespace KwasantWeb.Controllers
             createdEvent.StartDate = startDateInitial.Subtract(offset).ToOffset(offset);
             createdEvent.EndDate = endDateInitial.Subtract(offset).ToOffset(offset);
 
-            createdEvent.IsAllDay = (createdEvent.StartDate.Second == 0 && createdEvent.StartDate.Minute == 0 &&
-                                     createdEvent.StartDate.Hour == 0) &&
-                                    createdEvent.StartDate.Equals(createdEvent.StartDate.Date) &&
-                                    createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
-
+            createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
             return createdEvent;
         }
 

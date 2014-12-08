@@ -44,11 +44,7 @@ namespace KwasantCore.Services
         //some info about the event is known.
         public void Create(EventDO curEventDO, IUnitOfWork uow)
         {
-            curEventDO.IsAllDay = (curEventDO.StartDate.Second == 0 && curEventDO.StartDate.Minute == 0 &&
-                                     curEventDO.StartDate.Hour == 0) &&
-                                    curEventDO.StartDate.Equals(curEventDO.StartDate.Date) &&
-                                    curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
-
+            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.BookingRequest = bookingRequestDO;            
