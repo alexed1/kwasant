@@ -127,29 +127,6 @@ namespace KwasantCore.Services
             return curLogingStatus;
         }
 
-        public void LogRegistrationError(Exception ex)
-        {
-            IncidentDO incidentDO = new IncidentDO();
-            incidentDO.PrimaryCategory = "Error";
-            incidentDO.SecondaryCategory = "Processing";
-            incidentDO.Activity = "Registration";
-            incidentDO.Notes = ex.Message;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-
-            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                    incidentDO.PrimaryCategory,
-                    incidentDO.SecondaryCategory,
-                    incidentDO.Activity,
-                    incidentDO.ObjectId,
-                    incidentDO.CustomerId);
-
-            Logger.GetLogger().Info(logData);
-        }
-
         public async Task ForgotPasswordAsync(string userEmail)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -175,7 +152,7 @@ namespace KwasantCore.Services
                 emailDO.Subject = "Password Recovery Request";
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                                                               new Dictionary<string, string>()
+                                                               new Dictionary<string, object>()
                                                                    {{"-callback_url-", callbackUrl}});
                 uow.SaveChanges();
             }

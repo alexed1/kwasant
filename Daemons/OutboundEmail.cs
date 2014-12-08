@@ -40,6 +40,7 @@ namespace Daemons
 
             RegisterEvent<string, int>(SendGridPackagerEventHandler.EmailRejected, (reason, emailID) =>
             {
+                LogFail(null, reason);
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
@@ -52,6 +53,7 @@ namespace Daemons
             RegisterEvent<int, string, string, int>(SendGridPackagerEventHandler.EmailCriticalError,
                 (errorCode, name, message, emailID) =>
                 {
+                    LogFail(null, message);
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);

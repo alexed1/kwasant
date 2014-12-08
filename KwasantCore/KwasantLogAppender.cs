@@ -22,7 +22,6 @@ namespace KwasantCore
                 {
                     var logDO = new LogDO
                     {
-                        Date = DateTime.Now,
                         Level = loggingEvent.Level.ToString(),
                         Message = loggingEvent.RenderedMessage,
                         Name = loggingEvent.LoggerName

@@ -111,9 +111,15 @@
 		}
 		<div class="space form-actions">
             <input id="btnSave" type="submit" value="OK" class="btn small-dialog-button shadow-button pull-left" />
-            <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
+		    <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
+        @if (Model.IsNew)
+        {
             <a href="javascript:closeEvent();" class="cancel-btn btn small-dialog-button shadow-button pull-left">Cancel</a>
-            <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
+        }
+        else
+        {
+            <a href="javascript:deleteEvent();" style="margin-left: 15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
+        }
 		</div>
 	</form>
 </div>
@@ -129,29 +135,23 @@
 	            {
 	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
                     @:$.post('@Url.Action("ConfirmDelete", "Event", new { eventID = Model.Id })', function (response) {
-                        @:Kwasant.IFrame.CloseMe(false);
+                        @:Kwasant.IFrame.CloseMe({ saved: true, message: 'Cancelled' });
                         @:spinner.hide();
                     @:}, 'json');
-	            }
-	            else
-                {
-                    @:Kwasant.IFrame.CloseMe(false);
 	            }
 	        }
 	        return false;
 	    }
 
 	    function deleteEvent() {
-	        $(function() {
-	            Kwasant.IFrame.Display('@Url.Action("DeleteEvent", "Event", new { eventID = Model.Id })',
-	            {
-	                modal: true,
-	                callback: function(result) {
-	                    if (result)
-	                        close();
-	                }
-	            });
-	        }());
+	        Kwasant.IFrame.Display('@Url.Action("DeleteEvent", "Event", new { eventID = Model.Id })',
+	        {
+	            modal: true,
+	            callback: function(result) {
+	                Kwasant.IFrame.CloseMe({ saved: true, message: 'Event deleted.' });
+	            }
+	        });
+	        return false;
 	    }
 
 	    $(document).ready(function () {
@@ -179,48 +179,73 @@
 	    });
 
 	    $("#f").submit(function () {
+	        var url = '/Negotiation/CheckBooker';
+	        $.ajax({
+	            url: url,
+	            type: 'POST',
+	            data: { bookingRequestID: '@Model.BookingRequestID' },
+	            async: false,
+	            success: function (result) {
+	                if (result.Name == "valid") {
 
-	        updateDraftSummary(this);
+	                    updateDraftSummary(this);
 
-	        if (!modifiedState.modified) {
-	            //close();
-	            return false;
-	        }
+	                    if (!modifiedState.modified) {
+	                        //close();
+	                        return false;
+	                    }
 
-	        var fromDate = $('#StartDate');
-	        var toDate = $('#EndDate');
+	                    var fromDate = $('#StartDate');
+	                    var toDate = $('#EndDate');
 
-	        if (!($('#chkAllDay').is(':checked'))) {
-	            if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
-	                alert("Start date can't be greater than End Date");
-	                return false;
+	                    if (!($('#chkAllDay').is(':checked'))) {
+	                        if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
+	                            alert("Start date can't be greater than End Date");
+	                            return false;
+	                        }
+	                    }
+
+	                    var f = $("#f");
+	                    if (!f.valid())
+	                        return false;
+
+	                    fromDate.data("DateTimePicker").enable();
+	                    toDate.data("DateTimePicker").enable();
+
+	                    var url = f.prop('action') + '/?' + f.serialize();
+
+	                    Kwasant.IFrame.Display(url,
+                            {
+                                modal: true,
+                                callback: function (result) {
+                                    if ($('#chkAllDay').attr('checked')) {
+                                        fromDate.data("DateTimePicker").disable();
+                                        toDate.data("DateTimePicker").disable();
+                                    } else {
+                                        fromDate.data("DateTimePicker").enable();
+                                        toDate.data("DateTimePicker").enable();
+                                    }
+                                    close(result);
+                                }
+                            });
+
+	                    return false;
+
+	                }
+	                else if (result.Name == 'DifferentBooker'){
+	                    ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestID');
+	                    return false;
+	                }
+	                else if (result.Name == 'error'){
+	                    alert(result.Message);
+	                    return false;
+	                }
+	                else{
+	                    alert('An error occured on the server. Your changes have not been saved.');
+	                    return false;
+	                }
 	            }
-	        }
-
-	        var f = $("#f");
-	        if (!f.valid())
-	            return false;
-
-	        fromDate.data("DateTimePicker").enable();
-	        toDate.data("DateTimePicker").enable();
-
-	        var url = f.prop('action') + '/?' + f.serialize();
-
-	        Kwasant.IFrame.Display(url,
-				{
-				    modal: true,
-				    callback: function (result) {
-				        if ($('#chkAllDay').attr('checked')) {
-				            fromDate.data("DateTimePicker").disable();
-				            toDate.data("DateTimePicker").disable();
-				        } else {
-				            fromDate.data("DateTimePicker").enable();
-				            toDate.data("DateTimePicker").enable();
-				        }
-				        close(result);
-				    }
-				});
-
+	        });
 	        return false;
 	    });
 
