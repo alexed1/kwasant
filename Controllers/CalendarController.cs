@@ -43,7 +43,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult GetNegotiationCalendars(int calendarID)
+        public ActionResult GetNegotiationCalendars(int calendarID, String defaultEventDescription = null)
         {
             if (calendarID <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -77,7 +77,8 @@ namespace KwasantWeb.Controllers
                     ActiveCalendarID = calendarID,
                     ClickEditEnabled = false,
                     MergeEvents = true,
-                    RequiresConfirmation = false
+                    RequiresConfirmation = false,
+                    DefaultEventDescription = defaultEventDescription
                 });
             }
         }
