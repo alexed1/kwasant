@@ -60,8 +60,12 @@ namespace Data.Entities
 
         private void SetBookingRequestLastUpdated(IUnitOfWork uow)
         {
-            var br = uow.BookingRequestRepository.GetByKey(Negotiation.BookingRequestID);
-            br.LastUpdated = DateTime.Now;
+            if (Negotiation != null)
+            {
+                var br = uow.BookingRequestRepository.GetByKey(Negotiation.BookingRequestID);
+                if (br != null)
+                    br.LastUpdated = DateTime.Now;
+            }
         }
     }
 }

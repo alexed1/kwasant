@@ -36,9 +36,8 @@ namespace Playground
             evDO.Attendees.Add(new AttendeeDO { Name = "Dieterich, Joshua Ethan", EmailAddress = new EmailAddressDO("joshua_dieterich@harvard.edu") });
             evDO.Attendees.Add(new AttendeeDO { Name = "Outbound Archive", EmailAddress = new EmailAddressDO("kwasantoutbound@gmail.com") });
             evDO.Attendees.Add(new AttendeeDO { Name = "'Alexed15@gmail.com'", EmailAddress = new EmailAddressDO("alexed15@gmail.com") });
-            evDO.StartDate = DateTime.Now;
-            evDO.EndDate = DateTime.Now.AddDays(1);
-            evDO.IsAllDay = true;
+            evDO.StartDate = new DateTimeOffset(2014, 12, 09, 23, 0, 0, 0, new TimeSpan(0));
+            evDO.EndDate = evDO.StartDate.AddHours(1);
             evDO.Location = "Harvard";
             evDO.Summary = "Harvard Meeting with Paul Maeder";
 
