@@ -111,9 +111,15 @@
 		}
 		<div class="space form-actions">
             <input id="btnSave" type="submit" value="OK" class="btn small-dialog-button shadow-button pull-left" />
-            <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
+		    <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
+        @if (Model.IsNew)
+        {
             <a href="javascript:closeEvent();" class="cancel-btn btn small-dialog-button shadow-button pull-left">Cancel</a>
-            <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
+        }
+        else
+        {
+            <a href="javascript:deleteEvent();" style="margin-left: 15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
+        }
 		</div>
 	</form>
 </div>
@@ -129,29 +135,23 @@
 	            {
 	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
                     @:$.post('@Url.Action("ConfirmDelete", "Event", new { eventID = Model.Id })', function (response) {
-                        @:Kwasant.IFrame.CloseMe(false);
+                        @:Kwasant.IFrame.CloseMe({ saved: true, message: 'Cancelled' });
                         @:spinner.hide();
                     @:}, 'json');
-	            }
-	            else
-                {
-                    @:Kwasant.IFrame.CloseMe(false);
 	            }
 	        }
 	        return false;
 	    }
 
 	    function deleteEvent() {
-	        $(function() {
-	            Kwasant.IFrame.Display('@Url.Action("DeleteEvent", "Event", new { eventID = Model.Id })',
-	            {
-	                modal: true,
-	                callback: function(result) {
-	                    if (result)
-	                        close();
-	                }
-	            });
-	        }());
+	        Kwasant.IFrame.Display('@Url.Action("DeleteEvent", "Event", new { eventID = Model.Id })',
+	        {
+	            modal: true,
+	            callback: function(result) {
+	                Kwasant.IFrame.CloseMe({ saved: true, message: 'Event deleted.' });
+	            }
+	        });
+	        return false;
 	    }
 
 	    $(document).ready(function () {

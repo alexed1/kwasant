@@ -7,8 +7,8 @@ using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.TempServicesHome;
 using KwasantWeb.ViewModels;
+using KwasantWeb.ViewModelServices;
 using StructureMap;
 using Utilities;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
@@ -137,13 +137,16 @@ namespace KwasantWeb.Controllers
                     var userID = this.GetUserId();
                     _negotiationResponse.Process(curNegotiationVM, userID);
 
-                    return View();
+                    return Json(new
+                    {
+                        Success = true
+                    });
                 }
                 catch (Exception ex)
                 {
-                    return Json(new KwasantPackagedMessage
+                    return Json(new 
                     {
-                        Name = "Error",
+                        Success = false,
                         Message = " Time: " + DateTime.UtcNow + " BRId:" + curNegotiationVM.BookingRequestID + " Current BR Owner Name: " + _currBookerName + " Current BR STatus: " + uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).State
                     });
                 }

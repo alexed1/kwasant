@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddTemplateDescriptions : IMigrationMetadata
+    public sealed partial class SyncRob07122014 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddTemplateDescriptions));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SyncRob07122014));
         
         string IMigrationMetadata.Id
         {
-            get { return "201412061340546_AddTemplateDescriptions"; }
+            get { return "201412071449569_Sync.Rob.07.12.2014"; }
         }
         
         string IMigrationMetadata.Source

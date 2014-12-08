@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
@@ -40,8 +41,27 @@ namespace Data.Entities
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
 
-        public void OnDelete(DbPropertyValues originalValues)
+
+        public override void BeforeSave(IUnitOfWork uow)
         {
+            base.BeforeSave(uow);
+            SetBookingRequestLastUpdated(uow);
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        {
+            base.OnModify(originalValues, currentValues, uow);
+            SetBookingRequestLastUpdated(uow);
+        }
+
+        public void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow)
+        {
+            SetBookingRequestLastUpdated(uow);
+        }
+
+        private void SetBookingRequestLastUpdated(IUnitOfWork uow)
+        {
+            var br = uow.BookingRequestRepository.GetByKey(Negotiation.BookingRequestID);
+            br.LastUpdated = DateTime.Now;
         }
     }
 }

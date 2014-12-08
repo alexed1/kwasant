@@ -152,7 +152,7 @@ namespace KwasantCore.Services
                 emailDO.Subject = "Password Recovery Request";
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                                                               new Dictionary<string, string>()
+                                                               new Dictionary<string, object>()
                                                                    {{"-callback_url-", callbackUrl}});
                 uow.SaveChanges();
             }

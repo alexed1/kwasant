@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class MoveTemplateDescriptionsToMemory : IMigrationMetadata
+    public sealed partial class FixBookingRequestState : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(MoveTemplateDescriptionsToMemory));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(FixBookingRequestState));
         
         string IMigrationMetadata.Id
         {
-            get { return "201412062049034_MoveTemplateDescriptionsToMemory"; }
+            get { return "201412071552265_FixBookingRequestState"; }
         }
         
         string IMigrationMetadata.Source

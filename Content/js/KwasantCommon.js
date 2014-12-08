@@ -178,3 +178,22 @@ function ShowBookerOwnershipAlert(bookingRequestBooker, Id) {
         });
     }
 }
+
+function SubmitNegotiationForm(spinner, negotiation, callback) {
+     $.ajax({
+        type: "POST",
+        dataType: 'json',
+        contentType: 'application/json',
+        url: '/Negotiation/ProcessSubmittedForm',
+        data: JSON.stringify(negotiation)
+    })
+    .success(callback)
+    .fail(function () {
+        alert('An error occured on the server. Your changes have not been saved.');
+    })
+    .always(function () {
+        if (spinner !== null) {
+            spinner.hide();
+        }
+    });
+}

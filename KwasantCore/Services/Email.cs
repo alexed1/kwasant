@@ -43,7 +43,7 @@ namespace KwasantCore.Services
 
         #region Method
 
-        public void Send(IUnitOfWork uow, IEmailDO emailDO)
+        public void Send(IUnitOfWork uow, EmailDO emailDO)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -275,7 +275,7 @@ namespace KwasantCore.Services
             string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
             uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
-                    new Dictionary<string, string>
+                    new Dictionary<string, object>
                     {
                         {"credentials_string", credentials}
                     });
