@@ -471,6 +471,7 @@ namespace KwasantCore.Services
                 bookingRequestDO.Booker = bookerDO;
                 bookingRequestDO.PreferredBookerID = bookerId;
                 bookingRequestDO.PreferredBooker = bookerDO;
+                bookingRequestDO.Availability = BookingRequestAvailability.Available;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, bookerId);
             }
