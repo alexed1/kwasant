@@ -109,8 +109,8 @@ namespace Daemons
 
                     _alreadyListening = true;
                 }
-                GetUnreadMessages(_client);
             }
+            GetUnreadMessages(_client);
         }
 
         private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)

@@ -13,22 +13,6 @@ namespace KwasantCore.Services
 {
     public class Booker
     {
-        //VerifyOwnership
-        public string IsBookerValid(IUnitOfWork uow, int bookingRequestId, string currBooker)
-        {
-
-            BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-            if (bookingRequestDO.BookerID != currBooker)
-            {
-                if (bookingRequestDO.BookerID != null)
-                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
-
-                return "valid";
-            }
-            return "valid";
-
-        }
-
         public string ChangeBooker(IUnitOfWork uow, int bookingRequestId, string currBooker)
         {
             string result = "";

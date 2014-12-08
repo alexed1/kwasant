@@ -6,6 +6,7 @@ using Data.Interfaces;
 using KwasantCore.Exceptions;
 using KwasantCore.Services;
 using StructureMap;
+using Utilities.Logging;
 
 namespace KwasantCore.Managers
 {
@@ -14,13 +15,14 @@ namespace KwasantCore.Managers
         public void SubscribeToAlerts()
         {
             AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
-            AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
+            AlertManager.AlertBookingRequestProcessingTimeout += ProcessBRTimeout;
+            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
-            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed; 
+            AlertManager.AlertUserRegistrationError += ReportUserRegistrationError;
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -34,7 +36,7 @@ namespace KwasantCore.Managers
                 incidentDO.PrimaryCategory = "Negotiation";
                 incidentDO.SecondaryCategory = "ClarificationRequest";
                 incidentDO.CustomerId = expectedResponseDO.UserID;
-                incidentDO.ObjectId = expectedResponseId;
+                incidentDO.ObjectId = expectedResponseId.ToString();
                 incidentDO.Activity = "UnresponsiveAttendee";
                 //uow.IncidentRepository.Add(incidentDO);
                 AddIncident(uow, incidentDO);
@@ -47,11 +49,11 @@ namespace KwasantCore.Managers
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Booking Request";
+                incidentDO.PrimaryCategory = "BookingRequest";
                 incidentDO.SecondaryCategory = "Response Recieved";
                 incidentDO.CustomerId = customerID;
                 incidentDO.BookerId = userID;
-                incidentDO.ObjectId = bookingRequestId;
+                incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
                 //_uow.IncidentRepository.Add(incidentDO);
                 AddIncident(_uow, incidentDO);
@@ -64,29 +66,29 @@ namespace KwasantCore.Managers
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "EmailFailure";
-                incidentDO.SecondaryCategory = "Email";
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Failure";
                 incidentDO.Priority = 5;
                 incidentDO.Activity = "IntakeFailure";
                 incidentDO.Data = errorMessage;
-                incidentDO.ObjectId = 0;
+                incidentDO.ObjectId = null;
                 //_uow.IncidentRepository.Add(incidentDO);
                 AddIncident(_uow, incidentDO);
                 _uow.SaveChanges();
             }
         }
 
-        public void ProcessTimeout(int bookingRequestId, string bookerId)
+        public void ProcessBRTimeout(int bookingRequestId, string bookerId)
         {
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Timeout";
-                incidentDO.SecondaryCategory = "BookingRequest";
-                incidentDO.Activity = "";
-                incidentDO.ObjectId = bookingRequestDO.Id;
+                incidentDO.PrimaryCategory = "BookingRequest";
+                incidentDO.SecondaryCategory = null;
+                incidentDO.Activity = "Timeout";
+                incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.CustomerId = bookingRequestDO.CustomerID;
                 incidentDO.BookerId = bookingRequestDO.BookerID;
                 //uow.IncidentRepository.Add(incidentDO);
@@ -104,10 +106,9 @@ namespace KwasantCore.Managers
                 incidentDO.PrimaryCategory = "EmailFailure";
                 incidentDO.SecondaryCategory = "Email";
                 incidentDO.Activity = "SendFailure";
-                incidentDO.ObjectId = emailId;
+                incidentDO.ObjectId = Convert.ToString(emailId);
                 incidentDO.Data = message;
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
             Email _email = ObjectFactory.GetInstance<Email>();
@@ -122,10 +123,10 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "SyncFailure";
-                incidentDO.SecondaryCategory = "Calendar";
-                incidentDO.Activity = "SyncFailure";
-                incidentDO.ObjectId = authData.Id;
+                incidentDO.PrimaryCategory = "Calendar";
+                incidentDO.SecondaryCategory = "Failure";
+                incidentDO.Activity = "Synchronization";
+                incidentDO.ObjectId = authData.Id.ToString();
                 incidentDO.CustomerId = authData.UserID;
                 if (calendarLink != null)
                 {
@@ -167,7 +168,7 @@ namespace KwasantCore.Managers
                         SecondaryCategory = "Note",
                         Activity = "Created",
                         BookerId = curBookingRequest.BookerID,
-                        ObjectId = bookingRequestId,
+                        ObjectId = bookingRequestId.ToString(),
                         Data = note
                     };
                 //uow.IncidentRepository.Add(incidentDO);
@@ -191,12 +192,39 @@ namespace KwasantCore.Managers
                     SecondaryCategory = "Throughput",
                     Activity = "Checkout",
                     CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id,
+                    ObjectId = bookingRequestId.ToString(),
                     BookerId = bookerId,
-                    Data = string.Format("ObjectId ID {0} Booker BookerId: {1} ", bookingRequestDO.Id, bookerId),
                 };
 
                 int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+
+                curAction.Data += string.Format("Time To Process: {0}", getMinutinQueue);
+
+                //uow.IncidentRepository.Add(curAction);
+                AddIncident(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+
+        private void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                IncidentDO curAction = new IncidentDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "BookerAction",
+                    Activity = "MarkedAsProcessed",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id.ToString(),
+                    BookerId = bookerId,
+                };
+
+                var br = ObjectFactory.GetInstance<BookingRequest>();
+                int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
                 curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
@@ -206,34 +234,26 @@ namespace KwasantCore.Managers
             }
         }
 
-
-        public void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
+        public void ReportUserRegistrationError(Exception ex)
         {
-            BookingRequest _br = new BookingRequest();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                IncidentDO curAction = new IncidentDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Throughput",
-                    Activity = "MarkedProcessed",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id,
-                    BookerId = bookerId,
-                    Data = string.Format("ObjectId ID {0} Booker BookerId: {1} ", bookingRequestDO.Id, bookerId),
-                };
-
-                int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
-
-                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-
-                //uow.IncidentRepository.Add(curAction);
-                AddIncident(uow, curAction);
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "User";
+                incidentDO.SecondaryCategory = "Error";
+                incidentDO.Activity = "Registration";
+                incidentDO.Data = ex.Message;
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
+
+                string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                        incidentDO.PrimaryCategory,
+                        incidentDO.SecondaryCategory,
+                        incidentDO.Activity,
+                        incidentDO.ObjectId,
+                        incidentDO.CustomerId);
+
+                Logger.GetLogger().Info(logData);
             }
         }
 
@@ -244,6 +264,7 @@ namespace KwasantCore.Managers
 
             uow.IncidentRepository.Add(curAction);
         }
+
 
     }
 
