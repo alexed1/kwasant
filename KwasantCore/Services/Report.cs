@@ -80,7 +80,7 @@ namespace KwasantCore.Services
             _dataUrlMappings.Add("Email", "/Dashboard/Index/");
             _dataUrlMappings.Add("User", "/User/Details?userID=");
 
-
+          
             var factDO = uow.FactRepository.GetQuery().WhereInDateRange(e => e.CreateDate, dateRange);
 
             count = factDO.Count();
@@ -90,8 +90,8 @@ namespace KwasantCore.Services
                 .Skip(start)
                 .Take(length)
                 .AsEnumerable()
-                .Select(
-                    f => new
+                    .Select(
+                        f => new
                         {
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
@@ -117,15 +117,15 @@ namespace KwasantCore.Services
                 .Take(length)
                 .AsEnumerable()
                 .Select(
-                    f => new
+                        f => new
                         {
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                             ObjectId = f.ObjectId
-
+                            
                         })
                 .ToList();
         }
@@ -138,13 +138,13 @@ namespace KwasantCore.Services
             return incidentDO
                 .AsEnumerable()
                 .Select(
-                    f => new
+                        f => new
                         {
                             Id = f.Id,
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
-                            Data = f.Notes,
+                            Data = f.Data,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
 
                         })
@@ -160,18 +160,18 @@ namespace KwasantCore.Services
                 .WhereInDateRange(e => e.CreateDate, dateRange)
                 .OrderByDescending(e => e.CreateDate)
                 .AsEnumerable()
-                .Select(
-                    e =>
-                    new
-                        {
-                            PrimaryCategory = e.PrimaryCategory,
-                            SecondaryCategory = e.SecondaryCategory,
-                            Activity = e.Activity,
-                            Status = e.Status,
-                            Data = e.Data,
-                            CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                        })
-                .ToList();
+               .Select(
+                        e =>
+                            new
+                            {
+                                PrimaryCategory = e.PrimaryCategory,
+                                SecondaryCategory = e.SecondaryCategory,
+                                Activity = e.Activity,
+                                Status = e.Status,
+                                Data = e.Data,
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
+                            })
+                    .ToList();
         }
 
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
@@ -179,20 +179,20 @@ namespace KwasantCore.Services
             var strBookingRequestId = bookingRequestId.ToString(CultureInfo.InvariantCulture);
             return uow.HistoryRepository.GetQuery()
                 .Where(e => e.ObjectId == strBookingRequestId)
-                .OrderByDescending(e => e.CreateDate)
+                    .OrderByDescending(e => e.CreateDate)
                 .AsEnumerable()
-                .Select(
-                    e =>
-                    new
-                        {
-                            PrimaryCategory = e.PrimaryCategory,
-                            Activity = e.Activity,
-                            Status = e.Status,
-                            Data = e.Data,
-                            CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                            SecondaryCategory = e.SecondaryCategory
-                        })
-                .ToList();
+                    .Select(
+                        e =>
+                            new
+                            {
+                                PrimaryCategory = e.PrimaryCategory,
+                                Activity = e.Activity,
+                                Status = e.Status,
+                                Data = e.Data,
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
+                                SecondaryCategory = e.SecondaryCategory
+                            })
+                    .ToList();
         }
 
         private string AddClickability(string originalData)
@@ -247,7 +247,7 @@ namespace KwasantCore.Services
             return incidentDO
                 .AsEnumerable()
                 .Select(e => new
-                    {
+                                    {
                         BRNameAndCount =
                                  string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
                     })
@@ -268,9 +268,9 @@ namespace KwasantCore.Services
             return incidentDO
                 .AsEnumerable()
                 .Select(e => new
-                    {
-                        ObjectId = e.ObjectId,
-                        TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
+            {
+                ObjectId = e.ObjectId,
+                TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
                     })
                 .ToList();
         }

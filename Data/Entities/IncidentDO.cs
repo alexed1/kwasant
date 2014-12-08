@@ -13,12 +13,11 @@ namespace Data.Entities
         public IncidentDO()
         {
             Priority = 1;
-            Notes = "No additional notes";
+            //Notes = "No additional notes";
         }
 
         public int Priority { get; set; }
-        public string Notes { get; set; }
-
+    
         [NotMapped]
         public bool IsHighPriority { get { return Priority >= 5; } }
 
