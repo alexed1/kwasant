@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult ShowReport(string queryPeriod, string type, int draw, int start, int length)
+        public ActionResult ShowReport(string queryPeriod, string type, int? draw, int start, int length)
         {
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

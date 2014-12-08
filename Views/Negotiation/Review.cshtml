@@ -72,28 +72,18 @@
                 return;
             }
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
-                data: JSON.stringify(negotiation)
-            })
-            .success(function(result) {
-                if(result.Name == 'Error')
-                {
-                    alert("the server returned an error: " + result.Message);
+           
+            SubmitNegotiationForm(
+                spinner,
+                negotiation,
+                function(negotiationID) {
+                    Kwasant.IFrame.CloseMe(negotiationID);
+                    
                 }
-                else
-                {
-                    Kwasant.IFrame.CloseMe(result.negotiationID);
-                }
-            })
-            .always(function() {
-                if (spinner !== null) {
-                    spinner.hide();
-                }
-            });
+                
+             );
+
+            
         }
     </script>
 }
