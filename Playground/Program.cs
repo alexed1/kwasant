@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
+using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using SendGrid;
 using StructureMap;
 
@@ -25,42 +28,25 @@ namespace Playground
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            DoIt();
-            var a = 0;
+            var evDO = new EventDO();
+            evDO.CreatedBy = new UserDO { EmailAddress = new EmailAddressDO { Name = "Alex Edelstein" } };
+
+            evDO.Description = @"Meeting with Paul Maeder, Campaign co-chair for the School of  Engineering and Applied Sciences.";
+            evDO.Attendees.Add(new AttendeeDO { Name = "Alex Edelstein", EmailAddress = new EmailAddressDO("alex@edelstein.org") });
+            evDO.Attendees.Add(new AttendeeDO { Name = "Dieterich, Joshua Ethan", EmailAddress = new EmailAddressDO("joshua_dieterich@harvard.edu") });
+            evDO.Attendees.Add(new AttendeeDO { Name = "Outbound Archive", EmailAddress = new EmailAddressDO("kwasantoutbound@gmail.com") });
+            evDO.Attendees.Add(new AttendeeDO { Name = "'Alexed15@gmail.com'", EmailAddress = new EmailAddressDO("alexed15@gmail.com") });
+            evDO.StartDate = DateTime.Now;
+            evDO.EndDate = DateTime.Now.AddDays(1);
+            evDO.IsAllDay = true;
+            evDO.Location = "Harvard";
+            evDO.Summary = "Harvard Meeting with Paul Maeder";
+
+            var cal = Event.GenerateICSCalendarStructure(evDO);
+
+            iCalendarSerializer serializer = new iCalendarSerializer(cal);
+            string fileToAttach = serializer.Serialize(cal);
+
         }
-
-        private static void DoIt()
-        {
-
-            //Reproduce sendgrid error
-            var mailMessage = new SendGridMessage() { From = new MailAddress("rjrudman@gmail.com", "Rob") };
-            mailMessage.Subject = "TestSubj";
-
-            mailMessage.To = new [] { new MailAddress("rjrudman@gmail.com") };
-
-            mailMessage.Html = "<html></html>";
-            mailMessage.Text = "";
-            mailMessage.EnableTemplateEngine("09a7919f-e5d3-4c98-b6b8-d8ac6171401d");
-            mailMessage.AddSubstitution("RESP_URL", new List<string>() { null });
-
-
-            var credentials = new NetworkCredential
-            {
-                UserName = "alexed",
-                Password = "thorium65"
-            };
-            var web = new Web(credentials);
-            try
-            {
-                web.Deliver(mailMessage);
-            }
-            catch (Exception ex)
-            {
-                var y = 0;
-                throw;
-            }
-        }
-
-
     }
 }
