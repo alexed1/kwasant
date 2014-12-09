@@ -10,6 +10,9 @@ namespace Data.Entities
     /// </summary>
     public class RemoteCalendarProviderDO : BaseDO, IRemoteCalendarProviderDO
     {
+        public const string GoogleProviderName = "Google";
+        public const string ExchangeProviderName = "Microsoft Exchange";
+
         [Key]
         public int Id { get; set; }
         [Index(IsUnique = true), MaxLength(32)]

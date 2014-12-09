@@ -24,13 +24,11 @@ namespace Data.Repositories
         {
             var googleClientId = configRepository.Get("GoogleCalendarClientId");
             var googleClientSecret = configRepository.Get("GoogleCalendarClientSecret");
-            var microsoftClientId = configRepository.Get("MicrosoftCalendarClientId");
-            var microsoftClientSecret = configRepository.Get("MicrosoftCalendarClientSecret");
             var providers = new[]
                 {
                     new RemoteCalendarProviderDO
                         {
-                            Name = "Google",
+                            Name = RemoteCalendarProviderDO.GoogleProviderName,
                             AuthType = ServiceAuthorizationType.OAuth2,
                             AppCreds = JsonConvert.SerializeObject(
                                 new
@@ -44,17 +42,11 @@ namespace Data.Repositories
                         },
                     new RemoteCalendarProviderDO
                         {
-                            Name = "Microsoft",
-                            AuthType = ServiceAuthorizationType.OAuth2,
-                            AppCreds = JsonConvert.SerializeObject(
-                                new
-                                    {
-                                        ClientId = microsoftClientId,
-                                        ClientSecret = microsoftClientSecret,
-                                        Resource = "https://www.googleapis.com/auth/calendar,email"
-                                    }),
-                            Interface = RemoteCalendarServiceInterface.CalDAV,
-                            EndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                            Name = RemoteCalendarProviderDO.ExchangeProviderName,
+                            AuthType = ServiceAuthorizationType.Basic,
+                            AppCreds = null,
+                            Interface = RemoteCalendarServiceInterface.EWS,
+                            EndPoint = null
                         },
                 };
             foreach (var provider in providers)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2;
@@ -29,7 +30,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: "Google");
+                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: RemoteCalendarProviderDO.GoogleProviderName);
                 curUserAuthData.AuthData = authData;
                 uow.SaveChanges();
             }
@@ -39,7 +40,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: "Google");
+                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: RemoteCalendarProviderDO.GoogleProviderName);
                 return curUserAuthData.AuthData;
             }
         }
@@ -53,7 +54,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var provider = uow.RemoteCalendarProviderRepository.GetByName("Google");
+                var provider = uow.RemoteCalendarProviderRepository.GetByName(RemoteCalendarProviderDO.GoogleProviderName);
                 var creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(provider.AppCreds);
 
                 return new AuthorizationCodeFlow(

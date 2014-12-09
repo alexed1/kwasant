@@ -6,6 +6,7 @@ using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
+using KwasantCore.Managers.APIManagers.Authorizers.Exchange;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
@@ -78,8 +79,10 @@ namespace KwasantCore.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
+
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -111,8 +114,10 @@ namespace KwasantCore.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IRemoteCalendarServiceAuthorizer>().Use<ExchangeCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
+
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
