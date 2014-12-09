@@ -44,8 +44,7 @@ namespace KwasantCore.Services
         //some info about the event is known.
         public void Create(EventDO curEventDO, IUnitOfWork uow)
         {
-            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) &&
-                                  curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
+            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.BookingRequest = bookingRequestDO;            
@@ -159,8 +158,16 @@ namespace KwasantCore.Services
 
             //configure start and end time
             dDayEvent.IsAllDay = eventDO.IsAllDay;
-            dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
-            dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+            var start = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+            if (!eventDO.IsAllDay && !start.HasTime)
+                start.HasTime = true;
+            dDayEvent.DTStart = start;
+
+            var end = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+            if (!eventDO.IsAllDay && !end.HasTime)
+                end.HasTime = true;
+            dDayEvent.DTEnd = end;
+            
             dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
             dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
 

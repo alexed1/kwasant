@@ -19,6 +19,7 @@ namespace KwasantCore.Services
 {
     public class Email
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
         private EventValidator _curEventValidator;
         private readonly EmailAddress _emailAddress;
 
@@ -288,6 +289,28 @@ namespace KwasantCore.Services
             {
                 return Convert.ToString(uow.EmailRepository.GetByKey(emailId).ConversationId);
             }
+        }
+
+        public List<object> GetEmails(IUnitOfWork uow, DateRange dateRange, int start, int length, out int count)
+        {
+            var emailDO = uow.EmailRepository.GetAll()
+                .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+
+            count = emailDO.Count();
+
+            return emailDO.Skip(start).OrderByDescending(e => e.DateReceived).Take(length)
+                .Select(e => (object)new
+                {
+                    Id = e.Id,
+                    From = uow.EmailAddressRepository.GetByKey(e.FromID).Address, 
+                    Subject = e.Subject,
+                    Date = e.CreateDate.ToString(DateStandardFormat),
+                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
+                    //EmailStatus = "",
+                    ConversationId = e.ConversationId
+                }).ToList();
+
+            
         }
     }
 }

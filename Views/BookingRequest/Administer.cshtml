@@ -86,7 +86,6 @@
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
         $.post(path, function (response) {
-            alert(response.Name);
             if (response.Name == 'Success')
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
             else if (response.Name == 'DifferentBooker')

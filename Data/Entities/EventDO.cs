@@ -103,7 +103,8 @@ namespace Data.Entities
         private void SetBookingRequestLastUpdated(IUnitOfWork uow)
         {
             var br = uow.BookingRequestRepository.GetByKey(BookingRequestID);
-            br.LastUpdated = DateTime.Now;
+            if (br != null)
+                br.LastUpdated = DateTime.Now;
         }
     }
 }
