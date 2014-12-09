@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
@@ -6,6 +7,7 @@ using Data.States;
 using FluentValidation;
 using KwasantCore.Interfaces;
 using KwasantCore.Services;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
