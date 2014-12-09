@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
@@ -39,18 +40,32 @@ namespace Data.Entities
 
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
-        
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
-        {
-            var reflectionHelper = new ReflectionHelper<QuestionDO>();
-            var textProperty = reflectionHelper.GetProperty(br => br.Text);
-            this.DetectUpdates(originalValues, currentValues, new[] {textProperty});
 
-            base.OnModify(originalValues, currentValues);
+
+        public override void BeforeSave(IUnitOfWork uow)
+        {
+            base.BeforeSave(uow);
+            SetBookingRequestLastUpdated(uow);
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        {
+            base.OnModify(originalValues, currentValues, uow);
+            SetBookingRequestLastUpdated(uow);
         }
 
-        public void OnDelete(DbPropertyValues originalValues)
+        public void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow)
         {
+            SetBookingRequestLastUpdated(uow);
+        }
+
+        private void SetBookingRequestLastUpdated(IUnitOfWork uow)
+        {
+            if (Negotiation != null)
+            {
+                var br = uow.BookingRequestRepository.GetByKey(Negotiation.BookingRequestID);
+                if (br != null)
+                    br.LastUpdated = DateTime.Now;
+            }
         }
     }
 }

@@ -59,27 +59,28 @@
                 url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
                 data: JSON.stringify(negotiation)
             })
-                .always(function(result) {
-                    if (spinner !== null) {
-                        spinner.hide();
-                    }
-
-                    if (result === undefined || result === null || result.responseText === undefined || result.responseText === null) {
-                        alert('An error occured on the server. Your changes have not been saved.');
-                    } else {
-                        $(function () {
-                            Kwasant.IFrame.Display('ThankYouView',
-                            {
-                                modal: true,
-                                callback: function (result) {
-                                    if (result)
-                                        close();
-                                },
-                                height: 160
-                            });
-                        }());
-                    }
-                });
+            .success(function(result) {
+                if (result.Success) {
+                    Kwasant.IFrame.Display('ThankYouView',
+                        {
+                            modal: true,
+                            callback: function() {
+                                close();
+                            },
+                            height: 160
+                        });
+                } else {
+                    alert("The server returned an error: " + result.Message);
+                }
+            })
+            .fail(function() {
+                alert("Failed to connect to the server. Please try again.");
+            })
+            .always(function() {
+                if (spinner !== null) {
+                    spinner.hide();
+                }
+            });
         }
 
         $(function() {

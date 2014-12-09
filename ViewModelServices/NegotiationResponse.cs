@@ -9,7 +9,7 @@ using KwasantCore.Interfaces;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
-namespace KwasantWeb.TempServicesHome
+namespace KwasantWeb.ViewModelServices
 {
     public class NegotiationResponse
     {
