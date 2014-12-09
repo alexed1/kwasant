@@ -22,14 +22,17 @@ namespace KwasantWeb.Controllers
         private IUnitOfWork _uow;
         private IBookingRequestDORepository curBookingRequestRepository;
         private KwasantPackager API;
+        private Email _email;
+        private JsonPackager _jsonPackager;
         private readonly BookingRequest _br;
-
 
         public EmailController()
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             curBookingRequestRepository = _uow.BookingRequestRepository;
             API = new KwasantPackager();
+            _email = new Email();
+            _jsonPackager = new JsonPackager();
             _br = new BookingRequest();
         }
 
@@ -119,7 +122,7 @@ namespace KwasantWeb.Controllers
                             }
                             else
                             {
-                                bodyText = "[No Body]";
+                            bodyText = "[No Body]";
                             }
                         }
                         return new ConversationVM
@@ -194,35 +197,35 @@ namespace KwasantWeb.Controllers
         {
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(vm.BookingRequestId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
+        {
+            var cachedCallback = GetCachedCallback(vm.CallbackToken);
+            if (cachedCallback != null)
             {
-                var cachedCallback = GetCachedCallback(vm.CallbackToken);
-                if (cachedCallback != null)
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
                         try
                         {
-                            var emailDO = new EmailDO();
+                    var emailDO = new EmailDO();
 
-                            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-
-                            emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                            foreach (var to in vm.ToAddresses)
+                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                    
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                    foreach (var to in vm.ToAddresses)
                                 emailDO.AddEmailRecipient(EmailParticipantType.To,
                                     uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
-                            foreach (var cc in vm.CCAddresses)
+                    foreach (var cc in vm.CCAddresses)
                                 emailDO.AddEmailRecipient(EmailParticipantType.Cc,
                                     uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
-                            foreach (var bcc in vm.BCCAddresses)
+                    foreach (var bcc in vm.BCCAddresses)
                                 emailDO.AddEmailRecipient(EmailParticipantType.Bcc,
                                     uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
 
-                            emailDO.HTMLText = vm.Body;
-                            emailDO.PlainText = vm.Body;
-                            emailDO.Subject = vm.Subject;
+                    emailDO.HTMLText = vm.Body;
+                    emailDO.PlainText = vm.Body;
+                    emailDO.Subject = vm.Subject;
 
-                            uow.EmailRepository.Add(emailDO);
+                    uow.EmailRepository.Add(emailDO);
                             cachedCallback(uow, emailDO);
                             return Json(verifyCheckoutMessage);
                         }
@@ -271,5 +274,32 @@ namespace KwasantWeb.Controllers
         {
             return Json(true);
         }
+
+        public ActionResult ShowReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ShowEmails(string queryPeriod, int draw, int start, int length)
+        {
+            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int recordcount;
+                var emailDO = _email.GetEmails(uow, dateRange, start, length, out recordcount);
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                    data = _jsonPackager.Pack(emailDO)
+                });
+
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+        
     }
 }
