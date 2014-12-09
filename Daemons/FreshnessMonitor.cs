@@ -87,7 +87,7 @@ namespace Daemons
 
            
             DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
-            IEnumerable<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking).ToList().Where(x=>x.LastUpdated.DateTime < idleTimeLimit.DateTime);
+            IEnumerable<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated < idleTimeLimit);
             foreach (var br in staleBRList)
             {
                 _br.Timeout(uow, br);

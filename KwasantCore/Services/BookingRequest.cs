@@ -99,9 +99,9 @@ namespace KwasantCore.Services
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                uow.BookingRequestRepository.GetQuery().ToList()
+                uow.BookingRequestRepository.GetQuery()
                     .Where(e => (e.State == BookingRequestState.NeedsBooking))
-                    .OrderByDescending(e => e.DateReceived)
+                    .OrderByDescending(e => e.DateReceived).ToList()
                     .Select(
                         e =>
                         {
@@ -185,7 +185,7 @@ namespace KwasantCore.Services
                 .Where(e => e.BookingRequestID == bookingRequestId);
             //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
             var invitationResponses = uow.InvitationResponseRepository
-                .GetQuery().ToList()
+                .GetQuery()
                 .Where(e => e.Attendee != null && e.Attendee.Event != null &&
                             e.Attendee.Event.BookingRequestID == bookingRequestId);
             return Enumerable.Union<object>(events, invitationResponses);
