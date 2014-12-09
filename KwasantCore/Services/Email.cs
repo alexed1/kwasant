@@ -305,10 +305,12 @@ namespace KwasantCore.Services
                     From = uow.EmailAddressRepository.GetByKey(e.FromID).Address, 
                     Subject = e.Subject,
                     Date = e.CreateDate.ToString(DateStandardFormat),
-                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(),e.EmailStatus.Value),
+                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
+                    //EmailStatus = "",
                     ConversationId = e.ConversationId
                 }).ToList();
 
+            
         }
     }
 }
