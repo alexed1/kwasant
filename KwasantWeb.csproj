@@ -848,6 +848,7 @@
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
     <Content Include="Views\BookingRequest\AddNote.cshtml" />
     <Content Include="Views\BookingRequest\SearchResult.cshtml" />
+    <Content Include="Views\Email\ShowReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
