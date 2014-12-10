@@ -37,6 +37,16 @@
 
             var questions = @Html.Raw(JsonConvert.SerializeObject(Model.Questions));
 
+            for (var i = 0; i < questions.length; i++) {
+                for (var j = 0; j < questions[i].Answers.length; j++) {
+                    var a = questions[i].Answers[j];
+                    if (a.EventStartDate != null)
+                        a.EventStart = new Date(a.EventStartDate);
+                    if (a.EventEndDate != null)
+                        a.EventEnd = new Date(a.EventEndDate);
+                }
+            }
+
             var initialValues = {
                 Id: @(Model.Id == null ? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,

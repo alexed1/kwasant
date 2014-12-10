@@ -210,7 +210,7 @@
 
             var launchCalendar = function (calID) {
                 _that.CalendarID = calID;
-                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
+                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID + '&defaultEventDescription=' + 'Proposed for: ' + questionName.val(),
                     {
                         horizontalAlign: 'left',
                         callback: function (result) {
@@ -560,7 +560,10 @@
             }
         }
 
-        reconfigureAnswerButton();
+        if (questionObject.CalendarID == null)
+            configureAnswerButton(false);
+        else
+            configureAnswerButton(true);
 
         nodes.Questions.push(questionObject);
 
@@ -816,6 +819,24 @@
             baseReturn.EventID = this.EventID;
 
             return baseReturn;
+        };
+
+        answerObject.baseRemoveMe = answerObject.RemoveMe;
+        answerObject.RemoveMe = function () {
+            var outterThis = this;
+            var eventID = answerObject.EventID;
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+            $.post(
+                '/Event/ConfirmDelete',
+                { eventID: eventID }
+            ).success(function() {
+                outterThis.baseRemoveMe();
+            }).fail(function() {
+                alert('Server failed to delete event.');
+            }).always(function() {
+                if (spinner !== null)
+                    spinner.hide();
+            });
         };
 
         return answerObject;

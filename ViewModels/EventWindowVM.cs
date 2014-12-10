@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
@@ -10,6 +11,8 @@ namespace KwasantWeb.ViewModels
         public bool MergeEvents { get; set; }
         public bool RequiresConfirmation { get; set; }
         public bool ClickEditEnabled { get; set; }
+
+        public String DefaultEventDescription { get; set; }
 
         public EventWindowVM()
         {
