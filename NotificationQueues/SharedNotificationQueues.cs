@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace KwasantWeb.AlertQueues
+namespace KwasantWeb.NotificationQueues
 {
-    public static class PersonalAlertQueues
+    public static class PersonalNotificationQueues
     {
         //Define new queues with a string constant
         //Remember to update GetQueueByName
         public const String StrBookingRequestUpdatedQueue = @"BookingRequestUpdatedQueue";
 
 
-        public static IPersonalAlertQueue GetQueueByName(String name)
+        public static IPersonalNotificationQueue GetQueueByName(String name)
         {
             switch (name)
             {
@@ -23,19 +23,21 @@ namespace KwasantWeb.AlertQueues
         }
     }
 
-    public static class SharedAlertQueues
+    public static class SharedNotificationQueues
     {
         //Define new queues with a string constant, and a static instance of your queue.
 
         public const String StrBookingRequestReservedForUserQueue = @"BookingRequestReservedForUserQueue";
         public const String StrPollBookingRequestResponseQueue = @"PollBookingRequestResponseQueue";
         public const String StrHighPriorityIncidentsQueue = @"HighPriorityIncidentsQueue";
+        public const String StrUserNotificationQueue = @"UserNotificationQueue";
 
         private static readonly Dictionary<string, IStaticQueue> Queues = new Dictionary<string, IStaticQueue>
             {
                 { StrBookingRequestReservedForUserQueue, new BookingRequestReservedForUserQueue() },
                 { StrPollBookingRequestResponseQueue, new NewBookingRequestResponseQueue() },
-                { StrHighPriorityIncidentsQueue, new HighPriorityIncidentsQueue() }
+                { StrHighPriorityIncidentsQueue, new HighPriorityIncidentsQueue() },
+                { StrUserNotificationQueue, new UserNotificationQueue() }
             };
 
         public static IStaticQueue GetQueueByName(String name)

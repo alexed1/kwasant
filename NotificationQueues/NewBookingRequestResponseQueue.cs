@@ -5,9 +5,9 @@ using KwasantCore.Services;
 using StructureMap;
 using Utilities;
 
-namespace KwasantWeb.AlertQueues
+namespace KwasantWeb.NotificationQueues
 {
-    public class NewBookingRequestResponseQueue : SharedAlertQueue<NewBookingRequestResponseData>
+    public class NewBookingRequestResponseQueue : SharedNotificationQueue<NewBookingRequestResponseData>
     {
         public NewBookingRequestResponseQueue()
         {
