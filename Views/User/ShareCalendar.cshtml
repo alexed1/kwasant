@@ -10,49 +10,75 @@
             <td>
                 <div class="row">
                     <div class="col-md-12">
-                        @foreach (var remoteCalendar in Model.RemoteCalendars)
-                        {
-                            if (!remoteCalendar.AccessGranted)
-                            {
-                                 @Html.ActionLink(
-                                    string.Format("Grant Access ", remoteCalendar.Provider), 
-                                    "GrantRemoteCalendarAccess", 
-                                    new { providerName = remoteCalendar.Provider },
-					                new { style = "background: url('/Content/img/googleCalendar.png') no-repeat;display:block; height:53px; width:280px; text-align:right;color: #333333;font-weight:bold;padding: 20px 0;" })
-                            }
-                            else
-                            {
-                                @Html.ActionLink(
-                                    string.Format("Revoke Access ", remoteCalendar.Provider),
-                                    "RevokeRemoteCalendarAccess",
-                                    new {providerName = remoteCalendar.Provider},
-					                new { style = "background: url('/Content/img/googleCalendar.png') no-repeat;display:block; height:53px; width:280px; text-align:right;color: #333333;font-weight:bold;padding: 20px 0;" })
-                            }
-                          
-                        }
+                        
                     </div>
                 </div>
                 <br />
 
             </td>
         </tr>
+    </table>
+
+<style>
+    .granttext a {
+        color: #fff;
+    }
+
+</style>
+
+    <table width="" cellpadding="0" cellspacing="0">
+
         <tr>
+            <td height="80" width="186">
+                <img class="floating" src="/Content/img/googleCalendar.png" alt="Kwasant" title="Kwasant">
+            </td>
             <td>
-                
-                    <img class="floating" src="/Content/img/MicrosoftExchangelogo.png" alt="Kwasant" title="Kwasant">
-                    <b>(Coming Soon) </b>
-                <br />
-                <br />
+<b class="custom-btn granttext" style="cursor: pointer">
+                @foreach (var remoteCalendar in Model.RemoteCalendars)
+                        {
+                            if (!remoteCalendar.AccessGranted)
+                            {
+                       
+                         @Html.ActionLink(
+                                    string.Format("Grant Access ", remoteCalendar.Provider), 
+                                    "GrantRemoteCalendarAccess", 
+                                    new { providerName = remoteCalendar.Provider })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink(
+                                    string.Format("Revoke Access ", remoteCalendar.Provider),
+                                    "RevokeRemoteCalendarAccess",
+                                    new {providerName = remoteCalendar.Provider})
+                            }
+                          
+                        }@*<b class="custom-btn" style="cursor: pointer">Grant Access  </b>*@
+</b>
             </td>
         </tr>
+
         <tr>
+            <td height="80">
+                <img class="floating" src="/Content/img/MicrosoftExchangelogo.png" alt="Kwasant" title="Kwasant">
+            </td>
             <td>
-               
-                    <img class="floating" src="/Content/img/icloud-logo.png" alt="Kwasant" title="Kwasant">
-                    <b>(Coming Soon) </b>
-               
+                <b>(Coming Soon) </b>
             </td>
         </tr>
+
+        <tr>
+            <td height="80">
+                <img class="floating" src="/Content/img/icloud-logo.png" alt="Kwasant" title="Kwasant">
+            </td>
+
+            <td>
+                <b>(Coming Soon) </b>
+            </td>
+        </tr>
+
+
+
 
     </table>
 </p>
