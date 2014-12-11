@@ -53,5 +53,40 @@ namespace KwasantTest.Services
 
             }
         }
+
+        [Test]
+        public void CanUpdateAnswerIfAnswerDoesntAlreadyExist()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var _answer = new Answer();
+                var submittedAnsData = fixture.TestAnswer6();
+                _answer.Update(uow, submittedAnsData);
+                uow.SaveChanges();
+                var retrievedAnswerDO = uow.AnswerRepository.GetByKey(1);
+                Assert.AreEqual(submittedAnsData.Text, retrievedAnswerDO.Text);
+                Assert.AreEqual(1, retrievedAnswerDO.Id);
+
+            }
+        }
+
+        [Test]
+        public void GeneratesExceptionIfNotInDatabase()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var _answer = new Answer();
+                var submittedAnsData = fixture.TestAnswer5();
+                Assert.Throws<NullReferenceException>(() =>
+                {
+                    _answer.Update(uow, submittedAnsData);
+                });
+                
+            }
+        }
+
+
     }
 }

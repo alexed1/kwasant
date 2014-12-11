@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Data.Interfaces
 {
@@ -7,7 +8,7 @@ namespace Data.Interfaces
         int Id { get; set; }
         string Handler { get; set; }
         string TemplateName { get; set; }
-        IDictionary<string, string> MergeData { get; }
+        IDictionary<String, Object> MergeData { get; }
         IEmailDO Email { get; set; }
     }
 }

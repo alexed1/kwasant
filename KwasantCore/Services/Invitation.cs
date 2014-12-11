@@ -51,7 +51,9 @@ namespace KwasantCore.Services
             curInvitation.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             //configure the sender information
-            curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            var from = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            curInvitation.From = from;
+            curInvitation.FromName = from.ToDisplayName();
 
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
             curInvitation.ReplyToAddress = replyToAddress.Address;
@@ -91,8 +93,8 @@ namespace KwasantCore.Services
             String templateName;
 
             string endtime = curEvent.EndDate.ToString("hh:mm tt");
-            var timezone = curEvent.StartDate.Offset;
-            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone;
+            var timezone = curEvent.StartDate.Offset.Ticks < 0 ? curEvent.StartDate.Offset.ToString() : "+" + curEvent.StartDate.Offset;
+            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " " + timezone;
             
             if (type == InvitationType.InitialInvite)
             {
@@ -126,8 +128,11 @@ namespace KwasantCore.Services
             var whoListPlainText = String.Join(Environment.NewLine, curEvent.Attendees.Select(a => a.Name + " - " + a.EmailAddress.Address));
 
             curInvitation.Subject = subject;
+
+            curInvitation.TagEmailToBookingRequest(curEvent.BookingRequest);
+            
             uow.EnvelopeRepository.ConfigureTemplatedEmail(
-                curInvitation, templateName, new Dictionary<string, string>
+                curInvitation, templateName, new Dictionary<string, object>
                 {
                     {"description", curEvent.Description},
                     {
@@ -140,7 +145,7 @@ namespace KwasantCore.Services
                     {"wholist", String.Format(whoWrapper, whoList)},
                     {"linkto", GetAuthTokenForBaseURL(uow, userID)},
                     {"summary", curEvent.Summary},
-                    {"timezone", timezone.ToString()},
+                    {"timezone", timezone},
                     {"wholistplaintext", whoListPlainText},
                 }
                 );

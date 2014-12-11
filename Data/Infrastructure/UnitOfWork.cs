@@ -140,6 +140,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EmailStatusRepository _emailStatusRepository;
+
+        public EmailStatusRepository EmailStatusRepository
+        {
+            get
+            {
+                return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
+            }
+        }
+
         private EnvelopeRepository _envelopeRepository;
 
         public EnvelopeRepository EnvelopeRepository
@@ -219,13 +229,24 @@ namespace Data.Infrastructure
                 return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
-        private FactRepository _FactRepository;
+
+        private HistoryRepository _historyRepository;
+
+        public HistoryRepository HistoryRepository
+        {
+            get
+            {
+                return _historyRepository ?? (_historyRepository = new HistoryRepository(this));
+            }
+        }
+
+        private FactRepository _factRepository;
         
         public FactRepository FactRepository
         {
             get
             {
-                return _FactRepository ?? (_FactRepository = new FactRepository(this));
+                return _factRepository ?? (_factRepository = new FactRepository(this));
             }
         }
      

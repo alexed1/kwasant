@@ -96,6 +96,7 @@
       <HintPath>..\..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -139,6 +140,7 @@
     <Compile Include="Controllers\BookingRequestControllerTests.cs" />
     <Compile Include="Controllers\EventControllerTests.cs" />
     <Compile Include="Controllers\NegotiationControllerTests.cs" />
+    <Compile Include="Controllers\NegotiationResponseControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Conversations\ConversationTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />

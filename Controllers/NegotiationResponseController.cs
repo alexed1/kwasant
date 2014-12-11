@@ -7,10 +7,11 @@ using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.TempServicesHome;
 using KwasantWeb.ViewModels;
+using KwasantWeb.ViewModelServices;
 using StructureMap;
 using Utilities;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 
 namespace KwasantWeb.Controllers
 {
@@ -20,11 +21,13 @@ namespace KwasantWeb.Controllers
         private IAttendee _attendee;
         private Negotiation _negotiation;
         private NegotiationResponse _negotiationResponse;
+        Booker _booker;
 
         public NegotiationResponseController()
         {
             _negotiationResponse = new NegotiationResponse();
             _negotiation = new Negotiation();
+            _booker = new Booker();
         }
 
 
@@ -43,7 +46,7 @@ namespace KwasantWeb.Controllers
                 var userDO = uow.UserRepository.GetByKey(userID);
 
                 _attendee = new Attendee(new EmailAddress(new ConfigRepository()));
-                
+
                 var curNegotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (curNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -119,15 +122,35 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationVM curNegotiationVM)
         {
-            if (!curNegotiationVM.Id.HasValue)
-                throw new HttpException(400, "Invalid parameter");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string _currBookerName = "";
+                try
+                {
+                    _currBookerName = _booker.GetName(uow, uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).BookerID);
 
-            AuthenticateUser(curNegotiationVM.Id.Value);
+                    if (!curNegotiationVM.Id.HasValue)
+                        throw new HttpException(400, "Invalid parameter");
 
-            var userID = this.GetUserId();
-            _negotiationResponse.Process(curNegotiationVM, userID);
+                    AuthenticateUser(curNegotiationVM.Id.Value);
 
-            return View();
+                    var userID = this.GetUserId();
+                    _negotiationResponse.Process(curNegotiationVM, userID);
+
+                    return Json(new
+                    {
+                        Success = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new 
+                    {
+                        Success = false,
+                        Message = " Time: " + DateTime.UtcNow + " BRId:" + curNegotiationVM.BookingRequestID + " Current BR Owner Name: " + _currBookerName + " Current BR STatus: " + uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).State
+                    });
+                }
+            }
         }
 
         [KwasantAuthorize(Roles = Roles.Customer)]

@@ -2,7 +2,6 @@
 {
     public class BookingRequestState
     {
-        public const int Unstarted = 1;
         public const int Resolved = 2;
         public const int Booking = 3;
         public const int Invalid = 4;

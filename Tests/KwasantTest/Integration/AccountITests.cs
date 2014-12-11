@@ -41,7 +41,7 @@ namespace KwasantTest.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeDO = uow.EnvelopeRepository.GetQuery().Single();
-                callbackUrl = envelopeDO.MergeData["-callback_url-"];
+                callbackUrl = (String)envelopeDO.MergeData["-callback_url-"];
             }
             var userId = Regex.Match(callbackUrl,
                                      "userId=(?<userId>[-a-f\\d]+)",

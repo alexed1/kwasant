@@ -248,12 +248,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlertQueues\AlertQueue.cs" />
-    <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
-    <Compile Include="AlertQueues\BookingRequestReservedForUserQueue.cs" />
-    <Compile Include="AlertQueues\HighPriorityIncidentsQueue.cs" />
-    <Compile Include="AlertQueues\NewBookingRequestResponseQueue.cs" />
-    <Compile Include="AlertQueues\SharedAlertQueues.cs" />
+    <Compile Include="NotificationQueues\UserNotificationData.cs" />
+    <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
+    <Compile Include="NotificationQueues\NotificationQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestUpdatedQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestReservedForUserQueue.cs" />
+    <Compile Include="NotificationQueues\HighPriorityIncidentsQueue.cs" />
+    <Compile Include="NotificationQueues\NewBookingRequestResponseQueue.cs" />
+    <Compile Include="NotificationQueues\SharedNotificationQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -306,9 +308,11 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
-    <Compile Include="TempServicesHome\NegotiationResponse.cs" />
+    <Compile Include="ViewModelServices\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
+    <Compile Include="ViewModels\BookingRequestNoteVM.cs" />
     <Compile Include="ViewModels\BookingRequestVM.cs" />
+    <Compile Include="ViewModels\BRSearchResultVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
@@ -798,9 +802,7 @@
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\BookingRequest\Index.cshtml" />
-    <Content Include="Views\ClarificationResponse\New.cshtml" />
     <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
-    <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\Negotiation\Edit.cshtml" />
@@ -849,6 +851,9 @@
     <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
+    <Content Include="Views\BookingRequest\AddNote.cshtml" />
+    <Content Include="Views\BookingRequest\SearchResult.cshtml" />
+    <Content Include="Views\Email\ShowReport.cshtml" />
     <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
     <Content Include="Views\User\ShareCalendar.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />

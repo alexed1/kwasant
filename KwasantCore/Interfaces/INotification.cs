@@ -9,5 +9,6 @@ namespace KwasantCore.Interfaces
     public interface INotification
     {
         bool IsInNotificationWindow(string startTimeConfigName, string endTimeConfigName);
+        void Generate(string userId, string message, TimeSpan expiresIn = default(TimeSpan));
     }
 }

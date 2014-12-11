@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
@@ -83,8 +84,8 @@ namespace KwasantCore.Managers
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
-               
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "2e411208-7a0d-4a72-a005-e39ae018d708", null); //welcome to kwasant v2 template
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, _configRepository.Get("welcome_to_kwasant_template"), null); //welcome to kwasant v2 template
                 uow.SaveChanges();
             }
         }
@@ -96,71 +97,85 @@ namespace KwasantCore.Managers
 
         public void DispatchNegotiationRequests(IUnitOfWork uow, EmailDO generatedEmailDO, NegotiationDO negotiationDO)
         {
-            if (!generatedEmailDO.Recipients.Any())
+            var batches = generatedEmailDO.Recipients.GroupBy(r =>
+            {
+                var curUserDO = uow.UserRepository.GetOrCreateUser(r.EmailAddress);
+                return GetCRTemplate(curUserDO);
+            });
+
+            foreach (var batch in batches)
+            {
+                DispatchBatchedNegotiationRequests(uow, batch.Key, generatedEmailDO.HTMLText, batch.ToList(), negotiationDO);
+            }
+        }
+
+        public void DispatchBatchedNegotiationRequests(IUnitOfWork uow, String templateName, String htmlText, IList<RecipientDO> recipients, NegotiationDO negotiationDO)
+        {
+            if (!recipients.Any())
                 return;
 
-            foreach (var attendee in generatedEmailDO.Recipients)
+            var emailDO = new EmailDO();
+            //This means, when the customer replies, their client will include the bookingrequest id
+            emailDO.TagEmailToBookingRequest(negotiationDO.BookingRequest);
+
+            var customer = negotiationDO.BookingRequest.Customer;
+            var mode = _user.GetMode(customer);
+            if (mode == CommunicationMode.Direct)
             {
-                var emailDO = new EmailDO();
-                //This means, when the customer replies, their client will include the bookingrequest id
-                emailDO.TagEmailToBookingRequest(negotiationDO.BookingRequest);
-                
-                var customer = negotiationDO.BookingRequest.Customer;
-                var mode = _user.GetMode(customer);
-                if (mode == CommunicationMode.Direct)
-                {
-                    var directEmailAddress = _configRepository.Get("EmailFromAddress_DirectMode");
-                    var directEmailName = _configRepository.Get("EmailFromName_DirectMode");
-                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(directEmailAddress);
-                    emailDO.FromName = directEmailName;
-                }
-                else
-                {
-                    var delegateEmailAddress = _configRepository.Get("EmailFromAddress_DelegateMode");
-                    var delegateEmailName = _configRepository.Get("EmailFromName_DelegateMode");
-                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(delegateEmailAddress);
-                    emailDO.FromName = String.Format(delegateEmailName, customer.DisplayName);
-                }
+                var directEmailAddress = _configRepository.Get("EmailFromAddress_DirectMode");
+                var directEmailName = _configRepository.Get("EmailFromName_DirectMode");
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(directEmailAddress);
+                emailDO.FromName = directEmailName;
+            }
+            else
+            {
+                var delegateEmailAddress = _configRepository.Get("EmailFromAddress_DelegateMode");
+                var delegateEmailName = _configRepository.Get("EmailFromName_DelegateMode");
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(delegateEmailAddress);
+                emailDO.FromName = String.Format(delegateEmailName, customer.DisplayName);
+            }
 
+            emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
+                negotiationDO.BookingRequest.Customer.FirstName,
+                (negotiationDO.BookingRequest.Customer.LastName ?? ""),
+                "RE: " + negotiationDO.Name);
+
+            var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
+
+            var tokenUrls = new List<String>();
+            foreach (var attendee in recipients)
+            {
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-               
-                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
-                    negotiationDO.BookingRequest.Customer.FirstName,
-                    (negotiationDO.BookingRequest.Customer.LastName ?? ""),
-                    "RE: " + negotiationDO.Name);
-
-                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
-
                 var curUserDO = uow.UserRepository.GetOrCreateUser(attendee.EmailAddress);
                 var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, curUserDO);
-
-                uow.EmailRepository.Add(emailDO);
-                var summaryQandAText = _negotiation.GetSummaryText(negotiationDO);
-
-                string currBookerAddress = negotiationDO.BookingRequest.Booker.EmailAddress.Address;
-
-                string templateName = GetCRTemplate(curUserDO);
-
-                var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
-                
-                // Fix an issue when coverting to UTF-8
-                conversationThread = conversationThread.Replace((char) 160, (char) 32);
-
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
-                    new Dictionary<string, string>
-                    {
-                        {"RESP_URL", tokenURL},
-                        {"bodytext", generatedEmailDO.HTMLText},
-                        {"questions", String.Join("<br/>", summaryQandAText)},
-                        {"conversationthread", conversationThread},
-                        {"bookername", currBookerAddress.Replace("@kwasant.com","")}
-                    });
+                tokenUrls.Add(tokenURL);
             }
+
+            uow.EmailRepository.Add(emailDO);
+            var summaryQandAText = _negotiation.GetSummaryText(negotiationDO);
+
+            string currBookerAddress = negotiationDO.BookingRequest.Booker.EmailAddress.Address;
+
+            var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
+
+            // Fix an issue when coverting to UTF-8
+            conversationThread = conversationThread.Replace((char)160, (char)32);
+
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
+                new Dictionary<string, object>
+                {
+                    {"RESP_URL", tokenUrls},
+                    {"bodytext", htmlText},
+                    {"questions", String.Join("<br/>", summaryQandAText)},
+                    {"conversationthread", conversationThread},
+                    {"bookername", currBookerAddress.Replace("@kwasant.com","")}
+                });
+
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
 
             //Everyone who gets an email is now an attendee.
             var currentAttendeeIDs = negotiationDO.Attendees.Select(a => a.EmailAddressID).ToList();
-            foreach (var recipient in generatedEmailDO.Recipients)
+            foreach (var recipient in recipients)
             {
                 if (!currentAttendeeIDs.Contains(recipient.EmailAddressID))
                 {
@@ -174,7 +189,6 @@ namespace KwasantCore.Managers
                 }
             }
         }
-
 
         public string GetCRTemplate(UserDO curUserDO)
         {
@@ -257,6 +271,12 @@ namespace KwasantCore.Managers
                 uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
+        }
+
+        public void ProcessSubmittedNote(int bookingRequestId, string note)
+        {
+            var incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
+            incidentReporter.ProcessSubmittedNote(bookingRequestId, note);
         }
     }
 

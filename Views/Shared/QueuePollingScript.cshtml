@@ -1,10 +1,12 @@
-﻿@using KwasantWeb.AlertQueues
+﻿@using KwasantWeb.NotificationQueues
 <script src="/Content/js/notify.js"></script>
 
 <script type="text/javascript">
     PollNewBookingRequestEnabled = true;
     PollBookingRequestResponseEnabled = true;
-
+    PollHighPriorityIncidentEnabled = true;
+    PollUserNotificationEnabled = true;
+    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     var notify = $.notify;
     
     var pollTimeInSeconds = 5;
@@ -13,6 +15,7 @@
         pollNewBookingRequest();
         pollBookingRequestResponse();
         pollHighPriorityIncident();
+        pollUserNotification();
     }
 
     function getUpdateForPage(eventName, objectID, callback) {
@@ -23,7 +26,8 @@
                 objectID: objectID
             },
             function (guid) {
-
+                if (!guidRegex.test(guid))
+                    return;
                 var interval = setInterval(function () {
                     $.post(
                         '/Alerting/RequestUpdate',
@@ -51,6 +55,8 @@
                 eventName: eventName,
             },
             function (guid) {
+                if (!guidRegex.test(guid))
+                    return;
                 var interval = setInterval(function () {
                     $.post(
                         '/Alerting/RequestUpdateForUser',
@@ -78,6 +84,8 @@
                 eventName: eventName,
             },
             function (guid) {
+                if (!guidRegex.test(guid))
+                    return;
                 var interval = setInterval(function () {
                     $.post(
                         '@Url.Action("RequestUpdateForRole", "Alerting")',
@@ -144,7 +152,7 @@
 
     function pollNewBookingRequest() {
         if (PollNewBookingRequestEnabled) {
-            getUpdateForUser('@SharedAlertQueues.StrBookingRequestReservedForUserQueue', function (result) {
+            getUpdateForUser('@SharedNotificationQueues.StrBookingRequestReservedForUserQueue', function (result) {
                 $.each(result, function (ind, row) {
                     var message = 'A new booking request has been assigned to you!  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
 
@@ -160,7 +168,7 @@
     
     function pollBookingRequestResponse() {
         if (PollBookingRequestResponseEnabled) {
-            getUpdateForUser('@SharedAlertQueues.StrPollBookingRequestResponseQueue', function (result) {
+            getUpdateForUser('@SharedNotificationQueues.StrPollBookingRequestResponseQueue', function (result) {
                 $.each(result, function (ind, row) {
                     var message = 'A booking request has recieved a new response.  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
 
@@ -175,8 +183,8 @@
     }
 
     function pollHighPriorityIncident() {
-        if (PollBookingRequestResponseEnabled) {
-            getUpdateForRole('@SharedAlertQueues.StrHighPriorityIncidentsQueue', function (result) {
+        if (PollHighPriorityIncidentEnabled) {
+            getUpdateForRole('@SharedNotificationQueues.StrHighPriorityIncidentsQueue', function (result) {
                 $.each(result, function (ind, row) {
                     var message = 'New high priority incident has occurred!  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
 
@@ -185,6 +193,20 @@
                             location.href = '/Report?type=incident';
                         },
                         className: 'new-incident'
+                    });
+                });
+            });
+        }
+    }
+    
+    function pollUserNotification() {
+        if (PollUserNotificationEnabled) {
+            getUpdateForUser('@SharedNotificationQueues.StrUserNotificationQueue', function (result) {
+                $.each(result, function (ind, row) {
+                    var message = row.Message;
+
+                    displayBottomRight(message, {
+                        className: 'new-notification'
                     });
                 });
             });

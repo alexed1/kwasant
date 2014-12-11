@@ -15,6 +15,7 @@ namespace Data.Interfaces
         CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
+        EmailStatusRepository EmailStatusRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
         EventRepository EventRepository { get; }
         EventStatusRepository EventStatusRepository { get; }
@@ -56,6 +57,7 @@ namespace Data.Interfaces
         RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
+        HistoryRepository HistoryRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

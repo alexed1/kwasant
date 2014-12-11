@@ -9,15 +9,18 @@ using KwasantCore.Interfaces;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
-namespace KwasantWeb.TempServicesHome
+namespace KwasantWeb.ViewModelServices
 {
     public class NegotiationResponse
     {
         private INegotiation _negotiation;
+        private ITracker _tracker;
 
         public NegotiationResponse()
         {
             _negotiation = ObjectFactory.GetInstance<INegotiation>();
+            _tracker = ObjectFactory.GetInstance<ITracker>();
+
         }
 
         public void Process(NegotiationVM curNegotiationVM, string userID)
@@ -41,6 +44,9 @@ namespace KwasantWeb.TempServicesHome
                 _negotiation.CreateQuasiEmailForBookingRequest(uow, curNegotiationDO, curUserDO, questionAnswer);
 
                 uow.SaveChanges();
+
+                _tracker.Identify(curUserDO);
+                _tracker.Track(curUserDO, "RespondedToClarificationRequest", "ClickedNegResponseLink", new Dictionary<string, object> { { "BookingRequestId", curNegotiationDO.BookingRequestID } });
             }
         }
 

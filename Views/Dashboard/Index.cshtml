@@ -77,11 +77,17 @@
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: "/BookingRequest/MarkAsProcessed?id=" + '@Model.BookingRequestVM.BookingRequestId',
+                    url: "/BookingRequest/MarkAsProcessed?curBRId=" + '@Model.BookingRequestVM.BookingRequestId',
                     success:function(response){
-                        alert(response.Message);
-                        if(response.Name == 'Success')
+                        if (response.Name == 'Success'){
                             return true;
+                        }
+                        else if (response.Name == 'DifferentBooker')
+                            ShowBookerOwnershipAlert(response.Message, '@Model.BookingRequestVM.BookingRequestId');
+                        else if (response.Name == 'error')
+                            alert(response.Message);
+                        else
+                            alert('An error occured on the server. Your changes have not been saved.');
                     }
                 })
             } 
@@ -118,13 +124,14 @@
                             <a id="btnBookingRequest">BookingRequest</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", new { controller ="BookingRequest" }, new { id="btnBookingRequestGetAll" })</li>
+                                <li><a id="liAddNote" onclick="getAddNoteWindow();">Add Note</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a id="btnUser">User</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", new { controller = "User" }, new { id="btnUserGetAll" }) </li>
-                                <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
+                                <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -206,7 +213,7 @@
             onClick: function (event) {
                 if(event.target == 'markprocessed')
                 {
-                    updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');
+                    updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = Model.BookingRequestVM.BookingRequestId })');
                 }
                 else if(event.target == 'sendmessage'){
                     sendAnEmail();
