@@ -235,7 +235,7 @@ namespace KwasantCore.Managers
                         Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                         //Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                     };
-                AddFact(uow, curAction);
+                //AddFact(uow, curAction);
                 uow.SaveChanges();
             }
         }
@@ -306,7 +306,7 @@ namespace KwasantCore.Managers
                     };
                 //curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
                 curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-                AddFact(uow, curAction);
+                //AddFact(uow, curAction);
                 uow.SaveChanges();
             }
         }
@@ -315,24 +315,10 @@ namespace KwasantCore.Managers
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AddFact(uow, curAction);
+                //AddFact(uow, curAction);
                 uow.SaveChanges();
             }
         }
-        private void AddFact(IUnitOfWork uow, FactDO curAction)
-        {
-            Debug.Assert(uow != null);
-            Debug.Assert(curAction != null);
-            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            
-            //curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-            curAction.Data += string.Format("{0} ID :{1}, EmailAddress: {2} ", curAction.PrimaryCategory ,curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-
-            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                Logger.GetLogger().Info(curAction.Data);
-            uow.FactRepository.Add(curAction);
-        }
-
 
         public void ReportUserRegistered(UserDO curUser)
         {
@@ -382,7 +368,7 @@ namespace KwasantCore.Managers
                             bookerDO.EmailAddress.Address)
                     };
 
-                AddFact(uow, curAction);
+                //AddFact(uow, curAction);
                 uow.SaveChanges();
             }
         }

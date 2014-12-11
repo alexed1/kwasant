@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces;
+using Utilities.Logging;
+using StructureMap;
+using Utilities;
 
 namespace Data.Entities
 {
@@ -20,5 +23,13 @@ namespace Data.Entities
         public string Activity { get; set; }
         public string Data { get; set; }
         public string Status { get; set; }
+
+        public override void BeforeSave(IUnitOfWork uow)
+        {
+            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
+            Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : uow.UserRepository.GetByKey(CustomerId).EmailAddress.Address)) + Data;
+            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
+                Logger.GetLogger().Info(Data);
+        }
     }
 }
