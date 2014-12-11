@@ -16,6 +16,7 @@ namespace Data.Entities
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
+            Availability = BookingRequestAvailability.Available;
             State = BookingRequestState.NeedsBooking;
             ConversationMembers = new List<EmailDO>();
         }
