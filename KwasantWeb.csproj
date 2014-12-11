@@ -481,6 +481,7 @@
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
     <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\logo.png" />
