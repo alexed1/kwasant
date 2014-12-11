@@ -21,13 +21,13 @@ namespace KwasantTest.Managers
     public class CalendarSyncManagerTest : BaseTest
     {
         private CalendarSyncManager _calendarSyncManager;
-        private List<iCalendar> _remoteCalendarEvents;
+        private List<IEvent> _remoteCalendarEvents;
         
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _remoteCalendarEvents = new List<iCalendar>();
+            _remoteCalendarEvents = new List<IEvent>();
             CalendarSyncManager.DisableAutoSynchronization = true;
             
             var clientMock = new Mock<IRemoteCalendarServiceClient>();
@@ -42,8 +42,8 @@ namespace KwasantTest.Managers
                 .ReturnsAsync(new Dictionary<string, string>() { { "url", "name" } });
             clientMock.Setup(c =>
                               c.CreateEventAsync(It.IsAny<IRemoteCalendarLinkDO>(),
-                                                 It.IsAny<iCalendar>()))
-                .Returns<IRemoteCalendarLinkDO, iCalendar>((calendarLink, iCalEvent) =>
+                                                 It.IsAny<IEvent>()))
+                .Returns<IRemoteCalendarLinkDO, IEvent>((calendarLink, iCalEvent) =>
                              {
                                  _remoteCalendarEvents.Add(iCalEvent); 
                                  return Task.Delay(0);
@@ -80,7 +80,7 @@ namespace KwasantTest.Managers
                 // SETUP
                 var curEvent = fixture.TestEvent2();
                 var iCalEvent = Event.GenerateICSCalendarStructure(curEvent);
-                _remoteCalendarEvents.Add(iCalEvent);
+                _remoteCalendarEvents.Add(iCalEvent.Events[0]);
 
                 uow.SaveChanges();
                 // EXECUTE
@@ -131,7 +131,7 @@ namespace KwasantTest.Managers
                 // VERIFY
                 Assert.AreEqual(1, _remoteCalendarEvents.Count,
                     "One event must be in the remote storage after synchronization.");
-                var newEvent = Event.CreateEventFromICSCalendar(uow, _remoteCalendarEvents[0]);
+                var newEvent = Event.CreateEventFromIcsEvent(uow, _remoteCalendarEvents[0]);
                 AssertEventsAreEqual(curEvent, newEvent);
             }
         }
@@ -203,7 +203,7 @@ namespace KwasantTest.Managers
                 curRemoteEvent.Location = "changed location";
                 curRemoteEvent.Description = "changed description";
                 var iCalEvent = Event.GenerateICSCalendarStructure(curRemoteEvent);
-                _remoteCalendarEvents.Add(iCalEvent);
+                _remoteCalendarEvents.Add(iCalEvent.Events[0]);
 
                 // EXECUTE
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
@@ -219,7 +219,7 @@ namespace KwasantTest.Managers
                 Assert.AreEqual(1, _remoteCalendarEvents.Count,
                     "One event must be in the remote storage after synchronization.");
                 var newLocalEvent = localEvents[0];
-                var newRemoteEvent = Event.CreateEventFromICSCalendar(uow, _remoteCalendarEvents[0]);
+                var newRemoteEvent = Event.CreateEventFromIcsEvent(uow, _remoteCalendarEvents[0]);
                 AssertEventsAreEqual(newLocalEvent, newRemoteEvent);
                 AssertEventsAreEqual(curRemoteEvent, newRemoteEvent);
             }

@@ -79,7 +79,7 @@ namespace KwasantCore.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
+                For<IRemoteCalendarServiceAuthorizer>().Use<ExchangeCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
 
                 For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);

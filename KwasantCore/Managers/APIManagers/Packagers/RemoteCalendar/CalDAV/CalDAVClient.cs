@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Serialization;
+using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManagers.Transmitters.Http;
 using KwasantICS.DDay.iCal;
@@ -59,8 +60,8 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
             "    <D:displayname/>\r\n" +
             "    <D:resourcetype/>\r\n" +
             "  </D:prop>\r\n" +
-            "</D:propfind>";        
-        
+            "</D:propfind>";
+
         /// <summary>
         /// Creates a request to CalDAV service for retrieving all calendar events in range of from..to. 
         /// See CalDAV reference for more details.
@@ -69,7 +70,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<iCalendar>> GetEventsAsync(IRemoteCalendarLinkDO calendarLink, DateTimeOffset @from, DateTimeOffset to)
+        public async Task<IEnumerable<IEvent>> GetEventsAsync(IRemoteCalendarLinkDO calendarLink, DateTimeOffset @from, DateTimeOffset to)
         {
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
@@ -102,7 +103,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
             }
 
             // extract ICS objects from response
-            return multiStatus.Items != null 
+            return (multiStatus.Items != null 
                 ? multiStatus.Items
                     .Select(r =>
                             {
@@ -112,21 +113,19 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
                                 }
                             })
                     .ToArray() 
-                : new iCalendar[0];
+                : new iCalendar[0]).SelectMany(c => c.Events);
         }
 
-        public async Task CreateEventAsync(IRemoteCalendarLinkDO calendarLink, iCalendar calendarEvent)
+        public async Task CreateEventAsync(IRemoteCalendarLinkDO calendarLink, IEvent calendarEvent)
         {
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
             if (calendarEvent == null)
                 throw new ArgumentNullException("calendarEvent");
-            if (calendarEvent.Events == null || calendarEvent.Events.Count == 0)
-                throw new ArgumentException("iCalendar object must contain at least one event.", "calendarEvent");
 
             var calendarId = calendarLink.RemoteCalendarHref;
             var userId = calendarLink.LocalCalendar.Owner.Id;
-            var eventId = calendarEvent.Events.First().UID;
+            var eventId = calendarEvent.UID;
             var uri = new Uri(_endPointUri, calendarId);
 
             // We need factory method rather than just an instance here as it is required by IHttpChannel.SendRequestAsync. 
@@ -135,8 +134,8 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
             {
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Concat(uri, eventId));
                 request.Headers.Add("If-None-Match", "*");
-                iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent);
-                string calendarString = serializer.Serialize(calendarEvent);
+                iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent.iCalendar);
+                string calendarString = serializer.Serialize(calendarEvent.iCalendar);
                 request.Content = new StringContent(calendarString, Encoding.UTF8, "text/calendar");
                 return request;
             };

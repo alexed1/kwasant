@@ -11,6 +11,6 @@ namespace Data.Interfaces
         IUserDO User { get; set; }
         
         string AuthData { get; set; }
-        bool HasAccessToken();
+        bool IsValid();
     }
 }

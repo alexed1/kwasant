@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
+using Data.States;
 
 namespace Data.Entities
 {
@@ -36,10 +37,11 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO User { get; set; }        
         
-        public bool HasAccessToken()
+        public bool IsValid()
         {
             return !string.IsNullOrEmpty(AuthData) &&
-                   AuthData.Contains("access_token");
+                   ((Provider.AuthType == ServiceAuthorizationType.OAuth2 && AuthData.Contains("access_token"))
+                   || Provider.AuthType == ServiceAuthorizationType.Basic && AuthData.Contains("password"));
         }
     }
 }

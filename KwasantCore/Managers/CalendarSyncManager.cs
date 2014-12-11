@@ -123,7 +123,7 @@ namespace KwasantCore.Managers
             DateTimeOffset from, to;
             GetPeriod(out from, out to);
 
-            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.HasAccessToken()))
+            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.IsValid()))
             {
                 try
                 {
@@ -216,7 +216,7 @@ namespace KwasantCore.Managers
             Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
             var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
             // filter out reccurring events
-            var incomingEvents = remoteEvents.Select(cal => Event.CreateEventFromICSCalendar(uow, cal)).Where(eventPredictor).ToArray();
+            var incomingEvents = remoteEvents.Select(icsEvent => Event.CreateEventFromIcsEvent(uow, icsEvent)).Where(eventPredictor).ToArray();
             var calendar = calendarLink.LocalCalendar;
             Debug.Assert(calendar != null, "No local calendar associated with this calendar link.");
             var owner = calendar.Owner;
@@ -303,8 +303,8 @@ namespace KwasantCore.Managers
 
         private async Task PushEventAsync(IRemoteCalendarServiceClient client, IRemoteCalendarLinkDO calendarLink, EventDO eventDO)
         {
-            var iCalendarEvent = Event.GenerateICSCalendarStructure(eventDO);
-            await client.CreateEventAsync(calendarLink, iCalendarEvent);
+            var iCalendar = Event.GenerateICSCalendarStructure(eventDO);
+            await client.CreateEventAsync(calendarLink, iCalendar.Events[0]);
         }
     }
 }

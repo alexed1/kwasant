@@ -63,7 +63,7 @@ namespace KwasantWeb.Controllers
                 this.GetUserId(),
                 this.GetUserName(),
                 GetCallbackUrl(providerName),
-                Request.RawUrl,
+                Request.Url.AbsoluteUri,
                 CancellationToken.None);
 
             if (!result.IsAuthorized && !string.IsNullOrEmpty(result.RedirectUri))

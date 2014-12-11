@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -27,7 +28,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Exchange
                     return new AuthorizationResult(true, null);
                 }
             }
-            return new AuthorizationResult(false, new Uri(new Uri(currentUrl), "/ExchangeAuth/Login").ToString());
+            return new AuthorizationResult(false, new Uri(new Uri(currentUrl), string.Format("/ExchangeAuth/Login?returnUrl={0}", HttpUtility.UrlEncode(currentUrl))).ToString());
         }
 
         public async Task RevokeAccessAsync(string userId, CancellationToken cancellationToken)
@@ -39,6 +40,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Exchange
                 {
                     uow.RemoteCalendarAuthDataRepository.Remove(userAuthData);
                 }
+                uow.SaveChanges();
             }
         }
 
@@ -46,8 +48,9 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Exchange
         {
             ExchangeService service = new ExchangeService();
             service.Credentials = new WebCredentials(email, password);
+            service.AutodiscoverUrl(email, ValidateRedirectionUrlCallback);
             // tries to get an item in the calendar folder to check user's credentials.
-            var folders = service.FindItems(WellKnownFolderName.Calendar, new FolderView(1));
+            var folders = service.FindFolders(WellKnownFolderName.Calendar, new FolderView(1));
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -56,7 +59,13 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Exchange
                 await dataStore.ClearAsync();
                 await dataStore.StoreAsync("email", email);
                 await dataStore.StoreAsync("password", password);
+                uow.SaveChanges();
             }
+        }
+
+        private bool ValidateRedirectionUrlCallback(string redirectionUrl)
+        {
+            return true;
         }
     }
 }

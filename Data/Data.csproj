@@ -485,6 +485,10 @@
     <Compile Include="Migrations\201412022001255_AddIncidentStatus.Designer.cs">
       <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412091551511_Sync.09.12.2014.cs" />
+    <Compile Include="Migrations\201412091551511_Sync.09.12.2014.Designer.cs">
+      <DependentUpon>201412091551511_Sync.09.12.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
@@ -1437,6 +1441,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412022001255_AddIncidentStatus.resx">
       <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412091551511_Sync.09.12.2014.resx">
+      <DependentUpon>201412091551511_Sync.09.12.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

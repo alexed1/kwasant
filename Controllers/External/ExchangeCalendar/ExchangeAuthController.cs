@@ -19,6 +19,8 @@ namespace KwasantWeb.Controllers.External.ExchangeCalendar
         [HttpGet]
         public ActionResult Login(string returnUrl)
         {
+            if (string.IsNullOrEmpty(returnUrl))
+                throw new ArgumentNullException("returnUrl");
             ViewBag.returnUrl = returnUrl;
             return View(new LoginVM());
         }
