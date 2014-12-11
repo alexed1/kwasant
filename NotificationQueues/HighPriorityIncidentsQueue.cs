@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.Infrastructure;
+﻿using Data.Infrastructure;
 using Data.States;
 
-namespace KwasantWeb.AlertQueues
+namespace KwasantWeb.NotificationQueues
 {
-    public class HighPriorityIncidentsQueue : SharedAlertQueue<HighPriorityIncidentData>
+    public class HighPriorityIncidentsQueue : SharedNotificationQueue<HighPriorityIncidentData>
     {
         public HighPriorityIncidentsQueue()
         {

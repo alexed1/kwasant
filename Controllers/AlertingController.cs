@@ -4,7 +4,7 @@ using System.Net;
 using System.Web.Mvc;
 using Data.Interfaces;
 using KwasantCore.Managers;
-using KwasantWeb.AlertQueues;
+using KwasantWeb.NotificationQueues;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers
 
             if (Session[guid] == null)
             {
-                var queue = PersonalAlertQueues.GetQueueByName(eventName);
+                var queue = PersonalNotificationQueues.GetQueueByName(eventName);
                 queue.ObjectID = objectID;
 
                 Session[guid] = queue;
@@ -37,7 +37,7 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(guid))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var queue = Session[guid] as IPersonalAlertQueue;
+            var queue = Session[guid] as IPersonalNotificationQueue;
 
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -52,7 +52,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var guid = Guid.NewGuid().ToString();
-            var queue = (ISharedAlertQueue<IUserUpdateData>)SharedAlertQueues.GetQueueByName(eventName);
+            var queue = (ISharedNotificationQueue<IUserUpdateData>)SharedNotificationQueues.GetQueueByName(eventName);
             queue.RegisterInterest(guid);
             Session[guid] = queue;
 
@@ -65,7 +65,7 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(guid))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var queue = Session[guid] as ISharedAlertQueue<IUserUpdateData>;
+            var queue = Session[guid] as ISharedNotificationQueue<IUserUpdateData>;
 
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -80,7 +80,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var guid = Guid.NewGuid().ToString();
-            var queue = (ISharedAlertQueue<IRoleUpdateData>)SharedAlertQueues.GetQueueByName(eventName);
+            var queue = (ISharedNotificationQueue<IRoleUpdateData>)SharedNotificationQueues.GetQueueByName(eventName);
             queue.RegisterInterest(guid);
             Session[guid] = queue;
 
@@ -93,7 +93,7 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(guid))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var queue = Session[guid] as ISharedAlertQueue<IRoleUpdateData>;
+            var queue = Session[guid] as ISharedNotificationQueue<IRoleUpdateData>;
 
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

@@ -18,8 +18,8 @@ using KwasantCore.Security;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
-using KwasantWeb.AlertQueues;
 using KwasantWeb.App_Start;
+using KwasantWeb.NotificationQueues;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
@@ -72,7 +72,7 @@ namespace KwasantWeb
 
             ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
 
-            SharedAlertQueues.Begin();
+            SharedNotificationQueues.Begin();
 
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
