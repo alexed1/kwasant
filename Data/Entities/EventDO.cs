@@ -84,8 +84,16 @@ namespace Data.Entities
             }
         }
 
-        public override void BeforeSave()
+        public override void AfterCreate()
         {
+            base.AfterCreate();
+            if (BookingRequest != null)
+            {
+                AlertManager.EventBooked(Id, BookingRequest.CustomerID);
+            }
+        }
+
+		public override void BeforeSave()        {
             base.BeforeSave();
             SetBookingRequestLastUpdated();
         }

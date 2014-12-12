@@ -16,6 +16,7 @@ namespace Data.Entities
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
+            Availability = BookingRequestAvailability.Available;
             State = BookingRequestState.NeedsBooking;
             ConversationMembers = new List<EmailDO>();
         }
@@ -60,7 +61,7 @@ namespace Data.Entities
 
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
-            base.OnModify(currentValues, originalValues);
+            base.OnModify(originalValues, currentValues);
 
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
