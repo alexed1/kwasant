@@ -239,12 +239,13 @@ namespace KwasantCore.Services
                 .Where(e => e.PrimaryCategory == "BookingRequest" && e.Activity == "MarkedAsProcessed")
                 .WhereInDateRange(e => e.CreateDate, dateRange)
                 .GroupBy(e => e.BookerId)
-                .OrderByDescending(e => e.Key)
-                .Skip(start).Take(length);
+                .OrderByDescending(e => e.Key);
+               
 
             count = incidentDO.Count();
 
             return incidentDO
+                .Skip(start).Take(length)
                 .AsEnumerable()
                 .Select(e => new
                 {
@@ -261,11 +262,11 @@ namespace KwasantCore.Services
             var incidentDO = uow.IncidentRepository.GetQuery()
                 .Where(e => e.PrimaryCategory == "BookingRequest" && e.Activity == "Checkout")
                 .WhereInDateRange(e => e.CreateDate, dateRange)
-                .OrderByDescending(e => e.CreateDate)
-                .Skip(start)
-                .Take(length);
+                .OrderByDescending(e => e.CreateDate);
+                
             count = incidentDO.Count();
             return incidentDO
+                .Skip(start).Take(length)
                 .AsEnumerable()
                 .Select(e => new
                 {
