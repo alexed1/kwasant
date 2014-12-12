@@ -20,9 +20,7 @@ namespace Data.Repositories
         public EmailAddressDO GetOrCreateEmailAddress(String email, String name = null)
         {
             email = email.Trim();
-            //Validate email here!
-            email.ValidateEmailAddress();
-
+            
             var matchingEmailAddress = DBSet.Local.FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)
                 matchingEmailAddress = GetQuery().FirstOrDefault(e => e.Address == email);

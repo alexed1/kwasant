@@ -202,11 +202,7 @@ namespace KwasantWeb.Controllers
         {
             try
             {
-                var emailAddressDO = new EmailAddressDO(emailAddress);
-
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
+                RegexUtilities.ValidateEmailAddress(emailAddress);
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
