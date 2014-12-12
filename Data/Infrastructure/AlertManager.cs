@@ -93,6 +93,9 @@ namespace Data.Infrastructure
         public delegate void UserNotificationHandler(string userId, string message, TimeSpan expiresIn = default(TimeSpan));
         public static event UserNotificationHandler AlertUserNotification;
 
+        public delegate void BRReleasedBookerHandler(int bookingRequestId);
+        public static event BRReleasedBookerHandler AlertBRReleasedBooker;
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -266,6 +269,11 @@ namespace Data.Infrastructure
             if (handler != null) handler(incidentId);
         }
 
+        public static void BRReleasedBooker(int bookingRequestId)
+        {
+            if (AlertBRReleasedBooker != null)
+                AlertBRReleasedBooker(bookingRequestId);
+        }
         #endregion
     }
 
