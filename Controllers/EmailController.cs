@@ -97,7 +97,23 @@ namespace KwasantWeb.Controllers
                             booker = bookingRequestDO.Booker.FirstName;
                     }
                 }
-                
+
+                var fromUser = uow.UserRepository.GetOrCreateUser(curEmail.From);
+                var timezoneGuessed = false;
+                String timezoneID = String.Empty;
+                var explicitTimeZone = fromUser.GetExplicitTimeZone();
+                if (explicitTimeZone != null)
+                {
+                    timezoneID = explicitTimeZone.Id;
+                }
+                else
+                {
+                    var guessedTimeZone = fromUser.GetOrGuessTimeZone();
+                    timezoneGuessed = true;
+                    if (guessedTimeZone != null)
+                        timezoneID = guessedTimeZone.Id;
+                }
+
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
                     Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e =>
@@ -141,6 +157,9 @@ namespace KwasantWeb.Controllers
                     EmailAttachments = attachmentInfo,
                     ReadOnly = readonlyView.HasValue && readonlyView.Value,
                     Booker = booker,
+                    TimezoneGuessed = timezoneGuessed,
+                    UserTimeZoneID = timezoneID,
+                    FromUserID = fromUser.Id,
                     LastUpdated = curEmail.LastUpdated
                 };
 

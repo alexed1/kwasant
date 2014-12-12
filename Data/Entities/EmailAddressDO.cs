@@ -29,6 +29,9 @@ namespace Data.Entities
         [InverseProperty("EmailAddress")]
         public virtual List<RecipientDO> Recipients { get; set; }
 
+        [InverseProperty("From")]
+        public virtual List<EmailDO> SentEmails { get; set; }
+
         public String NameOrAddress()
         {
             if (!String.IsNullOrEmpty(Name))

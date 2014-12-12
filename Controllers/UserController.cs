@@ -95,6 +95,18 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult UpdateUserTimezone(String userID, String timezoneID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDO = uow.UserRepository.GetByKey(userID);
+                userDO.TimeZoneID = timezoneID;
+                uow.SaveChanges();
+                return Json(true);
+            }
+        }
+
         public ActionResult MyAccount()
         {
              return View();
