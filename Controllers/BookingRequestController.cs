@@ -85,16 +85,17 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ProcessBookerChange(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var currBooker = this.GetUserId();
-                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
-                return Content(result);
-            }
-        }
+        //Removed. See https://maginot.atlassian.net/browse/KW-704
+        //[HttpGet]
+        //public ActionResult ProcessBookerChange(int bookingRequestId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var currBooker = this.GetUserId();
+        //        string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
+        //        return Content(result);
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult MarkAsProcessed(int curBRId)

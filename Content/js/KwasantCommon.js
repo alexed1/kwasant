@@ -167,7 +167,7 @@ function leftPad(number) {
 }
 
 function ShowBookerOwnershipAlert(bookingRequestBooker, Id) {
-    if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
+    if (alert("TYou can't do that action because Booker " + bookingRequestBooker + " \n has this item CheckedOut.")) {
         $.ajax({
             url: "/BookingRequest/ProcessBookerChange",
             type: "GET",
