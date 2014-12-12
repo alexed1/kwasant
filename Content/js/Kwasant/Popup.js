@@ -139,6 +139,18 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         }
     };
 
+    Kwasant.IFrame.DispatchPostRequest = function (url, data, callback) {
+        var spinner = Kwasant.IFrame.DisplaySpinner();
+        $.post(url, data)
+            .success(callback)
+            .fail(function() {
+                alert('Error connecting to server. Your changes were not saved.');
+            }).always(function() {
+                if (spinner !== null)
+                    spinner.hide();
+            });
+    };
+
     Kwasant.IFrame.DispatchUrlRequest = function(url, callback, type) {
         var spinner = Kwasant.IFrame.DisplaySpinner();
         $.ajax(url, { type: type })

@@ -117,6 +117,28 @@ namespace Data.Entities
         public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
 
+        public String TimeZoneID { get; set; }
+
+        public TimeZoneInfo GetExplicitTimeZone()
+        {
+            if (String.IsNullOrEmpty(TimeZoneID))
+                return null;
+
+            return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneID);
+        }
+
+        public TimeZoneInfo GetOrGuessTimeZone()
+        {
+            var explicitTimeZone = GetExplicitTimeZone();
+            if (explicitTimeZone != null)
+                return explicitTimeZone;
+
+            var mostUsedOffset = EmailAddress.SentEmails.GroupBy(b => b.CreateDate.Offset).OrderByDescending(g => g.Count()).Select(k => (TimeSpan?)k.Key).FirstOrDefault();
+            if (mostUsedOffset == null)
+                return null;
+            var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == mostUsedOffset.Value);
+            return potentialTimeZones.FirstOrDefault();
+        }
     }
 }
 
