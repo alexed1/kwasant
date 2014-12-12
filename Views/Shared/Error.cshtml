@@ -75,15 +75,23 @@
                             }
                             @if (Model != null && isAdminUser)
                             {
-                                <div style="overflow-wrap:break-word">
+                                <div style="overflow-wrap: break-word">
                                     <p>
                                         <b>Exception:</b> @Html.Raw(Model.Exception.Message.StringCSharpLineBreakToHTMLLineBreak())<br />
                                         <b>Controller:</b> @Html.Raw(Model.ControllerName.StringCSharpLineBreakToHTMLLineBreak())<br />
                                         <b>Action:</b> @Html.Raw(Model.ActionName.StringCSharpLineBreakToHTMLLineBreak())
                                     </p>
                                     <div>
-                                        <pre style="font-family:'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size:12pt">@Html.Raw(Model.Exception.StackTrace.StringCSharpLineBreakToHTMLLineBreak())</pre>
+                                        <pre style="font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 12pt">@Html.Raw(Model.Exception.StackTrace.StringCSharpLineBreakToHTMLLineBreak())</pre>
                                     </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="overflow-wrap: break-word">
+                                    <p>
+                                        <b>Exception:</b> @Html.Raw(Model.Exception.Message.StringCSharpLineBreakToHTMLLineBreak())<br />
+                                    </p>
                                 </div>
                             }
                         </p>

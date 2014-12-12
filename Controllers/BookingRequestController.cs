@@ -73,7 +73,10 @@ namespace KwasantWeb.Controllers
             var currBooker = this.GetUserId();
             try
             {
-                _br.CheckOut(id.Value, currBooker);
+                if (Request != null && Request.UrlReferrer != null)
+                    if (Request.UrlReferrer.PathAndQuery == "/BookingRequest" || Request.UrlReferrer.PathAndQuery == "/BookingRequest/Index")
+                        _br.ConsiderAutoCheckout(id.Value, currBooker);
+
                 return RedirectToAction("Index", "Dashboard", new { id });
             }
             catch (EntityNotFoundException)
@@ -82,16 +85,17 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ProcessBookerChange(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var currBooker = this.GetUserId();
-                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
-                return Content(result);
-            }
-        }
+        //Removed. See https://maginot.atlassian.net/browse/KW-704
+        //[HttpGet]
+        //public ActionResult ProcessBookerChange(int bookingRequestId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var currBooker = this.GetUserId();
+        //        string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
+        //        return Content(result);
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult MarkAsProcessed(int curBRId)
