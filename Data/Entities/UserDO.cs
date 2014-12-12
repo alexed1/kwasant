@@ -90,12 +90,12 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
-        public void BeforeSave(IUnitOfWork uow)
+        public void BeforeSave()
         {
             LastUpdated = DateTimeOffset.Now;
         }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             this.DetectStateUpdates(originalValues, currentValues);
         }

@@ -58,9 +58,9 @@ namespace Data.Entities
             base.AfterCreate();
         }
 
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
-            base.OnModify(currentValues, originalValues, uow);
+            base.OnModify(currentValues, originalValues);
 
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
