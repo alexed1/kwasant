@@ -233,10 +233,9 @@ namespace KwasantCore.Managers
                         CustomerId = curUserId,
                         ObjectId = null,
                         Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
-                        //Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                     };
-                //AddFact(uow, curAction);
-                uow.SaveChanges();
+
+                SaveFact(curAction);
             }
         }
 
@@ -255,7 +254,7 @@ namespace KwasantCore.Managers
                         CustomerId = customerId,
                         ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
                     };
-                //curAction.Data = string.Format("{0} {1} {2}: ObjectId: {3} EmailAddress: {4} Subject: {5}", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+              
                 curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
 
                 SaveFact(curAction);
@@ -304,10 +303,9 @@ namespace KwasantCore.Managers
                         CustomerId = bookingRequestDO.CustomerID,
                         ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
                     };
-                //curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
+              
                 curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-                //AddFact(uow, curAction);
-                uow.SaveChanges();
+                SaveFact(curAction);
             }
         }
 
@@ -315,7 +313,7 @@ namespace KwasantCore.Managers
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //AddFact(uow, curAction);
+                uow.FactRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }
