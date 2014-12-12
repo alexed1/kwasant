@@ -1,11 +1,7 @@
-﻿using System;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
 using FluentValidation;
-using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantCore.StructureMap;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;

@@ -141,8 +141,9 @@ namespace KwasantWeb.Controllers
             }
             if (queryParams.EmailAddress != null)
             {
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
+                var ru = new RegexUtilities();
+
+                if (!(ru.IsValidEmailAddress(queryParams.EmailAddress)))
                 {
                     var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }));
                     return jsonErrorResult;

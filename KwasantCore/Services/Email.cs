@@ -192,7 +192,7 @@ namespace KwasantCore.Services
         
         public EmailDO GenerateBasicMessage(IUnitOfWork uow, string subject, string message, string fromAddress ,string toRecipient)
         {
-            new EmailAddressValidator().Validate(new EmailAddressDO(toRecipient));
+            RegexUtilities.ValidateEmailAddress(toRecipient);
             EmailDO curEmail = new EmailDO
             {
                 Subject = subject,
@@ -216,13 +216,6 @@ namespace KwasantCore.Services
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
-        }
-        
-        public void ValidateEmailAddress(EmailAddressDO curEmailAddress)
-        {
-            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            emailAddressValidator.ValidateAndThrow(curEmailAddress);
-
         }
 
         public EmailDO AddSingleRecipient(IUnitOfWork uow, EmailDO curEmail, string toRecipient)
