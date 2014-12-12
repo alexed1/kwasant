@@ -24,12 +24,16 @@ namespace Data.Entities
         public string Data { get; set; }
         public string Status { get; set; }
 
-        public override void BeforeSave(IUnitOfWork uow)
+        public override void BeforeSave()
         {
-            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : uow.UserRepository.GetByKey(CustomerId).EmailAddress.Address)) + Data;
-            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                Logger.GetLogger().Info(Data);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
+                Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : uow.UserRepository.GetByKey(CustomerId).EmailAddress.Address)) + Data;
+
+                if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
+                    Logger.GetLogger().Info(Data);
+            }
         }
     }
 }
