@@ -661,13 +661,41 @@ namespace KwasantCore.Services
                         response.Message = "Failed to Checkout a BookingRequest that NeededBooking but had no Booker. BR ID = " + curBRId;
                     }
                 }
-                else 
+                else if (curBookingRequest.BookerID != null)
                 {
                     response.Name = "DifferentBooker";
                     response.Message = curBookingRequest.Booker.FirstName == null ? curBookingRequest.Booker.EmailAddress.Address : curBookingRequest.Booker.FirstName;
                 }
+                else 
+                {
+                    response.Name = "valid";
+                }
             }
             return response;
+        }
+
+        public void Merge(int originalBRId, int targetBRId) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curBookingRequest = uow.BookingRequestRepository.GetByKey(originalBRId);
+                foreach (var curConversation in curBookingRequest.ConversationMembers)
+                {
+                    curConversation.ConversationId = targetBRId;
+                }
+                foreach (var curNegotiation in curBookingRequest.Negotiations)
+                {
+                    curNegotiation.BookingRequestID = targetBRId;
+                }
+                var allEvents = uow.EventRepository.GetQuery().Where(e => e.BookingRequestID == originalBRId);
+                foreach (var curEvent in allEvents)
+                {
+                    curEvent.BookingRequestID = targetBRId;
+                }
+                curBookingRequest.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                AlertManager.BookingRequestMerged(originalBRId, targetBRId);
+            }
         }
     }
 }

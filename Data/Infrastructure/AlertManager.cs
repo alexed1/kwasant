@@ -90,6 +90,9 @@ namespace Data.Infrastructure
         public delegate void HighPriorityIncidentCreatedHandler(int incidentId);
         public static event HighPriorityIncidentCreatedHandler AlertHighPriorityIncidentCreated;
 
+        public delegate void BookingRequestMergedHandler(int originalBRId, int targetBRId);
+        public static event BookingRequestMergedHandler AlertBookingRequestMerged;
+
         #region Method
 
         public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -255,6 +258,12 @@ namespace Data.Infrastructure
         {
             HighPriorityIncidentCreatedHandler handler = AlertHighPriorityIncidentCreated;
             if (handler != null) handler(incidentId);
+        }
+
+        public static void BookingRequestMerged(int originalBRId, int targetBRId)
+        {
+            BookingRequestMergedHandler handler = AlertBookingRequestMerged;
+            if (handler != null) handler(originalBRId, targetBRId);
         }
 
         #endregion

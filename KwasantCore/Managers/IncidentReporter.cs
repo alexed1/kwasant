@@ -23,6 +23,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             AlertManager.AlertUserRegistrationError += ReportUserRegistrationError;
+            AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -264,6 +265,34 @@ namespace KwasantCore.Managers
             curAction.Data = string.Format("{0}, {1}, {2} ObjectId: {3} EmailAddress: {4} ", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, curAction.ObjectId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address)) + curAction.Data;
 
             uow.IncidentRepository.Add(curAction);
+        }
+
+        public void BookingRequestMerged(int originalBRId, int targetBRId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "BookingRequest";
+                incidentDO.SecondaryCategory = "BookerAction";
+                incidentDO.Activity = "MergedBRs";
+                incidentDO.ObjectId = originalBRId.ToString();
+
+                string logData = string.Format("{0} {1} {2}: ",
+                        incidentDO.PrimaryCategory,
+                        incidentDO.SecondaryCategory,
+                        incidentDO.Activity);
+
+                incidentDO.Data = logData + incidentDO.ObjectId;
+                uow.IncidentRepository.Add(incidentDO);
+                Logger.GetLogger().Info(incidentDO.Data);
+                uow.SaveChanges();
+
+                incidentDO.ObjectId = targetBRId.ToString();
+                incidentDO.Data = logData + incidentDO.ObjectId;
+                uow.IncidentRepository.Add(incidentDO);
+                Logger.GetLogger().Info(incidentDO.Data);
+                uow.SaveChanges();
+            }
         }
     }
 

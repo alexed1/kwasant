@@ -440,5 +440,25 @@ namespace KwasantWeb.Controllers
             communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
             return Json(true);
         }
+
+        public ActionResult ShowMergeBRView(int bookingRequestID) 
+        {
+            ViewBag.BookingRequestId = bookingRequestID;
+            return View("MergeRelatedBR");
+        }
+
+        [HttpPost]
+        public ActionResult Merge(int originalBRId, int targetBRId)
+        {
+            //call to VerifyOwnership
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(targetBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
+            {
+                _br.Merge(originalBRId, targetBRId);
+                TempData["isMerged"] = true;
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Merged successfully" });
+            }
+            return Json(verifyCheckoutMessage);
+        }
     }
 }
