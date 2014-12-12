@@ -49,7 +49,7 @@ namespace KwasantCore.Managers
             {
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "Response Recieved";
+                incidentDO.SecondaryCategory = "Response Received";
                 incidentDO.CustomerId = customerID;
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId.ToString();
@@ -183,7 +183,7 @@ namespace KwasantCore.Managers
                 IncidentDO curAction = new IncidentDO()
                 {
                     PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Throughput",
+                    SecondaryCategory = null,
                     Activity = "Checkout",
                     CustomerId = bookingRequestDO.Customer.Id,
                     ObjectId = bookingRequestId.ToString(),
@@ -211,8 +211,8 @@ namespace KwasantCore.Managers
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "BookerAction",
                     Activity = "MarkedAsProcessed",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(),
+                    CustomerId = bookingRequestDO.CustomerID,
+                    ObjectId = bookingRequestId.ToString(),
                     BookerId = bookerId,
                 };
 
@@ -248,7 +248,7 @@ namespace KwasantCore.Managers
             }
         }
 
-       
+
     }
 
 
