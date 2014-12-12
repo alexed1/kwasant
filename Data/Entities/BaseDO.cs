@@ -20,12 +20,12 @@ namespace Data.Entities
         {
         }
 
-        public virtual void BeforeSave(IUnitOfWork uow)
+        public virtual void BeforeSave()
         {
             LastUpdated = DateTimeOffset.Now;
         }
 
-        public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             this.DetectStateUpdates(originalValues, currentValues);
         }
