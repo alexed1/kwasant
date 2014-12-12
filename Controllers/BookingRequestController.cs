@@ -73,7 +73,10 @@ namespace KwasantWeb.Controllers
             var currBooker = this.GetUserId();
             try
             {
-                _br.CheckOut(id.Value, currBooker);
+                if (Request != null && Request.UrlReferrer != null)
+                    if (Request.UrlReferrer.PathAndQuery == "/BookingRequest" || Request.UrlReferrer.PathAndQuery == "/BookingRequest/Index")
+                        _br.ConsiderAutoCheckout(id.Value, currBooker);
+
                 return RedirectToAction("Index", "Dashboard", new { id });
             }
             catch (EntityNotFoundException)
