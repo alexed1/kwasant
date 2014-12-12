@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Utilities
 {
@@ -10,7 +12,7 @@ namespace Utilities
         {
             var ru = new RegexUtilities();
             if (!ru.IsValidEmailAddress(emailAddress))
-                throw new Exception("Invalid email address: '" + emailAddress + "'");
+                throw new ValidationException(new [] { new ValidationFailure("emailAddress", "Invalid email address: '" + emailAddress + "'")});
         }
 
         public bool IsValidEmailAddress(String emailAddress)
