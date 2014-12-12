@@ -93,25 +93,24 @@ namespace Data.Entities
             }
         }
 
-        public override void BeforeSave(IUnitOfWork uow)
-        {
-            base.BeforeSave(uow);
-            SetBookingRequestLastUpdated(uow);
+		public override void BeforeSave()        {
+            base.BeforeSave();
+            SetBookingRequestLastUpdated();
         }
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
-            base.OnModify(originalValues, currentValues, uow);
-            SetBookingRequestLastUpdated(uow);
-        }
-
-        public void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow)
-        {
-            SetBookingRequestLastUpdated(uow);
+            base.OnModify(originalValues, currentValues);
+            SetBookingRequestLastUpdated();
         }
 
-        private void SetBookingRequestLastUpdated(IUnitOfWork uow)
+        public void OnDelete(DbPropertyValues originalValues)
         {
-            var br = uow.BookingRequestRepository.GetByKey(BookingRequestID);
+            SetBookingRequestLastUpdated();
+        }
+
+        private void SetBookingRequestLastUpdated()
+        {
+            var br = BookingRequest;
             if (br != null)
                 br.LastUpdated = DateTime.Now;
         }
