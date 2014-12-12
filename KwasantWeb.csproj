@@ -248,12 +248,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlertQueues\AlertQueue.cs" />
-    <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
-    <Compile Include="AlertQueues\BookingRequestReservedForUserQueue.cs" />
-    <Compile Include="AlertQueues\HighPriorityIncidentsQueue.cs" />
-    <Compile Include="AlertQueues\NewBookingRequestResponseQueue.cs" />
-    <Compile Include="AlertQueues\SharedAlertQueues.cs" />
+    <Compile Include="NotificationQueues\UserNotificationData.cs" />
+    <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
+    <Compile Include="NotificationQueues\NotificationQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestUpdatedQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestReservedForUserQueue.cs" />
+    <Compile Include="NotificationQueues\HighPriorityIncidentsQueue.cs" />
+    <Compile Include="NotificationQueues\NewBookingRequestResponseQueue.cs" />
+    <Compile Include="NotificationQueues\SharedNotificationQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -461,6 +463,8 @@
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\forms\try-kwasant-btn.png" />
+    <Content Include="Content\img\googleCalendar.png" />
+    <Content Include="Content\img\icloud-logo.png" />
     <Content Include="Content\img\icons\sort_asc.png" />
     <Content Include="Content\img\icons\sort_asc_disabled.png" />
     <Content Include="Content\img\icons\sort_both.png" />
@@ -468,6 +472,7 @@
     <Content Include="Content\img\icons\sort_desc_disabled.png" />
     <Content Include="Content\img\icons\watch-video-label.png" />
     <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\site\alex-photo.png" />
@@ -849,6 +854,9 @@
     <Content Include="Views\BookingRequest\AddNote.cshtml" />
     <Content Include="Views\BookingRequest\SearchResult.cshtml" />
     <Content Include="Views\Email\ShowReport.cshtml" />
+    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
+    <Content Include="Views\User\ShareCalendar.cshtml" />
+    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
   </ItemGroup>
   <ItemGroup>

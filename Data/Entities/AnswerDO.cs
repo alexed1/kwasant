@@ -31,27 +31,27 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public override void BeforeSave(IUnitOfWork uow)
+        public override void BeforeSave()
         {
-            base.BeforeSave(uow);
-            SetBookingRequestLastUpdated(uow);
+            base.BeforeSave();
+            SetBookingRequestLastUpdated();
         }
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
-            base.OnModify(originalValues, currentValues, uow);
-            SetBookingRequestLastUpdated(uow);
-        }
-
-        public void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow)
-        {
-            SetBookingRequestLastUpdated(uow);
+            base.OnModify(originalValues, currentValues);
+            SetBookingRequestLastUpdated();
         }
 
-        private void SetBookingRequestLastUpdated(IUnitOfWork uow)
+        public void OnDelete(DbPropertyValues originalValues)
+        {
+            SetBookingRequestLastUpdated();
+        }
+
+        private void SetBookingRequestLastUpdated()
         {
             if (Question != null && Question.Negotiation != null)
             {
-                var br = uow.BookingRequestRepository.GetByKey(Question.Negotiation.BookingRequestID);
+                var br = Question.Negotiation.BookingRequest;
                 if (br != null)
                     br.LastUpdated = DateTime.Now;
             }

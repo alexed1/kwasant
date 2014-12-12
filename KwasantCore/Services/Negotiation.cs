@@ -122,15 +122,12 @@ namespace KwasantCore.Services
         {
             var summaryText = new List<string>();
             var actualHtml =
-                    @"
-{0}. {1} <br/>
-Proposed Answers: {2}
-";
+                    @"<strong style='color: #333333;'>{0}. {1}</strong><br/><span style='color: #333333;'>{2}</span><br/>";
 
             for (var i = 0; i < curNegotiationDO.Questions.Count; i++)
             {
                 var question = curNegotiationDO.Questions[i];
-                var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join(", ", question.Answers.Select(a => a.Text)) : "[None proposed]");
+                var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join("<br/>", question.Answers.Select(a => a.Text)) : "[None proposed]");
                 summaryText.Add(currentQuestion);
             }
             return summaryText;

@@ -394,6 +394,8 @@ namespace KwasantTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.Booker = bookingRequestDO.Customer;
 
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.Customer.Id);

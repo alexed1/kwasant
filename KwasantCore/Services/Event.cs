@@ -10,6 +10,8 @@ using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Interfaces.DataTypes;
+using KwasantICS.DDay.iCal.Structs;
 using Segment;
 using Utilities;
 using StructureMap;
@@ -154,16 +156,52 @@ namespace KwasantCore.Services
             fromName = String.Format(fromName, invitation.GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
+            
             DDayEvent dDayEvent = new DDayEvent();
+
+            TimeZoneInfo timeZone;
+            if (eventDO.BookingRequest != null)
+            {
+                timeZone = eventDO.BookingRequest.Customer.GetOrGuessTimeZone();
+            }
+            else
+            {
+                var possibleZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == eventDO.StartDate.Offset);
+                timeZone = possibleZones.FirstOrDefault();
+            }
 
             //configure start and end time
             dDayEvent.IsAllDay = eventDO.IsAllDay;
-            var start = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+
+            IDateTime start;
+            IDateTime end;
+            if (timeZone != null) //If we find a potential timezone, use it
+            {
+                var calTimeZone = iCalTimeZone.FromSystemTimeZone(timeZone);
+                ddayCalendar.AddTimeZone(calTimeZone);
+
+                start = new iCalDateTime(eventDO.StartDate.DateTime)
+                {
+                    IsUniversalTime = false,
+                    TZID = calTimeZone.TZID
+                };
+
+                end = new iCalDateTime(eventDO.EndDate.DateTime)
+                {
+                    IsUniversalTime = false,
+                    TZID = calTimeZone.TZID
+                };
+            }
+            else //If we don't find a matching timezone, use UTC.
+            {
+                start = new iCalDateTime(eventDO.StartDate.ToUniversalTime().DateTime) { IsUniversalTime = true };
+                end = new iCalDateTime(eventDO.EndDate.ToUniversalTime().DateTime) { IsUniversalTime = true };
+            }
+
             if (!eventDO.IsAllDay && !start.HasTime)
                 start.HasTime = true;
             dDayEvent.DTStart = start;
 
-            var end = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
             if (!eventDO.IsAllDay && !end.HasTime)
                 end.HasTime = true;
             dDayEvent.DTEnd = end;

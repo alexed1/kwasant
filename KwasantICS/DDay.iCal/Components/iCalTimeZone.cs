@@ -70,7 +70,7 @@ namespace KwasantICS.DDay.iCal
         public static iCalTimeZone FromSystemTimeZone(System.TimeZoneInfo tzinfo, DateTime earlistDateTimeToSupport, bool includeHistoricalData)
         {
             TimeZoneInfo.AdjustmentRule[] adjustmentRules = tzinfo.GetAdjustmentRules();
-            TimeSpan utcOffset = tzinfo.BaseUtcOffset;
+            TimeSpan utcOffset = tzinfo.GetUtcOffset(DateTime.Now);
             iCalTimeZone dday_tz = new iCalTimeZone();
             dday_tz.TZID = tzinfo.Id;
 

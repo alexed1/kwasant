@@ -9,18 +9,17 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
     public class DataController : Controller
     {
         readonly EmailAddress _emailAddress;
-        EmailAddressValidator _emailAddressValidator;
-
+        
         public DataController()
         {
             _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
-            _emailAddressValidator = new EmailAddressValidator();
         }
 
         [HttpPost]
@@ -31,7 +30,8 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(emailString, uow);
-                    if (!(_emailAddressValidator.Validate(emailAddressDO).IsValid))
+                    var ru = new RegexUtilities();
+                    if (!(ru.IsValidEmailAddress(emailAddressDO.Address)))
                         return Json("Invalid email format");
                     else
                         return Json(true);

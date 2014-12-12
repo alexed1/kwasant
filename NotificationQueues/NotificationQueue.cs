@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KwasantWeb.AlertQueues
+namespace KwasantWeb.NotificationQueues
 {
     /*
      * The following classes define queues for alerts to be displayed to users while they browse the wesbite.
      * There are two types of queues:
-     * 1. PersonalAlertQueue<T>
+     * 1. PersonalNotificationQueue<T>
      *      - This queue is for things like an update on a page. It is not an important update, but can be something like 'The booking request recieved a new email, click here to refresh'
      *      - If no one is viewing the page which is affected by an update, no event listener is executed
      *      - This means that we only listen to events which will affect us
      *      - The queue is valid for the lifetime of the session, after which it will be cleared up
      *      
-     * 2. SharedAlertQueue<T>
+     * 2. SharedNotificationQueue<T>
      *      - This queue is for important messages, which we need to listen for even if no user is online
      *      - This can be used for things like 'A new booking request has been assigned to you'
      *      - These queues are static, and exist for the lifetime of the application
@@ -31,7 +31,7 @@ namespace KwasantWeb.AlertQueues
      *  
      *  These queues have been designed to be simple to use and ensure thread safety and try to minimize the memory footprint
      *  
-     *  To define a new queue, simply implement PersonalAlertQueue<T> or SharedAlertQueue<T>
+     *  To define a new queue, simply implement PersonalNotificationQueue<T> or SharedNotificationQueue<T>
      *  Once your queue is implemented, please refer to StaticAlertQueues.cs and define your queue and implement GetQueueByName
      *  Be sure to put it in the correct class (Personal vs Shared)!
      *  
@@ -49,18 +49,18 @@ namespace KwasantWeb.AlertQueues
      *     For example, for Dashboard/Index the ID would be the ID of the booking request
      */
 
-    public interface IPersonalAlertQueue
+    public interface IPersonalNotificationQueue
     {
         int ObjectID { get; set; }
         IEnumerable<object> GetUpdates();
     }
 
-    public interface IPersonalAlertQueue<out T> : IPersonalAlertQueue
+    public interface IPersonalNotificationQueue<out T> : IPersonalNotificationQueue
     {
         IEnumerable<T> GetUpdates(Func<T, bool> predicate);
     }
 
-    public class PersonalAlertQueue<T> : IPersonalAlertQueue<T>
+    public class PersonalNotificationQueue<T> : IPersonalNotificationQueue<T>
         where T : class
     {
         public int ObjectID { get; set; }
@@ -110,17 +110,17 @@ namespace KwasantWeb.AlertQueues
     {
         void PruneOldEntries();
     }
-    public interface ISharedAlertQueue
+    public interface ISharedNotificationQueue
     {
         IEnumerable<object> GetUpdates(String guid);
     }
 
-    public interface ISharedAlertQueue<out T> : ISharedAlertQueue
+    public interface ISharedNotificationQueue<out T> : ISharedNotificationQueue
     {
         void RegisterInterest(string guid);
         IEnumerable<T> GetUpdates(String guid, Func<T, bool> predicate);
     }
-    public class SharedAlertQueue<T> : ISharedAlertQueue<T>, IStaticQueue
+    public class SharedNotificationQueue<T> : ISharedNotificationQueue<T>, IStaticQueue
         where T : class//, IUserUpdateData
     {
         private readonly TimeSpan _expireInterestedPartiesAfter = TimeSpan.FromMinutes(15);
@@ -194,11 +194,12 @@ namespace KwasantWeb.AlertQueues
         /// Appends an update to the queue. Threadsafe.
         /// </summary>
         /// <param name="update">Update to append</param>
-        protected void AppendUpdate(T update)
+        /// <param name="expireUpdateAfter">Expires in</param>
+        protected void AppendUpdate(T update, TimeSpan expireUpdateAfter = default(TimeSpan))
         {
             if (_interestedPartyQueues.Any())
             {
-                MarkExpiration(update, ExpireUpdateAfter);
+                MarkExpiration(update, expireUpdateAfter == default(TimeSpan) ? ExpireUpdateAfter : expireUpdateAfter);
 
                 foreach (var interestedPartyQueue in _interestedPartyQueues)
                 {
