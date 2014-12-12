@@ -101,9 +101,11 @@
         if (Kwasant.IFrame.PopupsActive()) { return; }
         Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
             {
-                horizontalAlign: 'left',
-                width: 800,
-                height: 520,
+                horizontalAlign: 'center',
+                width: 1160,
+                height: 800,
+                minHeight: 700,
+              
                 callback: window.parent.calendar.refreshCalendars
             });
     }
