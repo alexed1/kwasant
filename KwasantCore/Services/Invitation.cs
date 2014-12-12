@@ -103,8 +103,8 @@ namespace KwasantCore.Services
             if (guessedTimeZone != null)
             {
                 timezone = guessedTimeZone.DisplayName;
-                recipientStartDate = curEvent.StartDate.ToOffset(guessedTimeZone.BaseUtcOffset);
-                recipientEndDate = curEvent.EndDate.ToOffset(guessedTimeZone.BaseUtcOffset);
+                recipientStartDate = curEvent.StartDate.ToOffset(guessedTimeZone.GetUtcOffset(DateTime.Now));
+                recipientEndDate = curEvent.EndDate.ToOffset(guessedTimeZone.GetUtcOffset(DateTime.Now));
             }
             else
             {

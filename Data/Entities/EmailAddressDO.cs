@@ -11,11 +11,11 @@ namespace Data.Entities
         public EmailAddressDO()
         {
             Recipients = new List<RecipientDO>();
+            SentEmails = new List<EmailDO>();
         }
 
-        public EmailAddressDO(string emailAddress)
+        public EmailAddressDO(string emailAddress) : this()
         {
-            Recipients = new List<RecipientDO>();
             Address = emailAddress;
         }
 
