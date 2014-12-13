@@ -213,6 +213,25 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                 try {
                     var contentWindow = this.contentWindow;
                     var iframeDoc = $(this).contents();
+
+                    //This is a workaround, as iframes dont let us access the status code.
+                    //Therefore, we stick meta tags in our error pages
+                    //If we find the statusCode meta frame, and its value is not 200, then it's an error.
+                    //In this case, we hide the spinner and display an error (the form is not displayed)./
+                    var statusCodeMetaTag = $(iframeDoc.get(0).head).find('meta[name="statusCode"]').get(0);
+                    if (statusCodeMetaTag !== undefined && statusCodeMetaTag !== null) {
+                        var statusCode = statusCodeMetaTag.content;
+                        if (statusCode != 200) {
+                            if (spinner)
+                                spinner.hide();
+                            
+                            //Now it's an error...
+                            alert('Problem connecting to the server. Please try again later.');
+                            iframe.remove(); //Delete the iframe
+                            return;
+                        }
+                    }
+
                     var that = $(this);
                     var reposition = function() {
                         var winH = $(top).height();
