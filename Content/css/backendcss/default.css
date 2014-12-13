@@ -1668,3 +1668,48 @@ today-calendar-tbl .first-col {
         position: relative;
         top: 0px;
     }
+
+      #tblHistoryReport td
+	    {
+	        font-size: 14px;
+	        padding: 6px 10px;
+	    }
+
+	    .dateWD
+	    {
+	        width: 19% !important;
+	    }
+
+	    .categoryWD
+	    {
+	        width: 10% !important;
+	    }
+
+	    .secondarycategoryWD
+	    {
+	        width: 19% !important;
+	    }
+
+	    .activityWD
+	    {
+	        width: 5% !important;
+	    }
+
+	    .statusWD
+	    {
+	        width: 5% !important;
+	    }
+
+	    .dataWD
+	    {
+	        width: 31% !important;
+	    }
+
+	    .bookerWD
+	    {
+	        width: 12% !important;
+	    }
+
+    #tblHistoryReport_wrapper .dataTables_length, .dataTables_filter {
+        width: inherit !important;
+    }
