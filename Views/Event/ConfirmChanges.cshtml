@@ -76,11 +76,6 @@
                         });
                     }
                 });
-			    var dp_day = window.parent.storedCalendar[0];
-			    dp_day.startDate = '@Model.StartDate';
-			    window.parent.calendar.refreshCalendars();
-			    var datevalue = new Date('@Model.StartDate');
-			    window.parent.dp_navigator.select(new DayPilot.Date(datevalue));
 			    return false;
 			});
 		});

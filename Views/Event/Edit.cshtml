@@ -26,7 +26,7 @@
         $(document).ready(function () {
             $('#chkAllDay').click(hideShowDates);
 
-            data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
+            data = [@Html.Raw(String.Join(",", Model.Attendees.Replace("'","\\'").Split(',').Select(a =>
                             "{id: '" + a + "', text: '" + a + "'}"
                             )))];
             getValidEmailAddress($('#attendeesSel'));
