@@ -30,6 +30,8 @@ namespace KwasantTest.Entities
             
                 EventDO eventDO = fixture.TestEvent4();
                 eventDO.BookingRequest = fixture.TestBookingRequest1();
+               
+                eventDO.BookingRequest.Booker = fixture.TestUser2();
            
                 eventRepo.Add(eventDO);
 

@@ -146,7 +146,7 @@ The booker sent the following message with the event: '{5}'
 
                 //recipientStartDate.ToString("ddd MMM d, yyyy hh:mm tt")
                 var templateDescription = String.Format(templateDescriptionFormat,
-                    eventDO.BookingRequest.Booker.DisplayName, //Booker name
+                    eventDO.BookingRequest.Booker  == null ? "Unknown" :  eventDO.BookingRequest.Booker.DisplayName, //Booker name
                     String.Join(", ", eventDO.Attendees.Select(a => a.Name)), //Attendees
                     eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " " + timezone,
                     eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt"),
@@ -156,6 +156,7 @@ The booker sent the following message with the event: '{5}'
 
                 quasiEmail.HTMLText = quasiEmail.PlainText = templateDescription;
                 quasiEmail.TagEmailToBookingRequest(eventDO.BookingRequest);
+                quasiEmail.Subject = firstInvitation.Subject;
 
                 uow.EmailRepository.Add(quasiEmail);
             }
