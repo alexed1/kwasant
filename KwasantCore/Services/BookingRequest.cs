@@ -710,5 +710,17 @@ namespace KwasantCore.Services
             }
             return response;
         }
+
+
+        public void MarkAsProcessed(int curBRId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
+                bookingRequestDO.State = BookingRequestState.Resolved;
+                bookingRequestDO.BookerID = null;
+                uow.SaveChanges();
+            }
+        }
     }
 }

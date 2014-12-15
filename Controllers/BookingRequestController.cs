@@ -104,15 +104,9 @@ namespace KwasantWeb.Controllers
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
-                bookingRequestDO.State = BookingRequestState.Resolved;
-                uow.SaveChanges();
-
+                _br.MarkAsProcessed(curBRId);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
-        }
             return Json(verifyCheckoutMessage);
         }
 
