@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Utilities
 {
     public class RegexUtilities
     {
+        public static void ValidateEmailAddress(String emailAddress)
+        {
+            var ru = new RegexUtilities();
+            if (!ru.IsValidEmailAddress(emailAddress))
+                throw new ValidationException(new [] { new ValidationFailure("emailAddress", "Invalid email address: '" + emailAddress + "'")});
+        }
+
         public bool IsValidEmailAddress(String emailAddress)
         {
             return ExtractFromString(emailAddress, true, true).Count == 1;

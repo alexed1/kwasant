@@ -23,6 +23,11 @@ namespace KwasantWeb.ViewModels
         public bool ReadOnly { get; set; }
         public List<String> VerbalisedHistory { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
+
+        public String UserTimeZoneID { get; set; }
+        public bool TimezoneGuessed { get; set; }
+
+        public String FromUserID { get; set; }
     }
 
     public class ConversationVM

@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.States;
 using StructureMap;
 using Data.Infrastructure;
+using Utilities;
 
 namespace KwasantCore.Services
 {
@@ -90,7 +91,7 @@ namespace KwasantCore.Services
             if (curEmailAddress.Name != null)
                 return curEmailAddress.Name;
 
-            curEmailAddress.Address.ValidateEmailAddress();
+            RegexUtilities.ValidateEmailAddress(curEmailAddress.Address);
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 

@@ -51,6 +51,7 @@
                         horizontalAlign: 'right',
                         callback: function(result) {
                             if (result.saved) {
+                                refreshConversation();
                                 calendar.refreshCalendars();
                                 displayMessage(result.message);
                             }

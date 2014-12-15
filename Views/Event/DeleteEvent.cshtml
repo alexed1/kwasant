@@ -54,8 +54,11 @@
 
 		$(function () {
 			$("#f").submit(function () {
-				var f = $("#f");
-				$.post(f.prop('action'), { eventID: @Model.Id }, function(result) {
+			    var f = $("#f");
+			    var spinner = Kwasant.IFrame.DisplaySpinner();
+			    $.post(f.prop('action'), { eventID: @Model.Id }, function(result) {
+			        if (spinner !== null)
+			            spinner.hide();
 					close(result);
 				}, 'json');
 				return false;

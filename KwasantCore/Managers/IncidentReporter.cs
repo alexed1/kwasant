@@ -38,8 +38,7 @@ namespace KwasantCore.Managers
                 incidentDO.CustomerId = expectedResponseDO.UserID;
                 incidentDO.ObjectId = expectedResponseId.ToString();
                 incidentDO.Activity = "UnresponsiveAttendee";
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
         }
@@ -50,13 +49,12 @@ namespace KwasantCore.Managers
             {
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "Response Recieved";
+                incidentDO.SecondaryCategory = "Response Received";
                 incidentDO.CustomerId = customerID;
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
-               // _uow.IncidentRepository.Add(incidentDO);
-                AddIncident(_uow, incidentDO);
+                _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
         }
@@ -72,8 +70,7 @@ namespace KwasantCore.Managers
                 incidentDO.Activity = "Intake";
                 incidentDO.Data = errorMessage;
                 incidentDO.ObjectId = null;
-                //_uow.IncidentRepository.Add(incidentDO);
-                AddIncident(_uow, incidentDO);
+                _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
         }
@@ -91,8 +88,7 @@ namespace KwasantCore.Managers
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.CustomerId = bookingRequestDO.CustomerID;
                 incidentDO.BookerId = bookingRequestDO.BookerID;
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
         }
@@ -108,8 +104,7 @@ namespace KwasantCore.Managers
                 incidentDO.Activity = "Send";
                 incidentDO.ObjectId = emailId.ToString();
                 incidentDO.Data = message;
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
             Email _email = ObjectFactory.GetInstance<Email>();
@@ -133,8 +128,7 @@ namespace KwasantCore.Managers
                 {
                     incidentDO.Data = string.Format("Link #{0}: {1}", calendarLink.Id, calendarLink.LastSynchronizationResult);
                 }
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
 
@@ -172,8 +166,7 @@ namespace KwasantCore.Managers
                         ObjectId = bookingRequestId.ToString(),
                         Data = note
                     };
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
         }
@@ -190,7 +183,7 @@ namespace KwasantCore.Managers
                 IncidentDO curAction = new IncidentDO()
                 {
                     PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Throughput",
+                    SecondaryCategory = null,
                     Activity = "Checkout",
                     CustomerId = bookingRequestDO.Customer.Id,
                     ObjectId = bookingRequestId.ToString(),
@@ -201,8 +194,7 @@ namespace KwasantCore.Managers
 
                 curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
-                //uow.IncidentRepository.Add(curAction);
-                AddIncident(uow, curAction);
+                uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }
@@ -219,8 +211,8 @@ namespace KwasantCore.Managers
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "BookerAction",
                     Activity = "MarkedAsProcessed",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(),
+                    CustomerId = bookingRequestDO.CustomerID,
+                    ObjectId = bookingRequestId.ToString(),
                     BookerId = bookerId,
                 };
 
@@ -228,8 +220,7 @@ namespace KwasantCore.Managers
                 int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
                 curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-                AddIncident(uow, curAction);
-                //uow.IncidentRepository.Add(curAction);
+                uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }
@@ -243,8 +234,7 @@ namespace KwasantCore.Managers
                 incidentDO.SecondaryCategory = "Error";
                 incidentDO.Activity = "Registration";
                 incidentDO.Data = ex.Message;
-                //uow.IncidentRepository.Add(incidentDO);
-                AddIncident(uow, incidentDO);
+                uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
 
                 string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
@@ -258,13 +248,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        private void AddIncident(IUnitOfWork uow, IncidentDO curAction)
-        {
 
-            curAction.Data = string.Format("{0}, {1}, {2} ObjectId: {3} EmailAddress: {4} ", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, curAction.ObjectId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address)) + curAction.Data;
-
-            uow.IncidentRepository.Add(curAction);
-        }
     }
 
 
