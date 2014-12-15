@@ -463,5 +463,11 @@ namespace KwasantWeb.Controllers
                 return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
             }
         }
+
+        public ActionResult DefaultActivityPopup(int bookingRequestId)
+        {
+            ViewBag.BookingRequestId = bookingRequestId;
+            return View();
+        }
     }
 }
