@@ -70,12 +70,12 @@ namespace KwasantCore.Services
         public List<object> GetAllByUserId(IBookingRequestDORepository curBookingRequestRepository, int start,
             int length, string userid)
         {
-            return
-                curBookingRequestRepository.GetQuery()
+            var filteredBookingRequestList = curBookingRequestRepository.GetQuery()
                     .Where(e => e.Customer.Id == userid).OrderByDescending(e => e.LastUpdated)
                     .Skip(start)
-                    .Take(length)
-                    .Select(e =>
+                    .Take(length).ToList();
+
+            return filteredBookingRequestList.Select(e =>
                         (object)new
                         {
                             id = e.Id,
