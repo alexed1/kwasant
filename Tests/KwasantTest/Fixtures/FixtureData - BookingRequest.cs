@@ -9,6 +9,8 @@ namespace KwasantTest.Fixtures
     {
         public BookingRequestDO TestBookingRequest1()
         {
+            var user = TestUser1();
+            
             var curBookingRequestDO = new BookingRequestDO
                                           {
                                               Id = 1,
@@ -18,13 +20,15 @@ namespace KwasantTest.Fixtures
                                               EmailStatus = EmailState.Unprocessed,
                                               DateReceived = DateTimeOffset.UtcNow,
                                               State = BookingRequestState.AwaitingClient,
-                                              Customer = TestUser1()
+                                              Customer = user
                                           };
+            user.EmailAddress.SentEmails.Add(curBookingRequestDO);
             return curBookingRequestDO;
         }
 
         public BookingRequestDO TestBookingRequest2()
         {
+            var user = TestUser1();
             var curBookingRequestDO = new BookingRequestDO
             {
                 Id = 2,
@@ -35,8 +39,9 @@ namespace KwasantTest.Fixtures
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
                 State = BookingRequestState.AwaitingClient,
-                Customer = TestUser1()
+                Customer = user
             };
+            user.EmailAddress.SentEmails.Add(curBookingRequestDO);
             return curBookingRequestDO;
         }
 

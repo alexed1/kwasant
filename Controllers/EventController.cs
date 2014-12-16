@@ -163,7 +163,11 @@ namespace KwasantWeb.Controllers
             if (bookingRequestID.HasValue)
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-                offset = bookingRequest.CreateDate.Offset;
+                var guessedTimeZone = bookingRequest.Customer.GetOrGuessTimeZone();
+                if (guessedTimeZone != null)
+                    offset = bookingRequest.Customer.GetOrGuessTimeZone().GetUtcOffset(DateTime.Now);
+                else
+                    offset = DateTimeOffset.Now.Offset;
             }
             else
             {

@@ -190,7 +190,8 @@ namespace KwasantCore.Services
                             Status = e.Status,
                             Data = e.Data,
                             CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                            SecondaryCategory = e.SecondaryCategory
+                            SecondaryCategory = e.SecondaryCategory,
+                            BookerId = e.BookerId
                         })
                 .ToList();
         }

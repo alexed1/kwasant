@@ -1,7 +1,7 @@
 ﻿@{
 Layout = "~/Views/Shared/_Blank.cshtml";
 }
-
+@section bodyStyle {overflow-y:scroll;}
 @section immediateScripts
 {
 	@Scripts.Render("~/bundles/js/jquery")
@@ -37,31 +37,33 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 	<table id="tblHistoryReport" class="table data-table">
 		<thead>
 			<tr>
-				<th style="width: 10%">Date</th>
-                <th style="width: 10%">Category</th>
-                <th style="width:15%">Secondary Category</th>
-				<th style="width: 15%">Activity</th>
-				<th style="width: 10%">Status</th>
-				<th style="width: 10%">Data</th>
+				<th class="dateWD">Date</th>
+                <th class="categoryWD">Category</th>
+                <th class="secondarycategoryWD">Secondary Category</th>
+				<th class="activityWD">Activity</th>
+				<th class="statusWD">Status</th>
+				<th class="dataWD">Data</th>
+                <th class="bookerWD">BookerId</th>
+
 			</tr>
 		</thead>
 	</table>
 </div>
 
 	<script type="text/javascript">
-		showHistory();
-		function showHistory()
-		{
-			var bookingRequestId=@ViewBag.bookingRequestID;
-			$.post("/Report/ShowHistoryByBookingRequestId", { bookingRequestId: bookingRequestId }, showHistoryReport);
-			function showHistoryReport(response) {
-				$('#tblHistoryReport').DataTable({
-					destroy: true,
-					"scrollY": "250px",
-					"scrollCollapse": true,
-					order: [0],
-					data: JSON.parse(response),
-					columns: [
+	    showHistory();
+	    function showHistory()
+	    {
+	        var bookingRequestId=@ViewBag.bookingRequestID;
+	        $.post("/Report/ShowHistoryByBookingRequestId", { bookingRequestId: bookingRequestId }, showHistoryReport);
+	        function showHistoryReport(response) {
+	            $('#tblHistoryReport').DataTable({
+	                //destroy: true,
+	                //"scrollY": "250px",
+	                //"scrollCollapse": true,
+	                order: [0],
+	                data: JSON.parse(response),
+	                columns: [
 						{
 						    data: function (data) {
 						        return convertToDateString(data.create_date);
@@ -71,11 +73,13 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 						{ data: 'secondary_category' },
 						{ data: 'activity' },
 						{ data: 'status' },
-						{ data: 'data' }
-					],
-				});
-			}
-		}
+						{ data: 'data' },
+					    { data: 'booker_id' }
+	                ],
+	            });
+	        }
+	    }
 
+	 
 
 	</script>

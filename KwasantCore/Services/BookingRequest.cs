@@ -46,12 +46,13 @@ namespace KwasantCore.Services
                 newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
 
+                AlertManager.BookingRequestNeedsProcessing(bookingRequest.Id);
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
-                            }
             }
+        }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
@@ -75,7 +76,7 @@ namespace KwasantCore.Services
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
-                        (object)new
+                        (object) new
                         {
                             id = e.Id,
                             subject = e.Subject,
@@ -92,8 +93,8 @@ namespace KwasantCore.Services
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
-                    where requests.Id == bookingRequestId
-                    select requests.Customer.Id).FirstOrDefault();
+                where requests.Id == bookingRequestId
+                select requests.Customer.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -110,7 +111,7 @@ namespace KwasantCore.Services
                                 text = String.Empty;
                             text = text.Trim();
                             if (text.Length > 400)
-                                text = text.Substring(0,400);
+                                text = text.Substring(0, 400);
 
                             return new
                             {
@@ -126,7 +127,7 @@ namespace KwasantCore.Services
 
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?)travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = uow.InstructionRepository;
@@ -206,7 +207,8 @@ namespace KwasantCore.Services
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
             // Send mail to Booker
             var curbooker = uow.UserRepository.GetByKey(bookerId);
-            string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " + bookingRequestDO.Subject;
+            string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " +
+                             bookingRequestDO.Subject;
 
             if (curbooker.EmailAddress != null)
                 message += "<br/>Booker : " + curbooker.EmailAddress.Address;
@@ -226,27 +228,35 @@ namespace KwasantCore.Services
         {
             var emailAddress = new EmailAddress(ObjectFactory.GetInstance<IConfigRepository>());
 
-            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO }).ToList();
+            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).ToList();
 
             //Get the emails of every recipient in every email
-            var emailThreads = emailAddress.ExtractParsedFromString(allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] { b.From.Address })).ToArray());
+            var emailThreads =
+                emailAddress.ExtractParsedFromString(
+                    allThreads.SelectMany(
+                        b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] {b.From.Address})).ToArray());
 
             //Get the emails found within email text
             var emailsInText = new List<ParsedEmailAddress>();
             foreach (var thread in allThreads)
             {
-                emailsInText.AddRange(emailAddress.ExtractParsedFromString(thread.HTMLText, thread.PlainText, thread.Subject));
+                emailsInText.AddRange(emailAddress.ExtractParsedFromString(thread.HTMLText, thread.PlainText,
+                    thread.Subject));
             }
 
             //Get the attendees of all events
-            var eventAttendees = emailAddress.ExtractParsedFromString(bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address)).ToArray());
-            return emailThreads.Union(emailsInText).Union(eventAttendees).GroupBy(pea => pea.Email).Select(g => g.First()); //Distinct on 'Email'
+            var eventAttendees =
+                emailAddress.ExtractParsedFromString(
+                    bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address)).ToArray());
+            return
+                emailThreads.Union(emailsInText).Union(eventAttendees).GroupBy(pea => pea.Email).Select(g => g.First());
+                //Distinct on 'Email'
         }
 
         public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
-                {
+        {
             return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
-                }
+        }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
@@ -263,8 +273,11 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
-                 .OrderByDescending(e => e.DateReceived).ToList();
+                    .Where(
+                        e =>
+                            e.State == BookingRequestState.Booking &&
+                            ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
+                    .OrderByDescending(e => e.DateReceived).ToList();
         }
 
         public object GetAllBookingRequests(IUnitOfWork uow)
@@ -294,7 +307,8 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
+                    .Where(
+                        e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
                     .OrderByDescending(e => e.DateReceived).ToList();
         }
 
@@ -312,7 +326,8 @@ namespace KwasantCore.Services
                 var preferredBookers =
                     uow.UserRepository.GetQuery()
                         .Where(u => bookerIDs.Contains(u.Id) && u.Available == true)
-                        .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
+                        .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking))
+                        .ToList();
 
                 return preferredBookers.FirstOrDefault();
             }
@@ -331,7 +346,7 @@ namespace KwasantCore.Services
                     AssociatedObjectType = "BookingRequest"
                 };
                 uow.ExpectedResponseRepository.Add(currExpectedResponse);
-            }               
+            }
         }
 
         public void AddExpectedResponseForNegotiation(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
@@ -350,7 +365,8 @@ namespace KwasantCore.Services
             }
         }
 
-        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequestDO, EmailDO emailDO, String userID)
+        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequestDO,
+            EmailDO emailDO, String userID)
         {
             var negotiations = bookingRequestDO.Negotiations
                 .Where(n => n.NegotiationState == NegotiationState.AwaitingClient)
@@ -366,20 +382,20 @@ namespace KwasantCore.Services
 
             var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
                 .Where(
-                er =>
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    er.AssociatedObjectID == bookingRequestDO.Id &&
-                    er.AssociatedObjectType == "BookingRequest")
+                    er =>
+                        er.UserID == userID &&
+                        er.Status == ExpectedResponseStatus.Active &&
+                        er.AssociatedObjectID == bookingRequestDO.Id &&
+                        er.AssociatedObjectType == "BookingRequest")
                 .Union(uow.ExpectedResponseRepository.GetQuery()
-                .Where(
-                er => 
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    negotiationIDs.Contains(er.AssociatedObjectID) &&
-                    er.AssociatedObjectType == "Negotiation"
-                ));
-            
+                    .Where(
+                        er =>
+                            er.UserID == userID &&
+                            er.Status == ExpectedResponseStatus.Active &&
+                            negotiationIDs.Contains(er.AssociatedObjectID) &&
+                            er.AssociatedObjectType == "Negotiation"
+                    ));
+
             foreach (var expectedResponse in expectedResponses)
                 expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
 
@@ -393,17 +409,18 @@ namespace KwasantCore.Services
             //Now we mark expected responses as complete
             var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
                 .Where(
-                er =>
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    er.AssociatedObjectID == negotiationID &&
-                    er.AssociatedObjectType == "Negotiation");
+                    er =>
+                        er.UserID == userID &&
+                        er.Status == ExpectedResponseStatus.Active &&
+                        er.AssociatedObjectID == negotiationID &&
+                        er.AssociatedObjectType == "Negotiation");
 
             foreach (var expectedResponse in expectedResponses)
                 expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
 
             if (expectedResponses.Any())
-                AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
+                AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID,
+                    userID);
         }
 
         public String GetConversationThread(BookingRequestDO bookingRequestDO)
@@ -421,39 +438,50 @@ namespace KwasantCore.Services
     </div>
 </div>
 ";
-            var threads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO }).Where(t => t.Id > 0);
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).Where(t => t.Id > 0);
 
             var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
             {
-                var bodyText = e.HTMLText;
-                if (String.IsNullOrEmpty(bodyText))
-                    bodyText = e.PlainText;
-                if (String.IsNullOrEmpty(bodyText))
+                String bodyText;
+                var envelope = e.Envelopes.FirstOrDefault();
+                if (envelope != null && !String.IsNullOrWhiteSpace(envelope.TemplateDescription))
                 {
-                    var envelope = e.Envelopes.FirstOrDefault();
-                    if (envelope != null && !String.IsNullOrEmpty(envelope.TemplateName))
+                    bodyText = envelope.TemplateDescription;
+                }
+                else
+                {
+                    bodyText = e.HTMLText;
+                    if (String.IsNullOrEmpty(bodyText))
+                        bodyText = e.PlainText;
+                    if (String.IsNullOrEmpty(bodyText))
                     {
-                        const string templateDescriptionFormat = @"This email was generated by the template '{0}' and was sent to {1}'";
-                        if (!String.IsNullOrWhiteSpace(envelope.TemplateDescription))
-                        {
-                            bodyText = String.Format(templateDescriptionFormat, envelope.TemplateDescription, String.Join(", ", e.To.Select(t => t.ToDisplayName())));
-                        }
-                        else
-                        {
+                        if (envelope != null && !String.IsNullOrEmpty(envelope.TemplateName))
                             bodyText = "This email was generated via SendGrid and sent to " + String.Join(", ", e.To.Select(t => t.ToDisplayName()));
-                        }
-                    }
-                    else
-                    {
-                        bodyText = "[No Body]";
                     }
                 }
 
-                return String.Format(conversationThreadFormat, e.FromName ?? e.From.Name, e.DateReceived.TimeAgo(), bodyText);
+                if (String.IsNullOrEmpty(bodyText))
+                    bodyText = "[No Body]";
+
+                return String.Format(conversationThreadFormat, e.FromName ?? e.From.Name, e.DateReceived.TimeAgo(),
+                    bodyText);
             }));
-                
+
 
             return result;
+        }
+
+        public void ConsiderAutoCheckout(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+
+                if (bookingRequestDO.State == BookingRequestState.NeedsBooking)
+                    CheckOut(bookingRequestId, bookerId);
+            }
         }
 
         public void CheckOut(int bookingRequestId, string bookerId)
@@ -463,6 +491,10 @@ namespace KwasantCore.Services
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequestDO == null)
                     throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+
+                if (!(new int?[] {BookingRequestState.NeedsBooking, BookingRequestState.Resolved, BookingRequestState.Finished}.Contains(bookingRequestDO.State)))
+                    throw new Exception("You tried to check out a BookingRequest that was not in states NeedsBooking or Resolved or Finished");
+
                 var bookerDO = uow.UserRepository.GetByKey(bookerId);
                 if (bookerDO == null)
                     throw new EntityNotFoundException<UserDO>(bookerId);
@@ -541,7 +573,8 @@ namespace KwasantCore.Services
 
         }
 
-        public string Generate(IUnitOfWork uow, string emailAddress, string meetingInfo, string submitsVia, string subject)
+        public string Generate(IUnitOfWork uow, string emailAddress, string meetingInfo, string submitsVia,
+            string subject)
         {
             MailMessage message = new MailMessage();
             message.From = new MailAddress(emailAddress);
@@ -553,11 +586,15 @@ namespace KwasantCore.Services
             Process(uow, bookingRequest);
             uow.SaveChanges();
 
-            ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", submitsVia, new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+            ObjectFactory.GetInstance<ITracker>()
+                .Track(bookingRequest.Customer, "SiteActivity", submitsVia,
+                    new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
 
             return bookingRequest.CustomerID;
         }
-        public List<BookingRequestDO> Search(IUnitOfWork uow, int id, bool searchAllEmail, string subject, string body, int emailStatus, int bookingStatus)
+
+        public List<BookingRequestDO> Search(IUnitOfWork uow, int id, bool searchAllEmail, string subject, string body,
+            int emailStatus, int bookingStatus)
         {
             if (id != 0)
             {
@@ -566,7 +603,7 @@ namespace KwasantCore.Services
                 {
                     filteredBrList = uow.BookingRequestRepository.GetQuery().Where(e => e.Id == id).ToList();
                 }
-                else 
+                else
                 {
                     var filteredEmail = uow.EmailRepository.GetByKey(id);
                     if (filteredEmail != null)
@@ -620,35 +657,36 @@ namespace KwasantCore.Services
         public int GetTimeInQueue(IUnitOfWork uow, string objectId)
         {
             DateTimeOffset currTime = DateTimeOffset.Now;
-            int getMinutinQueue =0;
+            int getMinutinQueue = 0;
             var factDO = uow.FactRepository.GetAll()
                 .Where(x => x.ObjectId == objectId &&
-                    (x.Activity == "StateChange") &&
-                    (x.Status == "Unstarted" ||
-                    x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
+                            (x.Activity == "StateChange") &&
+                            (x.Status == "Unstarted" ||
+                             x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
 
             if (factDO != null)
             {
                 DateTimeOffset lastStateChangeTime = factDO.LastUpdated;
 
                 TimeSpan getTimeinQueue = currTime.Subtract(lastStateChangeTime);
-                getMinutinQueue = (int)getTimeinQueue.TotalMinutes;
+                getMinutinQueue = (int) getTimeinQueue.TotalMinutes;
             }
             return getMinutinQueue;
         }
 
-        public KwasantPackagedMessage VerifyCheckOut(int curBRId, string curBookerId) 
+        public KwasantPackagedMessage VerifyCheckOut(int curBRId, string curBookerId)
         {
             KwasantPackagedMessage response = new KwasantPackagedMessage();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO curBookingRequest = uow.BookingRequestRepository.GetByKey(curBRId);
 
-                if (curBookingRequest.BookerID == curBookerId) 
+                if (curBookingRequest.BookerID == curBookerId)
                 {
                     response.Name = "valid";
                 }
-                else if (curBookingRequest.BookerID == null && curBookingRequest.State == BookingRequestState.NeedsBooking)
+                else if (curBookingRequest.BookerID == null &&
+                         curBookingRequest.State == BookingRequestState.NeedsBooking)
                 {
                     if (curBookerId != null)
                     {
@@ -658,16 +696,32 @@ namespace KwasantCore.Services
                     else
                     {
                         response.Name = "error";
-                        response.Message = "Failed to Checkout a BookingRequest that NeededBooking but had no Booker. BR ID = " + curBRId;
+                        response.Message =
+                            "Failed to Checkout a BookingRequest that NeededBooking but had no Booker. BR ID = " +
+                            curBRId;
                     }
                 }
-                else 
+                else
                 {
                     response.Name = "DifferentBooker";
-                    response.Message = curBookingRequest.Booker.FirstName == null ? curBookingRequest.Booker.EmailAddress.Address : curBookingRequest.Booker.FirstName;
+                    response.Message = curBookingRequest.Booker.FirstName == null
+                        ? curBookingRequest.Booker.EmailAddress.Address
+                        : curBookingRequest.Booker.FirstName;
                 }
             }
             return response;
+        }
+
+
+        public void MarkAsProcessed(int curBRId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
+                bookingRequestDO.State = BookingRequestState.Resolved;
+                bookingRequestDO.BookerID = null;
+                uow.SaveChanges();
+            }
         }
     }
 }

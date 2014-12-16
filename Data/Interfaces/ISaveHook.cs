@@ -7,17 +7,17 @@ namespace Data.Interfaces
     /// </summary>
     public interface ISaveHook
     {
-        void BeforeSave(IUnitOfWork uow);
+        void BeforeSave();
     }
 
     public interface IModifyHook
     {
-        void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues, IUnitOfWork uow);
+        void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues);
     }
 
     public interface IDeleteHook
     {
-        void OnDelete(DbPropertyValues originalValues, IUnitOfWork uow);
+        void OnDelete(DbPropertyValues originalValues);
     }
 
     public interface ICreateHook

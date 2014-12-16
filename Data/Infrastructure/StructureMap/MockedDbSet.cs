@@ -114,14 +114,20 @@ namespace Data.Infrastructure.StructureMap
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
-                return MergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                var isSaved = SavedSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                if (isSaved != null)
+                    return isSaved;
+                return LocalSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
             else
             {
 
                 int entityPrimaryKey = (int)(keyValues[0]);
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
-                return MergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                var isSaved = SavedSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                if (isSaved != null)
+                    return isSaved;
+                return LocalSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
         }
 
