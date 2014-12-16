@@ -104,14 +104,8 @@ namespace KwasantWeb.Controllers
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
-                    bookingRequestDO.State = BookingRequestState.Resolved;
-                    uow.SaveChanges();
-
-                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
-                }
+                _br.MarkAsProcessed(curBRId);
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
             return Json(verifyCheckoutMessage);
         }
@@ -123,14 +117,14 @@ namespace KwasantWeb.Controllers
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                     BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
-                    bookingRequestDO.State = BookingRequestState.Invalid;
-                    uow.SaveChanges();
-                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
-                }
+                bookingRequestDO.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
+        }
             return Json(verifyCheckoutMessage);
         }
 
@@ -429,9 +423,9 @@ namespace KwasantWeb.Controllers
         }
 
         public ActionResult AddNote(int bookingRequestId)
-        {
+                {
             return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
-        }
+            }
 
         [HttpPost]
         public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
@@ -482,6 +476,12 @@ namespace KwasantWeb.Controllers
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Merged successfully" });
             }
             return Json(verifyCheckoutMessage);
+        }
+
+        public ActionResult DefaultActivityPopup(int bookingRequestId)
+        {
+            ViewBag.BookingRequestId = bookingRequestId;
+            return View();
         }
     }
 }

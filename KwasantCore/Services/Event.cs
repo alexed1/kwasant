@@ -112,6 +112,54 @@ namespace KwasantCore.Services
                 invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
                 invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
             }
+
+            
+            var firstInvitation = invitations.FirstOrDefault();
+            if (firstInvitation != null)
+            {
+                var quasiEmail = new EmailDO();
+                quasiEmail.From = firstInvitation.From;
+
+                const String templateDescriptionFormat =
+@"An invitation was sent by booker '{0}', inviting the following attendees: {1}
+
+Additional information:
+StartDate: {2}
+EndDate: {3}
+EventID: {4}
+
+The booker sent the following message with the event: '{5}'
+";
+
+                var guessedTimeZone = eventDO.BookingRequest.Customer.GetOrGuessTimeZone();
+
+                String timezone;
+
+                if (guessedTimeZone != null)
+                {
+                    timezone = guessedTimeZone.DisplayName;   
+                }
+                else
+                {
+                    timezone = "UTC" + (eventDO.StartDate.Offset.Ticks < 0 ? eventDO.StartDate.Offset.ToString() : "+" + eventDO.StartDate.Offset);
+                }
+
+                //recipientStartDate.ToString("ddd MMM d, yyyy hh:mm tt")
+                var templateDescription = String.Format(templateDescriptionFormat,
+                    eventDO.BookingRequest.Booker  == null ? "Unknown" :  eventDO.BookingRequest.Booker.DisplayName, //Booker name
+                    String.Join(", ", eventDO.Attendees.Select(a => a.Name)), //Attendees
+                    eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " " + timezone,
+                    eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt"),
+                    eventDO.Id,
+                    extraBodyMessage
+                ).Replace(Environment.NewLine, "<br />");
+
+                quasiEmail.HTMLText = quasiEmail.PlainText = templateDescription;
+                quasiEmail.TagEmailToBookingRequest(eventDO.BookingRequest);
+                quasiEmail.Subject = firstInvitation.Subject;
+
+                uow.EmailRepository.Add(quasiEmail);
+            }
             return invitations;
         }
 

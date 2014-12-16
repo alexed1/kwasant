@@ -149,8 +149,8 @@ namespace KwasantCore.Services
 
             curInvitation.Subject = subject;
 
-            curInvitation.TagEmailToBookingRequest(curEvent.BookingRequest);
-            
+            curInvitation.TagEmailToBookingRequest(curEvent.BookingRequest, false);
+
             uow.EnvelopeRepository.ConfigureTemplatedEmail(
                 curInvitation, templateName, new Dictionary<string, object>
                 {

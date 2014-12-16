@@ -46,12 +46,13 @@ namespace KwasantCore.Services
                 newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
 
+                AlertManager.BookingRequestNeedsProcessing(bookingRequest.Id);
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
-                            }
             }
+        }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
@@ -70,12 +71,12 @@ namespace KwasantCore.Services
             int length, string userid)
         {
             return
-                curBookingRequestRepository.GetAll()
+                curBookingRequestRepository.GetQuery()
                     .Where(e => e.Customer.Id == userid).OrderByDescending(e => e.LastUpdated)
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
-                        (object) new
+                        (object)new
                         {
                             id = e.Id,
                             subject = e.Subject,
@@ -86,22 +87,22 @@ namespace KwasantCore.Services
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
+            return curBookingRequestRepository.GetQuery().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
-            return (from requests in curBookingRequestRepository.GetAll()
-                    where requests.Id == bookingRequestId
-                    select requests.Customer.Id).FirstOrDefault();
+            return (from requests in curBookingRequestRepository.GetQuery()
+                where requests.Id == bookingRequestId
+                select requests.Customer.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                uow.BookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetQuery()
                     .Where(e => (e.State == BookingRequestState.NeedsBooking))
-                    .OrderByDescending(e => e.DateReceived)
+                    .OrderByDescending(e => e.DateReceived).ToList()
                     .Select(
                         e =>
                         {
@@ -110,7 +111,7 @@ namespace KwasantCore.Services
                                 text = String.Empty;
                             text = text.Trim();
                             if (text.Length > 400)
-                                text = text.Substring(0, 400);
+                                text = text.Substring(0,400);
 
                             return new
                             {
@@ -181,11 +182,11 @@ namespace KwasantCore.Services
         public IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId)
         {
             var events = uow.EventRepository
-                .GetAll()
+                .GetQuery()
                 .Where(e => e.BookingRequestID == bookingRequestId);
             //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
             var invitationResponses = uow.InvitationResponseRepository
-                .GetAll()
+                .GetQuery()
                 .Where(e => e.Attendee != null && e.Attendee.Event != null &&
                             e.Attendee.Event.BookingRequestID == bookingRequestId);
             return Enumerable.Union<object>(events, invitationResponses);
@@ -253,9 +254,9 @@ namespace KwasantCore.Services
         }
 
         public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
-                {
+        {
             return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
-                }
+        }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
@@ -276,7 +277,7 @@ namespace KwasantCore.Services
                         e =>
                             e.State == BookingRequestState.Booking &&
                             ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
-                 .OrderByDescending(e => e.DateReceived).ToList();
+                    .OrderByDescending(e => e.DateReceived).ToList();
         }
 
         public object GetAllBookingRequests(IUnitOfWork uow)
@@ -345,7 +346,7 @@ namespace KwasantCore.Services
                     AssociatedObjectType = "BookingRequest"
                 };
                 uow.ExpectedResponseRepository.Add(currExpectedResponse);
-            }               
+            }
         }
 
         public void AddExpectedResponseForNegotiation(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
@@ -381,20 +382,20 @@ namespace KwasantCore.Services
 
             var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
                 .Where(
-                er =>
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    er.AssociatedObjectID == bookingRequestDO.Id &&
-                    er.AssociatedObjectType == "BookingRequest")
+                    er =>
+                        er.UserID == userID &&
+                        er.Status == ExpectedResponseStatus.Active &&
+                        er.AssociatedObjectID == bookingRequestDO.Id &&
+                        er.AssociatedObjectType == "BookingRequest")
                 .Union(uow.ExpectedResponseRepository.GetQuery()
-                .Where(
-                er => 
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    negotiationIDs.Contains(er.AssociatedObjectID) &&
-                    er.AssociatedObjectType == "Negotiation"
-                ));
-            
+                    .Where(
+                        er =>
+                            er.UserID == userID &&
+                            er.Status == ExpectedResponseStatus.Active &&
+                            negotiationIDs.Contains(er.AssociatedObjectID) &&
+                            er.AssociatedObjectType == "Negotiation"
+                    ));
+
             foreach (var expectedResponse in expectedResponses)
                 expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
 
@@ -408,11 +409,11 @@ namespace KwasantCore.Services
             //Now we mark expected responses as complete
             var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
                 .Where(
-                er =>
-                    er.UserID == userID &&
-                    er.Status == ExpectedResponseStatus.Active &&
-                    er.AssociatedObjectID == negotiationID &&
-                    er.AssociatedObjectType == "Negotiation");
+                    er =>
+                        er.UserID == userID &&
+                        er.Status == ExpectedResponseStatus.Active &&
+                        er.AssociatedObjectID == negotiationID &&
+                        er.AssociatedObjectType == "Negotiation");
 
             foreach (var expectedResponse in expectedResponses)
                 expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
@@ -441,37 +442,31 @@ namespace KwasantCore.Services
 
             var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
             {
-                var bodyText = e.HTMLText;
+                String bodyText;
+                var envelope = e.Envelopes.FirstOrDefault();
+                if (envelope != null && !String.IsNullOrWhiteSpace(envelope.TemplateDescription))
+                {
+                    bodyText = envelope.TemplateDescription;
+                }
+                else
+                {
+                    bodyText = e.HTMLText;
                 if (String.IsNullOrEmpty(bodyText))
                     bodyText = e.PlainText;
                 if (String.IsNullOrEmpty(bodyText))
                 {
-                    var envelope = e.Envelopes.FirstOrDefault();
                     if (envelope != null && !String.IsNullOrEmpty(envelope.TemplateName))
-                    {
-                        const string templateDescriptionFormat =
-                            @"This email was generated by the template '{0}' and was sent to {1}'";
-                        if (!String.IsNullOrWhiteSpace(envelope.TemplateDescription))
-                        {
-                            bodyText = String.Format(templateDescriptionFormat, envelope.TemplateDescription,
-                                String.Join(", ", e.To.Select(t => t.ToDisplayName())));
-                        }
-                        else
-                        {
-                            bodyText = "This email was generated via SendGrid and sent to " +
-                                       String.Join(", ", e.To.Select(t => t.ToDisplayName()));
+                            bodyText = "This email was generated via SendGrid and sent to " + String.Join(", ", e.To.Select(t => t.ToDisplayName()));
                         }
                     }
-                    else
-                    {
+
+                if (String.IsNullOrEmpty(bodyText))
                         bodyText = "[No Body]";
-                    }
-                }
 
                 return String.Format(conversationThreadFormat, e.FromName ?? e.From.Name, e.DateReceived.TimeAgo(),
                     bodyText);
             }));
-                
+
 
             return result;
         }
@@ -608,7 +603,7 @@ namespace KwasantCore.Services
                 {
                     filteredBrList = uow.BookingRequestRepository.GetQuery().Where(e => e.Id == id).ToList();
                 }
-                else 
+                else
                 {
                     var filteredEmail = uow.EmailRepository.GetByKey(id);
                     if (filteredEmail != null)
@@ -665,9 +660,9 @@ namespace KwasantCore.Services
             int getMinutinQueue = 0;
             var factDO = uow.FactRepository.GetAll()
                 .Where(x => x.ObjectId == objectId &&
-                    (x.Activity == "StateChange") &&
-                    (x.Status == "Unstarted" ||
-                    x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
+                            (x.Activity == "StateChange") &&
+                            (x.Status == "Unstarted" ||
+                             x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
 
             if (factDO != null)
             {
@@ -679,14 +674,14 @@ namespace KwasantCore.Services
             return getMinutinQueue;
         }
 
-        public KwasantPackagedMessage VerifyCheckOut(int curBRId, string curBookerId) 
+        public KwasantPackagedMessage VerifyCheckOut(int curBRId, string curBookerId)
         {
             KwasantPackagedMessage response = new KwasantPackagedMessage();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO curBookingRequest = uow.BookingRequestRepository.GetByKey(curBRId);
 
-                if (curBookingRequest.BookerID == curBookerId) 
+                if (curBookingRequest.BookerID == curBookerId)
                 {
                     response.Name = "valid";
                 }
@@ -742,6 +737,18 @@ namespace KwasantCore.Services
                 curBookingRequest.State = BookingRequestState.Invalid;
                 uow.SaveChanges();
                 AlertManager.BookingRequestMerged(originalBRId, targetBRId);
+            }
+        }
+
+
+        public void MarkAsProcessed(int curBRId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
+                bookingRequestDO.State = BookingRequestState.Resolved;
+                bookingRequestDO.BookerID = null;
+                uow.SaveChanges();
             }
         }
     }

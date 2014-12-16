@@ -481,6 +481,7 @@
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
     <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\logo.png" />
@@ -814,14 +815,12 @@
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
-    <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\User\ChooseCalendars.cshtml" />
     <Content Include="Views\User\FindUser.cshtml" />
     <Content Include="Views\User\ShowAddUser.cshtml" />
     <Content Include="Views\User\ShowCalendarEvents.cshtml" />
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
-    <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\BookingRequest\Administer.cshtml" />
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
@@ -857,6 +856,8 @@
     <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
     <Content Include="Views\User\ShareCalendar.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
+    <Content Include="Views\Shared\403.cshtml" />
+    <Content Include="Views\BookingRequest\DefaultActivityPopup.cshtml" />
     <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
   </ItemGroup>
   <ItemGroup>
