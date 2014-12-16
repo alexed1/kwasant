@@ -12,20 +12,31 @@
 <link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
 
 <style>
-    .view-popup-window {
+    .view-popup-window
+    {
         padding: 0px;
     }
 
-    td {
+    td
+    {
         font-weight: 200;
         line-height: 31.4285736083984px;
         height: 34px;
     }
-    .timezoneDiv {
+
+    .timezoneDiv
+    {
         float: left;
-        margin-left: 30px;
     }
-    .glyphicon {
+
+        .timezoneDiv select
+        {
+            width: 30%;
+            margin-left: 10px;
+        }
+
+    .glyphicon
+    {
         margin-left: 5px;
     }
 </style>
@@ -40,35 +51,33 @@
                 <tr>
                     <td class="displayLabel">From:</td>
                     <td>
-                        <div>
-                            <div style="float:left;"> @Model.FromName </div> 
-                            <div class="timezoneDiv">
-                                <select id="timezoneSelect">
-                                    @{
-                                        foreach (var timeZone in TimeZoneInfo.GetSystemTimeZones().OrderBy(tz => tz.GetUtcOffset(DateTime.Now)))
+                        <div class="timezoneDiv">
+                            @Model.FromName
+                            <select id="timezoneSelect">
+                                @{
+                                    foreach (var timeZone in TimeZoneInfo.GetSystemTimeZones().OrderBy(tz => tz.GetUtcOffset(DateTime.Now)))
+                                    {
+                                        if (timeZone.Id == Model.UserTimeZoneID)
                                         {
-                                            if (timeZone.Id == Model.UserTimeZoneID)
-                                            {
-                                                var displayName = timeZone.DisplayName;
+                                            var displayName = timeZone.DisplayName;
                                                 
-                                                <option value="@timeZone.Id" selected>@displayName</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@timeZone.Id">@timeZone.DisplayName</option>
-                                            }
+                                    <option value="@timeZone.Id" selected>@displayName</option>
+                                        }
+                                        else
+                                        {
+                                    <option value="@timeZone.Id">@timeZone.DisplayName</option>
                                         }
                                     }
-                                </select>
-                                <!-- Tell the user it's a guessed timezone -->
-                                <span style="display:none" id="timezoneGuessed" class="glyphicon glyphicon-info-sign" title="This timezone has been guessed by our system, and may be incorrect."></span>
-                                <!-- Tell the user the timezone hasn't been saved -->
-                                <span style="display:none" id="timezoneNotSaved" class="glyphicon glyphicon-asterisk" title="Your changes to the timezone have not been saved"></span>
-                                <!-- Tell the user the timezone is okay -->
-                                <span style="display:none" id="timezoneOk" class="glyphicon glyphicon-ok" title="This timezone has been explicitly set by a booker."></span>
-                                <a id="btnSaveTimezone" style="margin-left:20px;" href="javascript:void(0);">Save Timezone</a>
-                            </div> 
-                        </div> 
+                                }
+                            </select>
+                            <!-- Tell the user it's a guessed timezone -->
+                            <span style="display: none" id="timezoneGuessed" class="glyphicon glyphicon-info-sign" title="This timezone has been guessed by our system, and may be incorrect."></span>
+                            <!-- Tell the user the timezone hasn't been saved -->
+                            <span style="display: none" id="timezoneNotSaved" class="glyphicon glyphicon-asterisk" title="Your changes to the timezone have not been saved"></span>
+                            <!-- Tell the user the timezone is okay -->
+                            <span style="display: none" id="timezoneOk" class="glyphicon glyphicon-ok" title="This timezone has been explicitly set by a booker."></span>
+                            <a id="btnSaveTimezone" style="margin-left: 10px;" href="javascript:void(0);">Save</a>
+                        </div>
                     </td>
                 </tr>
                 <tr>
