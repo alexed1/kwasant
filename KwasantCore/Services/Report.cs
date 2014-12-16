@@ -16,13 +16,13 @@ namespace KwasantCore.Services
         private readonly Email _email;
         private Dictionary<string, string> _dataUrlMappings;
 
-        public Report()
+        public Report() 
         {
             _user = new User();
             _email = new Email();
         }
 
-
+        
         public object Generate(IUnitOfWork uow, DateRange dateRange, string type, int start,
             int length, out int recordcount)
         {
@@ -92,14 +92,14 @@ namespace KwasantCore.Services
                 .AsEnumerable()
                 .Select(
                     f => new
-                    {
-                        PrimaryCategory = f.PrimaryCategory,
-                        SecondaryCategory = f.SecondaryCategory,
-                        Activity = f.Activity,
-                        Status = f.Status,
-                        Data = AddClickability(f.Data),
-                        CreateDate = f.CreateDate.ToString(DateStandardFormat),
-                    })
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Status = f.Status,
+                            Data = AddClickability(f.Data),
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                        })
                 .ToList();
 
         }
@@ -118,15 +118,15 @@ namespace KwasantCore.Services
                 .AsEnumerable()
                 .Select(
                     f => new
-                    {
-                        PrimaryCategory = f.PrimaryCategory,
-                        SecondaryCategory = f.SecondaryCategory,
-                        Activity = f.Activity,
-                        Data = f.Data,
-                        CreateDate = f.CreateDate.ToString(DateStandardFormat),
-                        ObjectId = f.ObjectId
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Data = f.Data,
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                            ObjectId = f.ObjectId
 
-                    })
+                        })
                 .ToList();
         }
 
@@ -139,19 +139,19 @@ namespace KwasantCore.Services
                 .AsEnumerable()
                 .Select(
                     f => new
-                    {
-                        Id = f.Id,
-                        PrimaryCategory = f.PrimaryCategory,
-                        SecondaryCategory = f.SecondaryCategory,
-                        Activity = f.Activity,
-                        Data = f.Data,
-                        CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                        {
+                            Id = f.Id,
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Data = f.Data,
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
 
-                    })
+                        })
                 .ToList();
 
         }
-
+        
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string strBookingRequestId)
         {
             return uow.HistoryRepository.GetQuery()
@@ -163,14 +163,14 @@ namespace KwasantCore.Services
                 .Select(
                     e =>
                     new
-                    {
-                        PrimaryCategory = e.PrimaryCategory,
-                        SecondaryCategory = e.SecondaryCategory,
-                        Activity = e.Activity,
-                        Status = e.Status,
-                        Data = e.Data,
-                        CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                    })
+                        {
+                            PrimaryCategory = e.PrimaryCategory,
+                            SecondaryCategory = e.SecondaryCategory,
+                            Activity = e.Activity,
+                            Status = e.Status,
+                            Data = e.Data,
+                            CreateDate = e.CreateDate.ToString(DateStandardFormat),
+                        })
                 .ToList();
         }
 
@@ -184,14 +184,15 @@ namespace KwasantCore.Services
                 .Select(
                     e =>
                     new
-                    {
-                        PrimaryCategory = e.PrimaryCategory,
-                        Activity = e.Activity,
-                        Status = e.Status,
-                        Data = e.Data,
-                        CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                        SecondaryCategory = e.SecondaryCategory
-                    })
+                        {
+                            PrimaryCategory = e.PrimaryCategory,
+                            Activity = e.Activity,
+                            Status = e.Status,
+                            Data = e.Data,
+                            CreateDate = e.CreateDate.ToString(DateStandardFormat),
+                            SecondaryCategory = e.SecondaryCategory,
+                            BookerId = e.BookerId
+                        })
                 .ToList();
         }
 
@@ -240,7 +241,7 @@ namespace KwasantCore.Services
                 .WhereInDateRange(e => e.CreateDate, dateRange)
                 .GroupBy(e => e.BookerId)
                 .OrderByDescending(e => e.Key);
-               
+
 
             count = incidentDO.Count();
 
@@ -248,10 +249,10 @@ namespace KwasantCore.Services
                 .Skip(start).Take(length)
                 .AsEnumerable()
                 .Select(e => new
-                {
-                    BRNameAndCount =
-                             string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
-                })
+                    {
+                        BRNameAndCount =
+                                 string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
+                    })
                 .ToList();
 
         }
@@ -269,10 +270,10 @@ namespace KwasantCore.Services
                 .Skip(start).Take(length)
                 .AsEnumerable()
                 .Select(e => new
-                {
-                    ObjectId = e.ObjectId,
-                    TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
-                })
+                    {
+                        ObjectId = e.ObjectId,
+                        TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
+                    })
                 .ToList();
         }
     }

@@ -99,17 +99,17 @@ namespace Data.Infrastructure
 
             foreach (DbEntityEntry<ISaveHook> entity in allHooks)
             {
-                entity.Entity.BeforeSave(uow);
+                entity.Entity.BeforeSave();
             }
 
             foreach (DbEntityEntry<IModifyHook> entity in modifyHooks)
             {
-                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues, uow);
+                entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues);
             }
 
             foreach (DbEntityEntry<IDeleteHook> entity in deleteHooks)
             {
-                entity.Entity.OnDelete(entity.OriginalValues, uow);
+                entity.Entity.OnDelete(entity.OriginalValues);
             }
 
             //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.

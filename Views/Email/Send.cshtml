@@ -11,11 +11,11 @@
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
 <link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
 <script src="~/Content/js/jquery-ui.js"></script>
-<link href="~/Content/css/EmailSend.css" rel="stylesheet"/>
+<link href="~/Content/css/EmailSend.css" rel="stylesheet" />
 <script src="~/Content/js/select2.js"></script>
-<link href="~/Content/css/additionalcss/select2/select2.css" rel="stylesheet"/>
+<link href="~/Content/css/additionalcss/select2/select2.css" rel="stylesheet" />
 <script src="~/Content/js/jquery.validate.js"></script>
-<link href="~/Content/css/jquery-ui.css" rel="stylesheet"/>
+<link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
 
 <script>
     function updateHiddenField() {
@@ -94,14 +94,17 @@
 @if (!Model.RecipientsEditable)
 {
     <style type="text/css">
-        .draggable li {
+        .draggable li
+        {
             cursor: default;
         }
-        .addressField {
+
+        .addressField
+        {
             width: 650px;
             max-width: 650px;
         }
-</style>
+    </style>
 }
 
 <script type="text/javascript">
@@ -224,8 +227,24 @@
                 }
                 else
                 {
-                    Kwasant.IFrame.CloseMe(result);
-                }
+                    if(result.Name == 'valid'){
+                        Kwasant.IFrame.CloseMe(true);
+                        Kwasant.IFrame.Display('/BookingRequest/DefaultActivityPopup?bookingRequestId='+'@Model.BookingRequestId',
+	                    {
+	                        modal: true,
+	                        callback: function (result) {
+	                            if (result)
+	                                close();
+	                        }
+	                    });
+                    }
+                    else if(result.Name == 'DifferentBooker')
+                        ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestId');
+                    else if(result.Name == 'error')
+                        alert(result.Message);
+                    else
+                        alert('An error occured on the server. Your changes have not been saved.');
+            }
             })
             .always(function () {
                 if (spinner !== null) {
@@ -244,18 +263,18 @@
         {
             <h4 style="text-align: center; color: #D62C2C">@Model.HeaderText</h4>
         }
-        <div id="addressDiv" style="float:left; width:30%">
-            <h4 style="width:200px; text-align:center">Address book</h4>
+        <div id="addressDiv" style="float: left; width: 30%">
+            <h4 style="width: 200px; text-align: center">Address book</h4>
             <ul id="addressBook" class="draggable addressBook"></ul>
-            <div style="width:200px; margin-top:5px;">
+            <div style="width: 200px; margin-top: 5px;">
                 <input id="attendeeText" class="addAttendeeInput" type="text" placeholder="Enter a new recipient..." />
             </div>
         </div>
-        <div id="displayDiv" style="float:right; width:70%; margin-top:10px;">
+        <div id="displayDiv" style="float: right; width: 70%; margin-top: 10px;">
             <div class="info">
 
                 <div class="email-details with-border">
-                    <table style="width:100%; border-collapse: collapse">
+                    <table style="width: 100%; border-collapse: collapse">
                         <tr>
                             <td class="">Subject:</td>
                             <td>
@@ -300,7 +319,7 @@
             <div class="space form-actions negotiation-form-actions">
                 <input id="btnSend" type="button" value="Send" class="btn pull-left small-dialog-button shadow-button" onclick="sendEmail()" />
 
-                <a href="javascript:Kwasant.IFrame.CloseMe(false);" class="btn cancel-btn small-dialog-button shadow-button pull-left" style="margin-left:5px;">Cancel</a>
+                <a href="javascript:Kwasant.IFrame.CloseMe(false);" class="btn cancel-btn small-dialog-button shadow-button pull-left" style="margin-left: 5px;">Cancel</a>
             </div>
         </div>
     </div>

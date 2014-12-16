@@ -55,12 +55,13 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false)
+        public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false, string eventDescription = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
+                createdEvent.Description = createdEvent.Summary = eventDescription;
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
                 createdEvent.EventStatus = EventState.ProposedTimeSlot;
                 
@@ -120,6 +121,9 @@ namespace KwasantWeb.Controllers
             var overlaps =
                 uow.EventRepository.GetQuery()
                     .Where(ew =>
+                        //Don't include deleted events
+                        ew.EventStatus != EventState.Deleted &&
+
                         ew.Id != updatedEvent.Id && ew.CalendarID == updatedEvent.CalendarID &&
                             //If the existing event starts at or before our start date, and ends at or after our start date
                         ((ew.StartDate <= updatedEvent.StartDate && ew.EndDate >= updatedEvent.StartDate) ||
@@ -159,7 +163,11 @@ namespace KwasantWeb.Controllers
             if (bookingRequestID.HasValue)
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-                offset = bookingRequest.CreateDate.Offset;
+                var guessedTimeZone = bookingRequest.Customer.GetOrGuessTimeZone();
+                if (guessedTimeZone != null)
+                    offset = bookingRequest.Customer.GetOrGuessTimeZone().GetUtcOffset(DateTime.Now);
+                else
+                    offset = DateTimeOffset.Now.Offset;
             }
             else
             {
@@ -206,7 +214,7 @@ namespace KwasantWeb.Controllers
         public ActionResult ConfirmDelete(int eventID)
         {
             _event.Delete(eventID);
-            return Json(true);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd, bool requiresConfirmation = true, bool mergeEvents = false)
@@ -294,7 +302,10 @@ namespace KwasantWeb.Controllers
                                     });
                         }
                     }
-                    
+
+                    if (!curEventVM.BookingRequestID.HasValue)
+                        return Json(true, JsonRequestBehavior.AllowGet);
+
                     var emailController = new EmailController();
 
                     var currCreateEmailVM = new CreateEmailVM

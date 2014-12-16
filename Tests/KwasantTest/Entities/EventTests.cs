@@ -30,15 +30,18 @@ namespace KwasantTest.Entities
             
                 EventDO eventDO = fixture.TestEvent4();
                 eventDO.BookingRequest = fixture.TestBookingRequest1();
+               
+                eventDO.BookingRequest.Booker = fixture.TestUser2();
            
                 eventRepo.Add(eventDO);
+
+                uow.SaveChanges();
 
                 ev.GenerateInvitations(uow, eventDO, eventDO.Attendees);
                 uow.SaveChanges();
 
-                string endtime = eventDO.EndDate.ToString("hh:mm tt");
-                var timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
-                string subjectDate = eventDO.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
+                string endtime = eventDO.EndDate.ToOffset(eventDO.BookingRequest.Customer.GetOrGuessTimeZone().GetUtcOffset(DateTime.Now)).ToString("hh:mm tt");
+                string subjectDate = eventDO.StartDate.ToOffset(eventDO.BookingRequest.Customer.GetOrGuessTimeZone().GetUtcOffset(DateTime.Now)).ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime;
 
                 //Verify emails created in memory
                 EmailDO resultEmail = eventDO.Emails[0];

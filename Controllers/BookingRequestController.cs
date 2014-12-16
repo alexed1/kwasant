@@ -73,7 +73,10 @@ namespace KwasantWeb.Controllers
             var currBooker = this.GetUserId();
             try
             {
-                _br.CheckOut(id.Value, currBooker);
+                if (Request != null && Request.UrlReferrer != null)
+                    if (Request.UrlReferrer.PathAndQuery == "/BookingRequest" || Request.UrlReferrer.PathAndQuery == "/BookingRequest/Index")
+                        _br.ConsiderAutoCheckout(id.Value, currBooker);
+
                 return RedirectToAction("Index", "Dashboard", new { id });
             }
             catch (EntityNotFoundException)
@@ -82,16 +85,17 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ProcessBookerChange(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var currBooker = this.GetUserId();
-                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
-                return Content(result);
-            }
-        }
+        //Removed. See https://maginot.atlassian.net/browse/KW-704
+        //[HttpGet]
+        //public ActionResult ProcessBookerChange(int bookingRequestId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var currBooker = this.GetUserId();
+        //        string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
+        //        return Content(result);
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult MarkAsProcessed(int curBRId)
@@ -100,14 +104,8 @@ namespace KwasantWeb.Controllers
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
-                    bookingRequestDO.State = BookingRequestState.Resolved;
-                    uow.SaveChanges();
-
-                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
-                }
+                _br.MarkAsProcessed(curBRId);
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
             return Json(verifyCheckoutMessage);
         }
@@ -119,14 +117,14 @@ namespace KwasantWeb.Controllers
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                     BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
-                    bookingRequestDO.State = BookingRequestState.Invalid;
-                    uow.SaveChanges();
-                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
-                }
+                bookingRequestDO.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
+        }
             return Json(verifyCheckoutMessage);
         }
 
@@ -202,11 +200,7 @@ namespace KwasantWeb.Controllers
         {
             try
             {
-                var emailAddressDO = new EmailAddressDO(emailAddress);
-
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
+                RegexUtilities.ValidateEmailAddress(emailAddress);
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
@@ -429,9 +423,9 @@ namespace KwasantWeb.Controllers
         }
 
         public ActionResult AddNote(int bookingRequestId)
-        {
+                {
             return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
-        }
+            }
 
         [HttpPost]
         public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
@@ -439,6 +433,35 @@ namespace KwasantWeb.Controllers
             var communticationManager = ObjectFactory.GetInstance<CommunicationManager>();
             communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
             return Json(true);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CreateViaCustomer(string meetingInfo, string subject)
+        {
+            try
+            {
+                if (meetingInfo.Trim().Length < 30)
+                return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var currUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                    string userId = _br.Generate(uow, currUserDO.EmailAddress.Address, meetingInfo, "SubmitsViaCustomer", subject);
+                    return Json(new { Message = "A new booking requested created!", Result = "Success" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
+                return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
+            }
+        }
+
+        public ActionResult DefaultActivityPopup(int bookingRequestId)
+        {
+            ViewBag.BookingRequestId = bookingRequestId;
+            return View();
         }
     }
 }

@@ -90,7 +90,16 @@ namespace Data.Infrastructure
         public delegate void HighPriorityIncidentCreatedHandler(int incidentId);
         public static event HighPriorityIncidentCreatedHandler AlertHighPriorityIncidentCreated;
 
+        public delegate void UserNotificationHandler(string userId, string message, TimeSpan expiresIn = default(TimeSpan));
+        public static event UserNotificationHandler AlertUserNotification;
+
         #region Method
+
+        public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
+        {
+            UserNotificationHandler handler = AlertUserNotification;
+            if (handler != null) handler(userid, message, expiresIn);
+        }
 
         public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
         {

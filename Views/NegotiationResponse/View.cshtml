@@ -37,6 +37,16 @@
 
             var questions = @Html.Raw(JsonConvert.SerializeObject(Model.Questions));
 
+            for (var i = 0; i < questions.length; i++) {
+                for (var j = 0; j < questions[i].Answers.length; j++) {
+                    var a = questions[i].Answers[j];
+                    if (a.EventStartDate != null)
+                        a.EventStart = new Date(a.EventStartDate);
+                    if (a.EventEndDate != null)
+                        a.EventEnd = new Date(a.EventEndDate);
+                }
+            }
+
             var initialValues = {
                 Id: @(Model.Id == null ? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,
@@ -163,7 +173,7 @@
                                     : "Kwasant helps " + Model.OriginatingUser + " with calendar scheduling. <br />Please give us the following information:")
                         </h2>
                     </td>
-                    <td> <img class="floating" src="/Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant" height="50px"> </td>
+                    <td> <img class="floating" src="/Content/img/site/kwasant-logo.png" alt="Kwasant" title="Kwasant" height="50px"> </td>
                 </tr>
 
             </table>
