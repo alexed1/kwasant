@@ -12,6 +12,7 @@ using KwasantWeb.ViewModelServices;
 using StructureMap;
 using Utilities;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -122,34 +123,28 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationVM curNegotiationVM)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                string _currBookerName = "";
-                try
+                if (!curNegotiationVM.Id.HasValue)
+                    throw new HttpException(400, "Invalid parameter");
+
+                AuthenticateUser(curNegotiationVM.Id.Value);
+
+                var userID = this.GetUserId();
+                _negotiationResponse.Process(curNegotiationVM, userID);
+
+                return Json(new
                 {
-                    _currBookerName = _booker.GetName(uow, uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).BookerID);
-
-                    if (!curNegotiationVM.Id.HasValue)
-                        throw new HttpException(400, "Invalid parameter");
-
-                    AuthenticateUser(curNegotiationVM.Id.Value);
-
-                    var userID = this.GetUserId();
-                    _negotiationResponse.Process(curNegotiationVM, userID);
-
-                    return Json(new
-                    {
-                        Success = true
-                    });
-                }
-                catch (Exception ex)
+                    Success = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error with negotiation response", ex);
+                return Json(new 
                 {
-                    return Json(new 
-                    {
-                        Success = false,
-                        Message = " Time: " + DateTime.UtcNow + " BRId:" + curNegotiationVM.BookingRequestID + " Current BR Owner Name: " + _currBookerName + " Current BR STatus: " + uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).State
-                    });
-                }
+                    Success = false,
+                });
             }
         }
 

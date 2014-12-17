@@ -146,7 +146,7 @@
             {
                 var returnString = new StringBuilder();
                 returnString.Append("var " + id + "list = $('#" + id + "');");
-                foreach (var toAddress in list)
+                foreach (var toAddress in list.Select(v => v.Replace("'", "\\'")))
                 {
                     if (uniqueAddresses.Contains(toAddress))
                     {

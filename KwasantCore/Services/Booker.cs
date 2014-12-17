@@ -37,15 +37,10 @@ namespace KwasantCore.Services
 
         public string GetName(IUnitOfWork uow, string id)
         {
-            string bookerName = string.Empty;
-
             UserDO userDO = uow.UserRepository.GetByKey(id);
-
-            if (userDO.FirstName != null)
-                return bookerName = userDO.FirstName;
-            else
-                return bookerName = userDO.EmailAddress.Address;
-
+            if (userDO == null)
+                return "Unknown";
+            return userDO.DisplayName;
         }
     }
 }

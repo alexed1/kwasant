@@ -287,8 +287,10 @@
                             minHeight: 700,
                             minWidth: 630,
                             callback: function (result) {
-                                if (result)
+                                if (result) {
                                     displayMessage(result.message);
+                                    refreshConversation();
+                                }
                             }
                         });
                     }
@@ -304,6 +306,7 @@
                                             linkedNegotiationID = result.negotiationID;
                                             updateCreateResolveButtons();
                                             displayMessage(result.message);
+                                            refreshConversation();
                                         }
                                     }
                                 });
