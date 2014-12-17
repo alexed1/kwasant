@@ -616,7 +616,8 @@ namespace KwasantCore.Services
                             From = filteredEmail.From,
                             DateReceived = filteredEmail.DateReceived,
                             EmailStatus = filteredEmail.EmailStatus,
-                            State = 0
+                            State = 0,
+                            PlainText = filteredEmail.PlainText
                         });
                     }
                 }
@@ -642,14 +643,15 @@ namespace KwasantCore.Services
                             From = e.From,
                             DateReceived = e.DateReceived,
                             EmailStatus = e.EmailStatus,
-                            State = 0
+                            State = 0,
+                            PlainText = e.PlainText
                         }));
                     }
                 }
                 if (!subject.IsNullOrEmpty())
-                    filteredBrList = filteredBrList.Where(e => e.Subject.Contains(subject)).ToList();
+                    filteredBrList = filteredBrList.Where(e => e.Subject.ToLower().Contains(subject.ToLower())).ToList();
                 if (!body.IsNullOrEmpty())
-                    filteredBrList = filteredBrList.Where(e => e.PlainText.Contains(body)).ToList();
+                    filteredBrList = filteredBrList.Where(e => e.PlainText.IsNullOrEmpty() ? false : e.PlainText.ToLower().Contains(body.ToLower())).ToList();
                 return filteredBrList;
             }
         }
