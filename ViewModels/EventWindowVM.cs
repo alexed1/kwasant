@@ -12,12 +12,15 @@ namespace KwasantWeb.ViewModels
         public bool RequiresConfirmation { get; set; }
         public bool ClickEditEnabled { get; set; }
 
+        public String ShowMode { get; set; }
+
         public String DefaultEventDescription { get; set; }
 
         public EventWindowVM()
         {
             RequiresConfirmation = true;
             ClickEditEnabled = true;
+            ShowMode = "time";
         }
     }
 }

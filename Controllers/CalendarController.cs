@@ -43,7 +43,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult GetNegotiationCalendars(int calendarID, String defaultEventDescription = null)
+        public ActionResult GetNegotiationCalendars(int calendarID, String defaultEventDescription = null, bool mergeEvents = true, string showMode = "time")
         {
             if (calendarID <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -79,8 +79,9 @@ namespace KwasantWeb.Controllers
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     ActiveCalendarID = calendarID,
                     ClickEditEnabled = false,
-                    MergeEvents = true,
+                    MergeEvents = mergeEvents,
                     RequiresConfirmation = false,
+                    ShowMode = showMode,
                     DefaultEventDescription = defaultEventDescription
                 });
             }
