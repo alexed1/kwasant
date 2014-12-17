@@ -858,6 +858,7 @@
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\BookingRequest\DefaultActivityPopup.cshtml" />
+    <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

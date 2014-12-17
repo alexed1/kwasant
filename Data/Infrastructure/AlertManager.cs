@@ -93,6 +93,9 @@ namespace Data.Infrastructure
         public delegate void UserNotificationHandler(string userId, string message, TimeSpan expiresIn = default(TimeSpan));
         public static event UserNotificationHandler AlertUserNotification;
 
+        public delegate void BookingRequestMergedHandler(int originalBRId, int targetBRId);
+        public static event BookingRequestMergedHandler AlertBookingRequestMerged;
+
         public delegate void BRReleasedBookerHandler(int bookingRequestId);
         public static event BRReleasedBookerHandler AlertBRReleasedBooker;
 
@@ -267,6 +270,12 @@ namespace Data.Infrastructure
         {
             HighPriorityIncidentCreatedHandler handler = AlertHighPriorityIncidentCreated;
             if (handler != null) handler(incidentId);
+        }
+
+        public static void BookingRequestMerged(int originalBRId, int targetBRId)
+        {
+            BookingRequestMergedHandler handler = AlertBookingRequestMerged;
+            if (handler != null) handler(originalBRId, targetBRId);
         }
 
         public static void BRReleasedBooker(int bookingRequestId)

@@ -45,21 +45,24 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
         }
 
-        private void BookingRequestNeedsProcessing(int bookingRequestId)
+        public void BookingRequestNeedsProcessing(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 string toRecipient = _configRepository.Get("EmailAddress_BrNotify", null);
                 if (string.IsNullOrEmpty(toRecipient))
-                    return;
+                    throw new Exception("Atleast one recipient is required");
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                var email = ObjectFactory.GetInstance<Email>();
-                string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
-                string subject = "BookingRequest Needs Processing";
-                string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
-                EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                uow.SaveChanges();
+                if (!bookingRequestDO.Subject.ToLower().Contains("test message"))
+                {
+                    var email = ObjectFactory.GetInstance<Email>();
+                    string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+                    string subject = "BookingRequest Needs Processing";
+                    string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
+                    EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
+                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    uow.SaveChanges();
+                }
             }
         }
 

@@ -125,6 +125,7 @@
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", new { controller ="BookingRequest" }, new { id="btnBookingRequestGetAll" })</li>
                                 <li><a id="liAddNote" onclick="getAddNoteWindow();">Add Note</a></li>
+                                <li><a onclick="getOtherBRs();">Merge With Existing BR</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -220,5 +221,9 @@
                 }
             }
         });
+        if("@TempData["isMerged"]" == "True")
+        {
+            displayMessage("Booking Request Merger Successful.");
+        }
     });
 </script>

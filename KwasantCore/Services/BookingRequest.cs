@@ -70,13 +70,13 @@ namespace KwasantCore.Services
         public List<object> GetAllByUserId(IBookingRequestDORepository curBookingRequestRepository, int start,
             int length, string userid)
         {
-            return
-                curBookingRequestRepository.GetAll()
+            var filteredBookingRequestList = curBookingRequestRepository.GetQuery()
                     .Where(e => e.Customer.Id == userid).OrderByDescending(e => e.LastUpdated)
                     .Skip(start)
-                    .Take(length)
-                    .Select(e =>
-                        (object) new
+                    .Take(length).ToList();
+
+            return filteredBookingRequestList.Select(e =>
+                        (object)new
                         {
                             id = e.Id,
                             subject = e.Subject,
@@ -87,12 +87,12 @@ namespace KwasantCore.Services
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
+            return curBookingRequestRepository.GetQuery().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
-            return (from requests in curBookingRequestRepository.GetAll()
+            return (from requests in curBookingRequestRepository.GetQuery()
                 where requests.Id == bookingRequestId
                 select requests.Customer.Id).FirstOrDefault();
         }
@@ -100,9 +100,9 @@ namespace KwasantCore.Services
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                uow.BookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetQuery()
                     .Where(e => (e.State == BookingRequestState.NeedsBooking))
-                    .OrderByDescending(e => e.DateReceived)
+                    .OrderByDescending(e => e.DateReceived).ToList()
                     .Select(
                         e =>
                         {
@@ -111,7 +111,7 @@ namespace KwasantCore.Services
                                 text = String.Empty;
                             text = text.Trim();
                             if (text.Length > 400)
-                                text = text.Substring(0, 400);
+                                text = text.Substring(0,400);
 
                             return new
                             {
@@ -182,11 +182,11 @@ namespace KwasantCore.Services
         public IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId)
         {
             var events = uow.EventRepository
-                .GetAll()
+                .GetQuery()
                 .Where(e => e.BookingRequestID == bookingRequestId);
             //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
             var invitationResponses = uow.InvitationResponseRepository
-                .GetAll()
+                .GetQuery()
                 .Where(e => e.Attendee != null && e.Attendee.Event != null &&
                             e.Attendee.Event.BookingRequestID == bookingRequestId);
             return Enumerable.Union<object>(events, invitationResponses);
@@ -451,17 +451,17 @@ namespace KwasantCore.Services
                 else
                 {
                     bodyText = e.HTMLText;
-                    if (String.IsNullOrEmpty(bodyText))
-                        bodyText = e.PlainText;
-                    if (String.IsNullOrEmpty(bodyText))
-                    {
-                        if (envelope != null && !String.IsNullOrEmpty(envelope.TemplateName))
+                if (String.IsNullOrEmpty(bodyText))
+                    bodyText = e.PlainText;
+                if (String.IsNullOrEmpty(bodyText))
+                {
+                    if (envelope != null && !String.IsNullOrEmpty(envelope.TemplateName))
                             bodyText = "This email was generated via SendGrid and sent to " + String.Join(", ", e.To.Select(t => t.ToDisplayName()));
+                        }
                     }
-                }
 
                 if (String.IsNullOrEmpty(bodyText))
-                    bodyText = "[No Body]";
+                        bodyText = "[No Body]";
 
                 return String.Format(conversationThreadFormat, e.FromName ?? e.From.Name, e.DateReceived.TimeAgo(),
                     bodyText);
@@ -701,15 +701,43 @@ namespace KwasantCore.Services
                             curBRId;
                     }
                 }
-                else
+                else if (curBookingRequest.BookerID != null)
                 {
                     response.Name = "DifferentBooker";
                     response.Message = curBookingRequest.Booker.FirstName == null
                         ? curBookingRequest.Booker.EmailAddress.Address
                         : curBookingRequest.Booker.FirstName;
                 }
+                else 
+                {
+                    response.Name = "valid";
+            }
             }
             return response;
+        }
+
+        public void Merge(int originalBRId, int targetBRId) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curBookingRequest = uow.BookingRequestRepository.GetByKey(originalBRId);
+                foreach (var curConversation in curBookingRequest.ConversationMembers)
+                {
+                    curConversation.ConversationId = targetBRId;
+                }
+                foreach (var curNegotiation in curBookingRequest.Negotiations)
+                {
+                    curNegotiation.BookingRequestID = targetBRId;
+                }
+                var allEvents = uow.EventRepository.GetQuery().Where(e => e.BookingRequestID == originalBRId);
+                foreach (var curEvent in allEvents)
+                {
+                    curEvent.BookingRequestID = targetBRId;
+                }
+                curBookingRequest.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                AlertManager.BookingRequestMerged(originalBRId, targetBRId);
+            }
         }
 
 

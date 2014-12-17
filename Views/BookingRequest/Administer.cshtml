@@ -43,7 +43,7 @@
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = "requestid" })".replace("requestid", id) + "')");
 
-        $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + id);
+        $("#divEmailViewer").load('@Url.Action("GetInfo", "Email")?emailId=' + id);
 
         if (window.parent.calendar !== undefined) {
             window.parent.calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
@@ -381,4 +381,11 @@
                     minWidth: 200
                 });
         }
+
+    function getOtherBRs() {
+        Kwasant.IFrame.Display('@Url.Action("ShowMergeBRView", "BookingRequest", new { bookingRequestID = Model.BookingRequestId })',
+            {
+                modal: true
+            });
+    }
 </script>
