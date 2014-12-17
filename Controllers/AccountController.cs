@@ -175,7 +175,7 @@ Please register first.");
                                 if (getRole == "Admin")
                                     return RedirectToAction("Index", "Admin");
                                 else if (getRole == "Booker")
-                                    return RedirectToAction("Index", "Booker");
+                                    Response.Redirect("http://bookers.kwasant.com");
 
                                 return RedirectToAction("MyAccount", "User");
                             }
