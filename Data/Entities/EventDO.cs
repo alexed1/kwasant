@@ -84,7 +84,7 @@ namespace Data.Entities
             }
         }
 
-		public override void BeforeSave()        
+        public override void BeforeSave()
         {
             base.BeforeSave();
             SetBookingRequestLastUpdated();

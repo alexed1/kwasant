@@ -281,6 +281,7 @@ namespace KwasantWeb.Controllers
             try
             {
                 _br.ReleaseBooker(bookingRequestId);
+                AlertManager.BRReleasedBooker(bookingRequestId);
                 return Json(true);
             }
             catch (EntityNotFoundException)
