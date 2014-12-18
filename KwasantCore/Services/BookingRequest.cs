@@ -16,6 +16,7 @@ using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
+using System.Web;
 
 namespace KwasantCore.Services
 {
@@ -684,27 +685,18 @@ namespace KwasantCore.Services
             KwasantPackagedMessage response = new KwasantPackagedMessage();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                if (curBRId == null || curBookerId == null)
+                    throw new HttpException(400, "Invalid parameter");
+
+
                 BookingRequestDO curBookingRequest = uow.BookingRequestRepository.GetByKey(curBRId);
+
+                if (curBookingRequest == null)
+                    throw new HttpException(400, "Booking request not found");
 
                 if (curBookingRequest.BookerID == curBookerId)
                 {
                     response.Name = "valid";
-                }
-                else if (curBookingRequest.BookerID == null &&
-                         curBookingRequest.State == BookingRequestState.NeedsBooking)
-                {
-                    if (curBookerId != null)
-                    {
-                        CheckOut(curBRId, curBookerId);
-                        response.Name = "valid";
-                    }
-                    else
-                    {
-                        response.Name = "error";
-                        response.Message =
-                            "Failed to Checkout a BookingRequest that NeededBooking but had no Booker. BR ID = " +
-                            curBRId;
-                    }
                 }
                 else if (curBookingRequest.BookerID != null)
                 {
@@ -713,10 +705,26 @@ namespace KwasantCore.Services
                         ? curBookingRequest.Booker.EmailAddress.Address
                         : curBookingRequest.Booker.FirstName;
                 }
+                else if (curBookingRequest.State == BookingRequestState.NeedsBooking)
+                {
+                    if (curBookerId != null)
+                    {
+                        try
+                        {
+                            CheckOut(curBRId, curBookerId);
+                            response.Name = "valid";
+                        }
+                        catch (Exception ex)
+                        {
+                            response.Name = "error";
+                            response.Message = ex.Message;
+                        }
+                    }
+                }
                 else 
                 {
                     response.Name = "valid";
-            }
+                }
             }
             return response;
         }
