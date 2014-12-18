@@ -80,6 +80,12 @@
     <Reference Include="Microsoft.AspNet.Identity.Owin">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices">
+      <HintPath>..\packages\EWS-Api-2.1.1.0.0\lib\net35\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth">
+      <HintPath>..\packages\EWS-Api-2.1.1.0.0\lib\net35\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin">
       <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
@@ -190,16 +196,21 @@
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\AlertReporter.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\AuthorizationResult.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\Exchange\ExchangeCalendarAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleCalendarAuthorizer.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\IAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVModels.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\GoogleCalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\IRemoteCalendarServiceAuthorizer.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\CalDAV\CalDAVModels.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\EWS\EWSClient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\RemoteCalendarServiceClientFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\CalDAV\CalDAVClient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\CalDAV\GoogleCalDAVClient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\IRemoteCalendarServiceClient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\RemoteCalendar\IRemoteCalendarServiceClientFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />

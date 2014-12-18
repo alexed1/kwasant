@@ -288,6 +288,7 @@
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\IEventDataProvider.cs" />
+    <Compile Include="Controllers\External\ExchangeCalendar\ExchangeAuthController.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
     <Compile Include="Controllers\BookingRequestController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
@@ -852,6 +853,7 @@
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
     <Content Include="Views\BookingRequest\AddNote.cshtml" />
     <Content Include="Views\BookingRequest\SearchResult.cshtml" />
+    <Content Include="Views\ExchangeAuth\Login.cshtml" />
     <Content Include="Views\Email\ShowReport.cshtml" />
     <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
     <Content Include="Views\User\ShareCalendar.cshtml" />

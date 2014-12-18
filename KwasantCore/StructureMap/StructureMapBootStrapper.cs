@@ -6,9 +6,10 @@ using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
+using KwasantCore.Managers.APIManagers.Authorizers.Exchange;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
 using KwasantCore.Managers.APIManagers.Packagers.SegmentIO;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
@@ -73,12 +74,15 @@ namespace KwasantCore.StructureMap
                 For<IExpectedResponse>().Use<ExpectedResponse>();
                 For<INegotiationResponse>().Use<NegotiationResponse>();
 
-                For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
+                For<IRemoteCalendarServiceClientFactory>().Use<RemoteCalendarServiceClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IRemoteCalendarServiceAuthorizer>().Use<ExchangeCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
+
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -110,7 +114,10 @@ namespace KwasantCore.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IRemoteCalendarServiceAuthorizer>().Use<ExchangeCalendarAuthorizer>().Named(RemoteCalendarProviderDO.ExchangeProviderName);
+
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named(RemoteCalendarProviderDO.GoogleProviderName);
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();

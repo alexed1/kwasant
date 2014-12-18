@@ -306,29 +306,42 @@ The booker sent the following message with the event: '{5}'
             if (iCalendar.Events.Count == 0)
                 throw new ArgumentException("iCalendar has no events.");
             var icsEvent = iCalendar.Events[0];
-            return new EventDO()
-            {
-                Category = icsEvent.Categories != null ? icsEvent.Categories.FirstOrDefault() : null,
-                Class = icsEvent.Class,
-                Description = icsEvent.Description,
-                IsAllDay = icsEvent.IsAllDay,
-                StartDate = icsEvent.Start.UTC,
-                EndDate = icsEvent.End.UTC,
-                Location = icsEvent.Location,
-                Sequence = icsEvent.Sequence,
-                Summary = icsEvent.Summary,
-                Transparency = icsEvent.Transparency.ToString(),
-                CreateDate = icsEvent.Created != null ? icsEvent.Created.UTC : default(DateTimeOffset),
-                Attendees = icsEvent.Attendees
-                    .Where(a => a.Value != null)
-                    .Select(a => new AttendeeDO()
-                    {
-                        EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
-                        Name = a.CommonName
-                    })
-                    .ToList(),
-            };
+            return CreateEventFromIcsEvent(uow, icsEvent);
         }
 
+        public static EventDO CreateEventFromIcsEvent(IUnitOfWork uow, KwasantICS.DDay.iCal.IEvent icsEvent)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (icsEvent == null)
+                throw new ArgumentNullException("icsEvent");
+            return new EventDO()
+                {
+                    Category = icsEvent.Categories != null ? icsEvent.Categories.FirstOrDefault() : null,
+                    Class = icsEvent.Class,
+                    Description = icsEvent.Description,
+                    IsAllDay = icsEvent.IsAllDay,
+                    StartDate = icsEvent.Start.UTC,
+                    EndDate = icsEvent.End.UTC,
+                    Location = icsEvent.Location,
+                    Sequence = icsEvent.Sequence,
+                    Summary = icsEvent.Summary,
+                    Transparency = icsEvent.Transparency.ToString(),
+                    CreateDate = icsEvent.Created != null ? icsEvent.Created.UTC : default(DateTimeOffset),
+                    Attendees = icsEvent.Attendees
+                        .Where(a => a.Value != null)
+                        .Select(a => new AttendeeDO()
+                            {
+                                EmailAddress =
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0,
+                                                                                                                     a.Value.
+                                                                                                                         Scheme.
+                                                                                                                         Length +
+                                                                                                                     1)),
+                                Name = a.CommonName
+                            })
+                        .ToList(),
+                };
+        }
     }
 }

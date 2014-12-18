@@ -10,7 +10,7 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
 {
     public class GoogleCalendarAuthorizer : IOAuthAuthorizer
     {
-        class AuthResultAdapter : IOAuthAuthorizationResult
+        class AuthResultAdapter : IAuthorizationResult
         {
             private readonly AuthorizationCodeWebApp.AuthResult _result;
 
@@ -40,12 +40,17 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
             return CreateFlowMetadata(userId).Flow;
         }
 
-        public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken)
+        public async Task<IAuthorizationResult> GrantAccessAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken)
         {
             var flowMetadata = CreateFlowMetadata(userId, email, callbackUrl);
             var result = await new AuthorizationCodeWebApp(flowMetadata.Flow, flowMetadata.AuthCallback, currentUrl)
-                                   .AuthorizeAsync(userId, CancellationToken.None);
+                                   .AuthorizeAsync(userId, cancellationToken);
             return new AuthResultAdapter(result);
+        }
+
+        public async Task RevokeAccessAsync(string userId, CancellationToken cancellationToken)
+        {
+            await RevokeAccessTokenAsync(userId, cancellationToken);
         }
 
         public async Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken)

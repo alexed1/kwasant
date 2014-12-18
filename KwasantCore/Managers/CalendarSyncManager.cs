@@ -8,7 +8,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
 using KwasantCore.Services;
 using Utilities.Logging;
 using StructureMap;
@@ -72,10 +72,10 @@ namespace KwasantCore.Managers
             }
         }
 
-        private readonly ICalDAVClientFactory _clientFactory;
+        private readonly IRemoteCalendarServiceClientFactory _clientFactory;
         private readonly EventComparer _eventComparer = new EventComparer();
 
-        public CalendarSyncManager(ICalDAVClientFactory clientFactory)
+        public CalendarSyncManager(IRemoteCalendarServiceClientFactory clientFactory)
         {
             if (clientFactory == null)
                 throw new ArgumentNullException("clientFactory");
@@ -123,7 +123,7 @@ namespace KwasantCore.Managers
             DateTimeOffset from, to;
             GetPeriod(out from, out to);
 
-            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.HasAccessToken()))
+            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.IsValid()))
             {
                 try
                 {
@@ -210,13 +210,13 @@ namespace KwasantCore.Managers
             }
         }
 
-        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, ICalDAVClient client, IRemoteCalendarLinkDO calendarLink)
+        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, IRemoteCalendarServiceClient client, IRemoteCalendarLinkDO calendarLink)
         {
             // just a filter by date/time, added to avoid duplicate code.
             Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
             var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
             // filter out reccurring events
-            var incomingEvents = remoteEvents.Select(cal => Event.CreateEventFromICSCalendar(uow, cal)).Where(eventPredictor).ToArray();
+            var incomingEvents = remoteEvents.Select(icsEvent => Event.CreateEventFromIcsEvent(uow, icsEvent)).Where(eventPredictor).ToArray();
             var calendar = calendarLink.LocalCalendar;
             Debug.Assert(calendar != null, "No local calendar associated with this calendar link.");
             var owner = calendar.Owner;
@@ -301,10 +301,10 @@ namespace KwasantCore.Managers
             }
         }
 
-        private async Task PushEventAsync(ICalDAVClient client, IRemoteCalendarLinkDO calendarLink, EventDO eventDO)
+        private async Task PushEventAsync(IRemoteCalendarServiceClient client, IRemoteCalendarLinkDO calendarLink, EventDO eventDO)
         {
-            var iCalendarEvent = Event.GenerateICSCalendarStructure(eventDO);
-            await client.CreateEventAsync(calendarLink, iCalendarEvent);
+            var iCalendar = Event.GenerateICSCalendarStructure(eventDO);
+            await client.CreateEventAsync(calendarLink, iCalendar.Events[0]);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Data.Interfaces;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
 using StructureMap;
 using Utilities.Logging;
 
@@ -9,19 +9,19 @@ namespace Daemons
 {
     class CalendarSync : Daemon<CalendarSync>
     {
-        private readonly ICalDAVClientFactory _calDAVClientFactory;
+        private readonly IRemoteCalendarServiceClientFactory _remoteCalendarServiceClientFactory;
 
         public CalendarSync()
-            : this(ObjectFactory.GetInstance<ICalDAVClientFactory>())
+            : this(ObjectFactory.GetInstance<IRemoteCalendarServiceClientFactory>())
         {
             
         }
 
-        public CalendarSync(ICalDAVClientFactory calDAVClientFactory)
+        public CalendarSync(IRemoteCalendarServiceClientFactory remoteCalendarServiceClientFactory)
         {
-            if (calDAVClientFactory == null)
-                throw new ArgumentNullException("calDAVClientFactory");
-            _calDAVClientFactory = calDAVClientFactory;
+            if (remoteCalendarServiceClientFactory == null)
+                throw new ArgumentNullException("remoteCalendarServiceClientFactory");
+            _remoteCalendarServiceClientFactory = remoteCalendarServiceClientFactory;
         }
 
         public override int WaitTimeBetweenExecution
@@ -39,7 +39,7 @@ namespace Daemons
                     {
                         try
                         {
-                            CalendarSyncManager calendarSyncManager = new CalendarSyncManager(_calDAVClientFactory);
+                            CalendarSyncManager calendarSyncManager = new CalendarSyncManager(_remoteCalendarServiceClientFactory);
                             calendarSyncManager.SyncNowAsync(uow, curUser).Wait();
                             uow.SaveChanges();
 

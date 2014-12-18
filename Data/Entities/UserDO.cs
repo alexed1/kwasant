@@ -68,7 +68,7 @@ namespace Data.Entities
                 .Any(r =>
                      r.Provider != null &&
                      r.Provider.Name == providerName &&
-                     r.HasAccessToken());
+                     r.IsValid());
         }
 
         public void BeforeCreate()

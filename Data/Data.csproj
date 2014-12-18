@@ -519,6 +519,10 @@
     <Compile Include="Migrations\201412171332227_FixUpPastSimpleEmails.Designer.cs">
       <DependentUpon>201412171332227_FixUpPastSimpleEmails.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.cs" />
+    <Compile Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.Designer.cs">
+      <DependentUpon>201412181158275_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -596,7 +600,9 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\RemoteCalendarServiceInterface.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_RemoteCalendarServiceInterfaceTemplate.cs" />
     <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -1493,6 +1499,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412171332227_FixUpPastSimpleEmails.resx">
       <DependentUpon>201412171332227_FixUpPastSimpleEmails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.resx">
+      <DependentUpon>201412181158275_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
