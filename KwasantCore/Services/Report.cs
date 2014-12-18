@@ -250,8 +250,7 @@ namespace KwasantCore.Services
                 .AsEnumerable()
                 .Select(e => new
                     {
-                        BRNameAndCount =
-                                 string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
+                        BRNameAndCount = string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
                     })
                 .ToList();
 

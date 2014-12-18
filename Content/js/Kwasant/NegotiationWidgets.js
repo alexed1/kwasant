@@ -199,10 +199,16 @@
         var questionTypeCalendar = $('<input type="radio"/>')
             .attr('name', groupID)
             .attr('QuestionType', 'Timeslot');
+        
+        var questionTypeDayCalendar = $('<input type="radio"/>')
+            .attr('name', groupID)
+            .attr('QuestionType', 'TimeslotDay');
 
         if (questionInitValues.AnswerType == 'Timeslot')
             questionTypeCalendar.get(0).checked = true;
-        else
+        else if (questionInitValues.AnswerType == 'TimeslotDay')
+            questionTypeDayCalendar.get(0).checked = true;
+        else 
             questionTypeText.get(0).checked = true;        
 
         questionObject.OpenEventWindowSelection = function () {
@@ -210,9 +216,13 @@
 
             var launchCalendar = function (calID) {
                 _that.CalendarID = calID;
-                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID + '&defaultEventDescription=' + 'Proposed for: ' + questionName.val(),
+                var isDaySelection = (questionObject.getQuestionType() == 'TimeslotDay');
+                var merge = !isDaySelection;
+                var mode = isDaySelection ? "day" : "time";
+                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID + '&defaultEventDescription=' + 'Proposed for: ' + questionName.val() + '&mergeEvents=' + merge + '&showMode=' + mode,
                     {
                         horizontalAlign: 'left',
+                        height: 730,
                         callback: function (result) {
                             var filteredEvents = $.grep(result.events, function (elem) {
                                 if (elem.tag[0] == calID)
@@ -287,7 +297,7 @@
                 .click(function() { questionObject.OpenEventWindowSelection(); });
         }
 
-        var radioButtons = [questionTypeText, questionTypeCalendar];
+        var radioButtons = [questionTypeText, questionTypeCalendar, questionTypeDayCalendar];
 
 
         var topWidget = $('<div>');
@@ -305,7 +315,12 @@
                     $('<label></label>')
                         .append(
                             questionTypeCalendar
-                        ).append("Timeslot")
+                        ).append("Choose Time")
+                ).append(
+                    $('<label></label>')
+                        .append(
+                            questionTypeDayCalendar
+                        ).append("Choose Day")
                 );
 
         topWidget.append(edittableType);
@@ -370,6 +385,9 @@
         var reconfigureAnswerButton = function () {
             if (questionObject.getQuestionType() == 'Timeslot') {
                 questionTypeCalendar.get(0).checked = true;
+                configureAnswerButton(true);
+            } else if (questionObject.getQuestionType() == 'TimeslotDay') {
+                questionTypeDayCalendar.get(0).checked = true;
                 configureAnswerButton(true);
             } else {
                 questionTypeText.get(0).checked = true;
@@ -495,7 +513,6 @@
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true : false,
                 QuestionGUID: questionInitValues.QuestionGUID,
-                //PromptText: 'Enter an alternative suggestion here...',
                 PromptText: settings.DisplayMode == 'reply' ? "Enter an alternative suggestion here..." : "",
                 Text: ''
             }, initialValues);
@@ -503,6 +520,8 @@
             var answerObject;
             if (!initialValues.ForceTextAnswer && this.getQuestionType() == 'Timeslot') {
                 answerObject = createCalendarAnswerObject(this, answerInitValues);
+            } else if (!initialValues.ForceTextAnswer && this.getQuestionType() == 'TimeslotDay') {
+                answerObject = createCalendarDayAnswerObject(this, answerInitValues);
             } else {
                 answerObject = createTextAnswerObject(this, answerInitValues);
             }
@@ -834,6 +853,66 @@
             }).fail(function() {
                 alert('Server failed to delete event.');
             }).always(function() {
+                if (spinner !== null)
+                    spinner.hide();
+            });
+        };
+
+        return answerObject;
+    }
+    
+
+    function createCalendarDayAnswerObject(question, answerInitValues) {
+
+        var padMins = function (mins) {
+            if (mins < 10)
+                return mins + '0';
+            return mins;
+        };
+        var padHours = function (hours) {
+            if (hours < 10)
+                return '0' + hours;
+            return hours;
+        };
+
+        var startDateString;
+        if (answerInitValues.EventStart.toDateString === undefined) {
+            startDateString = answerInitValues.EventStart.d.toDateString();
+        } else {
+            startDateString = answerInitValues.EventStart.toDateString();
+        }
+
+        var eventStr = startDateString;
+
+        answerInitValues.Text = eventStr;
+        answerInitValues.DisableManualEdit = true;
+
+        var answerObject = createTextAnswerObject(question, answerInitValues);
+        answerObject.EventID = answerInitValues.EventID;
+        answerObject.EventStart = answerInitValues.EventStart;
+        answerObject.EventEnd = answerInitValues.EventEnd;
+
+        answerObject.baseGetValues = answerObject.getValues;
+        answerObject.getValues = function () {
+            var baseReturn = this.baseGetValues();
+            baseReturn.EventID = this.EventID;
+
+            return baseReturn;
+        };
+
+        answerObject.baseRemoveMe = answerObject.RemoveMe;
+        answerObject.RemoveMe = function () {
+            var outterThis = this;
+            var eventID = answerObject.EventID;
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+            $.post(
+                '/Event/ConfirmDelete',
+                { eventID: eventID }
+            ).success(function () {
+                outterThis.baseRemoveMe();
+            }).fail(function () {
+                alert('Server failed to delete event.');
+            }).always(function () {
                 if (spinner !== null)
                     spinner.hide();
             });

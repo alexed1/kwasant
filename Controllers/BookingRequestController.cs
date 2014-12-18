@@ -334,9 +334,16 @@ namespace KwasantWeb.Controllers
                     {
                         emailDO.TagEmailToBookingRequest(bookingRequestDO);
 
+                        const string emailDescription = @"A booker sent the following email to these recipients: {0}<br/>
+<br/>
+{1}
+";
+
                         var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         var sendingUser = subUow.UserRepository.GetByKey(userID);
-                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
+                        var envelopeDO = subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
+                        
+                        envelopeDO.TemplateDescription = String.Format(emailDescription, String.Join(", ", emailDO.Recipients.Select(r => r.EmailAddress.ToDisplayName())), emailDO.HTMLText);
 
                         var currBookingRequest = new BookingRequest();
                         currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);

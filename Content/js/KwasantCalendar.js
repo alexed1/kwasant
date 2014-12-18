@@ -42,6 +42,8 @@
 
         this.getEvents = function() {
             if (storedCalendars.length > 0) {
+                if (storedCalendars[0].events.list === undefined)
+                    return [];
                 return storedCalendars[0].events.list;
             }
             return [];
@@ -121,7 +123,7 @@
         if (settings.showMonth) {
             queueCalendarForInit(createMonthCalendar, 'Month');
         }
-
+        
         var toolbarRow = $("<div class='row toolbar-section'></div>");
         toolbarRow.append(toolbar);
 
@@ -136,10 +138,20 @@
         settings.topElement.append(calendarBox);
 
         var firstToDisplay = null;
+        
         for (var i = 0; i < storedCalendars.length; i++) {
             storedCalendars[i].init();
-            if (i == 0)
-                firstToDisplay = storedCalendars[0];
+            if (firstToDisplay == null) {
+                if (settings.startWith !== undefined) {
+                    var cal = storedCalendars[i];
+                    if (cal.viewType == settings.startWith) {
+                        firstToDisplay = cal;
+                    }
+                } else {
+                    if (i == 0)
+                        firstToDisplay = storedCalendars[0];
+                }
+            }
         }
         
         if (settings.showNavigator) {
@@ -152,8 +164,6 @@
             switcher.addNavigator(navi.dp);
             nav = navi.dp;
         }
-
-        
 
         if (firstToDisplay !== null)
             switcher.show(firstToDisplay);

@@ -69,7 +69,7 @@
 <script type="text/javascript">
     var calendar;
     $(function() {
-     @{
+        @{
          var calendarsToDisplay = new List<int>();
          if (Model.LinkedCalendarIDs != null)
          {
@@ -80,6 +80,9 @@
          var requiresConfirmation = Model.RequiresConfirmation ? "true" : "false";
          var mergeEvents = Model.MergeEvents ? "true" : "false";
      }
+        var showDay = true;
+        var showWeek = true;
+        var showMonth = true;
 
         calendar = $('#CalendarDiv1').KCalendar({
             getCalendarBackendURL: function() {
@@ -90,16 +93,16 @@
             },
             getNavigatorBackendURL: function() {
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
-            },  
+            },
             getEditURL: function (id) {
                 @if (Model.ClickEditEnabled)
                 {
                     @:return '/Event/Edit/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation';
-                }
+                                }
                 else
                 {
                     @:return '';
-                }
+                                }
             },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z&requiresConfirmation=@requiresConfirmation'; },
             getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation'; },
@@ -109,6 +112,12 @@
                 }
                 Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents&eventDescription=@HttpUtility.HtmlEncode(Model.DefaultEventDescription)', calendar.refreshCalendars, 'POST');
             },
+
+            showDay: showDay,
+            showWeek: showWeek,
+            showMonth: showMonth,
+            
+            startWith: '@(Model.ShowMode == "day" ? "Month" : "Day")',
 
             editRequiresConfirmation: @requiresConfirmation,
             newRequiresConfirmation: @requiresConfirmation,
