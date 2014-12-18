@@ -24,29 +24,53 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.EWS
     {
         class EventToAppointmentAdapter
         {
+            private string AdaptAppointmentAddress(string address)
+            {
+                return string.Concat("mailto:", address);
+            }
+
+            private IAttendee AdaptAppointmentAttendee(Attendee a, string role)
+            {
+                return new KwasantICS.DDay.iCal.DataTypes.Attendee(AdaptAppointmentAddress(a.Address))
+                    {
+                        CommonName = a.Name,
+                        Role = role
+                    };
+            }
+
             public IEvent AdaptAppointment(Appointment appointment)
             {
                 var e = new DDayEvent();
-                e.Attendees = appointment
-                    .RequiredAttendees.Union(appointment.OptionalAttendees)
-                    .Select<Attendee, IAttendee>(a => new KwasantICS.DDay.iCal.DataTypes.Attendee(a.Address))
+                e.Attendees = appointment.RequiredAttendees
+                    .Select(a => AdaptAppointmentAttendee(a, "REQ-PARTICIPANT"))
+                    .Union(
+                        appointment.OptionalAttendees
+                            .Select(a => AdaptAppointmentAttendee(a, "OPT-PARTICIPANT")))
                     .ToList();
                 e.Categories = appointment.Categories.ToList();
                 e.Summary = appointment.Subject;
-                e.Organizer = new Organizer(appointment.Organizer.Address) { CommonName = appointment.Organizer.Name };
-                e.Start = new iCalDateTime(appointment.Start, appointment.StartTimeZone.Id);
-                e.End = new iCalDateTime(appointment.End, appointment.EndTimeZone.Id);
+                e.Organizer = new Organizer(AdaptAppointmentAddress(appointment.Organizer.Address))
+                    {
+                        CommonName = appointment.Organizer.Name
+                    };
+                e.Start = new iCalDateTime(appointment.Start, TimeZoneInfo.Utc.Id);
+                e.End = new iCalDateTime(appointment.End, TimeZoneInfo.Utc.Id);
                 e.IsAllDay = appointment.IsAllDayEvent;
-                e.Created = new iCalDateTime(appointment.DateTimeCreated);
+                e.Created = new iCalDateTime(appointment.DateTimeCreated, TimeZoneInfo.Utc.Id);
                 e.Location = appointment.Location;
                 e.Description = appointment.TextBody;
+                e.Sequence = appointment.AppointmentSequenceNumber;
                 if (appointment.ICalDateTimeStamp.HasValue)
                 {
                     e.DTStamp = new iCalDateTime(appointment.ICalDateTimeStamp.Value);
                 }
                 e.UID = appointment.ICalUid;
-                e.Url = new Uri(appointment.NetShowUrl);
                 return e;
+            }
+
+            private string AdaptEventAddress(Uri address)
+            {
+                return address.AbsoluteUri.Remove(0, address.GetLeftPart(UriPartial.Scheme).Length);
             }
 
             public Appointment AdaptEvent(IEvent e, ExchangeService exchangeService)
@@ -54,7 +78,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.EWS
                 var appointment = new Appointment(exchangeService);
                 foreach (var attendee in e.Attendees)
                 {
-                    var a = new Attendee(attendee.CommonName, attendee.Value.Authority);
+                    var a = new Attendee(attendee.CommonName, AdaptEventAddress(attendee.Value));
                     switch (attendee.Role)
                     {
                         case "REQ-PARTICIPANT":
@@ -65,17 +89,15 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.EWS
                             break;
                     }
                 }
-                appointment.Location = e.Location;
-                appointment.Categories = new StringList(e.Categories);
                 appointment.Subject = e.Summary;
-                appointment.Organizer.Name = e.Organizer.CommonName;
-                appointment.Organizer.Address = e.Organizer.Value.Authority;
-                appointment.Start = e.Start.Date;
-                appointment.StartTimeZone = TimeZoneInfo.FromSerializedString(e.Start.TimeZoneName);
-                appointment.End = e.End.Date;
-                appointment.EndTimeZone = TimeZoneInfo.FromSerializedString(e.End.TimeZoneName);
-                appointment.IsAllDayEvent = e.IsAllDay;
+                appointment.Location = e.Location;
                 appointment.Body = new TextBody(e.Description);
+                appointment.Categories = new StringList(e.Categories);
+                // EWS doesn't allow to set Organizer from code, it will be set to remote calendar account automatically
+                // appointment.Organizer = ...
+                appointment.Start = e.Start.UTC;
+                appointment.End = e.End.UTC;
+                appointment.IsAllDayEvent = e.IsAllDay;
                 appointment.ICalUid = e.UID;
                 return appointment;
             }
@@ -113,11 +135,23 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.EWS
         public async Task<IEnumerable<IEvent>> GetEventsAsync(IRemoteCalendarLinkDO calendarLink, DateTimeOffset @from, DateTimeOffset to)
         {
             var folderId = new FolderId(calendarLink.RemoteCalendarHref);
-            var appointments = ExchangeService.FindAppointments(
-                folderId,
-                new CalendarView(
-                    TimeZoneInfo.ConvertTime(from, ExchangeService.TimeZone).DateTime,
-                    TimeZoneInfo.ConvertTime(to, ExchangeService.TimeZone).DateTime));
+            var folder = CalendarFolder.Bind(ExchangeService, folderId, new PropertySet());
+            var view = new CalendarView(
+                TimeZoneInfo.ConvertTime(from, ExchangeService.TimeZone).DateTime,
+                TimeZoneInfo.ConvertTime(to, ExchangeService.TimeZone).DateTime);
+            view.PropertySet = new PropertySet(BasePropertySet.IdOnly);
+            var appointments = folder.FindAppointments(view);
+            var propSet = new PropertySet(AppointmentSchema.Subject,
+                AppointmentSchema.Organizer,
+                AppointmentSchema.RequiredAttendees, AppointmentSchema.OptionalAttendees,
+                AppointmentSchema.Start, //AppointmentSchema.StartTimeZone,
+                AppointmentSchema.End, //AppointmentSchema.EndTimeZone,
+                AppointmentSchema.TimeZone, AppointmentSchema.IsAllDayEvent,
+                AppointmentSchema.Categories, AppointmentSchema.Location, AppointmentSchema.TextBody,
+                AppointmentSchema.AppointmentType, AppointmentSchema.AppointmentState, AppointmentSchema.AppointmentSequenceNumber,
+                AppointmentSchema.DateTimeCreated, 
+                AppointmentSchema.ICalDateTimeStamp, AppointmentSchema.ICalUid);
+            ExchangeService.LoadPropertiesForItems(appointments, propSet);
             return appointments.Select(a => _adapter.AdaptAppointment(a)).ToArray();
         }
 
@@ -125,7 +159,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.EWS
         {
             var a = _adapter.AdaptEvent(calendarEvent, ExchangeService);
             var folderId = new FolderId(calendarLink.RemoteCalendarHref);
-            a.Save(folderId);
+            a.Save(folderId, SendInvitationsMode.SendToNone);
         }
 
         public async Task<IDictionary<string, string>> GetCalendarsAsync(IRemoteCalendarAuthDataDO authData)
