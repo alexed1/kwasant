@@ -455,10 +455,6 @@
     <Compile Include="Migrations\201411210850397_Sync.21.11.2014.Designer.cs">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.cs" />
-    <Compile Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.Designer.cs">
-      <DependentUpon>201411211342113_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201411261106360_SeparateTableForInvitations.cs" />
     <Compile Include="Migrations\201411261106360_SeparateTableForInvitations.Designer.cs">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
@@ -486,10 +482,6 @@
     <Compile Include="Migrations\201412022001255_AddIncidentStatus.cs" />
     <Compile Include="Migrations\201412022001255_AddIncidentStatus.Designer.cs">
       <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412091551511_Sync.09.12.2014.cs" />
-    <Compile Include="Migrations\201412091551511_Sync.09.12.2014.Designer.cs">
-      <DependentUpon>201412091551511_Sync.09.12.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201412061311212_RefactorHistory.cs" />
     <Compile Include="Migrations\201412061311212_RefactorHistory.Designer.cs">
@@ -526,6 +518,10 @@
     <Compile Include="Migrations\201412171332227_FixUpPastSimpleEmails.cs" />
     <Compile Include="Migrations\201412171332227_FixUpPastSimpleEmails.Designer.cs">
       <DependentUpon>201412171332227_FixUpPastSimpleEmails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.cs" />
+    <Compile Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.Designer.cs">
+      <DependentUpon>201412181158275_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -1459,9 +1455,6 @@
     <EmbeddedResource Include="Migrations\201411210850397_Sync.21.11.2014.resx">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.resx">
-      <DependentUpon>201411211342113_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411261106360_SeparateTableForInvitations.resx">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
     </EmbeddedResource>
@@ -1479,9 +1472,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412022001255_AddIncidentStatus.resx">
       <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412091551511_Sync.09.12.2014.resx">
-      <DependentUpon>201412091551511_Sync.09.12.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412061311212_RefactorHistory.resx">
       <DependentUpon>201412061311212_RefactorHistory.cs</DependentUpon>
@@ -1509,6 +1499,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412171332227_FixUpPastSimpleEmails.resx">
       <DependentUpon>201412171332227_FixUpPastSimpleEmails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412181158275_GeneralizeRemoteCalendarFunctionality.resx">
+      <DependentUpon>201412181158275_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

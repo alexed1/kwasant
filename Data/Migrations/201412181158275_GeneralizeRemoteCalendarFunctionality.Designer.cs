@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201411211342113_GeneralizeRemoteCalendarFunctionality"; }
+            get { return "201412181158275_GeneralizeRemoteCalendarFunctionality"; }
         }
         
         string IMigrationMetadata.Source

@@ -2,9 +2,6 @@ using Data.States;
 
 namespace Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
-    
     public partial class GeneralizeRemoteCalendarFunctionality : KwasantDbMigration
     {
         public override void Up()
@@ -12,10 +9,10 @@ namespace Data.Migrations
             CreateTable(
                 "dbo._RemoteCalendarServiceInterfaceTemplate",
                 c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(maxLength: 16),
-                    })
+                {
+                    Id = c.Int(nullable: false),
+                    Name = c.String(maxLength: 16),
+                })
                 .PrimaryKey(t => t.Id);
 
             SeedConstants<RemoteCalendarServiceInterface>("dbo._RemoteCalendarServiceInterfaceTemplate");
@@ -28,7 +25,7 @@ namespace Data.Migrations
             CreateIndex("dbo.RemoteCalendarProviders", "Interface");
             AddForeignKey("dbo.RemoteCalendarProviders", "Interface", "dbo._RemoteCalendarServiceInterfaceTemplate", "Id", cascadeDelete: true);
         }
-        
+
         public override void Down()
         {
             RenameColumn("dbo.RemoteCalendarProviders", "EndPoint", "CalDAVEndPoint");
