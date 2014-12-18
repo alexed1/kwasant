@@ -9,6 +9,12 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
+    /// <summary>
+    /// AlertingController
+    /// </summary>
+    /// <remarks>
+    /// How-to guide on notifications may be found here: https://maginot.atlassian.net/wiki/display/SH/How+To+Create+Notifications
+    /// </remarks>
     [KwasantAuthorize]
     public class AlertingController : Controller
     {
