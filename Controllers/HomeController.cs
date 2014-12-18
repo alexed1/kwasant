@@ -86,11 +86,7 @@ namespace KwasantWeb.Controllers
             string result = "";
             try
             {
-                var emailAddressDO = new EmailAddressDO(emailAddress);
-
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
+                RegexUtilities.ValidateEmailAddress(emailAddress);
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
@@ -119,9 +115,7 @@ namespace KwasantWeb.Controllers
             {
                 EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
 
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
+                RegexUtilities.ValidateEmailAddress(emailAddressDO.Address);
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));

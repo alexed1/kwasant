@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
+using Data.Infrastructure;
+using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class NegotiationDO : BaseDO
+    public class NegotiationDO : BaseDO, IDeleteHook
     {
         public NegotiationDO()
         {
@@ -35,6 +39,29 @@ namespace Data.Entities
 
         [InverseProperty("Negotiation")]
         public virtual IList<QuestionDO> Questions { get; set; }
+
+        public override void BeforeSave()
+        {
+            base.BeforeSave();
+            SetBookingRequestLastUpdated();
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        {
+            base.OnModify(originalValues, currentValues);
+            SetBookingRequestLastUpdated();
+        }
+
+        public void OnDelete(DbPropertyValues originalValues)
+        {
+            SetBookingRequestLastUpdated();
+        }
+
+        private void SetBookingRequestLastUpdated()
+        {
+            var br = BookingRequest;
+            if (br != null)
+                br.LastUpdated = DateTime.Now;
+        }
 
     }
 }

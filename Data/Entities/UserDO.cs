@@ -8,15 +8,13 @@ using Data.Infrastructure;
 using Data.States;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
-
 using Data.Interfaces;
 using StructureMap;
-using System.ComponentModel.DataAnnotations;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUserDO, ICreateHook, IBaseDO, ISaveHook, IModifyHook
+    public class UserDO : IdentityUser, IUserDO, ICreateHook, ISaveHook, IModifyHook
     {
         [NotMapped]
         IEmailAddressDO IUserDO.EmailAddress
@@ -73,13 +71,13 @@ namespace Data.Entities
                      r.IsValid());
         }
 
-        void ICreateHook.BeforeCreate()
+        public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
                 CreateDate = DateTimeOffset.Now;
         }
 
-        void ICreateHook.AfterCreate()
+        public void AfterCreate()
         {
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
@@ -92,12 +90,12 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
-        void ISaveHook.BeforeSave()
+        public void BeforeSave()
         {
             LastUpdated = DateTimeOffset.Now;
         }
 
-        void IModifyHook.OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             this.DetectStateUpdates(originalValues, currentValues);
         }
@@ -118,6 +116,29 @@ namespace Data.Entities
 
         public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
+
+        public String TimeZoneID { get; set; }
+
+        public TimeZoneInfo GetExplicitTimeZone()
+        {
+            if (String.IsNullOrEmpty(TimeZoneID))
+                return null;
+
+            return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneID);
+        }
+
+        public TimeZoneInfo GetOrGuessTimeZone()
+        {
+            var explicitTimeZone = GetExplicitTimeZone();
+            if (explicitTimeZone != null)
+                return explicitTimeZone;
+
+            var mostUsedOffset = EmailAddress.SentEmails.GroupBy(b => b.CreateDate.Offset).OrderByDescending(g => g.Count()).Select(k => (TimeSpan?)k.Key).FirstOrDefault();
+            if (mostUsedOffset == null)
+                return null;
+            var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == mostUsedOffset.Value);
+            return potentialTimeZones.FirstOrDefault();
+        }
     }
 }
 

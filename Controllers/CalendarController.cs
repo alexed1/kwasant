@@ -43,7 +43,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult GetNegotiationCalendars(int calendarID)
+        public ActionResult GetNegotiationCalendars(int calendarID, String defaultEventDescription = null, bool mergeEvents = true, string showMode = "time")
         {
             if (calendarID <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -59,12 +59,15 @@ namespace KwasantWeb.Controllers
                 if (calendarDO.Negotiation != null)
                 {
                     calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
-                    var user = new User();
                     var recipientAddresses = calendarDO.Negotiation.Attendees.Select(r => r.EmailAddress) //Get email addresses for each recipient
                         .Select(a => uow.UserRepository.GetOrCreateUser(a)).Where(u => u != null).SelectMany(u => u.Calendars).ToList(); //Grab the user from the email and find their calendars
-                    
+
+                    IEnumerable<CalendarDO> bookingRequestCustomerCalendars = new List<CalendarDO>();
+                    if (calendarDO.Negotiation.BookingRequest != null && calendarDO.Negotiation.BookingRequest.Customer != null)
+                        bookingRequestCustomerCalendars = calendarDO.Negotiation.BookingRequest.Customer.Calendars;
+
                     //Grab the user from the email and find their calendars
-                    calendarsViaNegotiationRequest = calendarsViaNegotiationRequest.Union(recipientAddresses);
+                    calendarsViaNegotiationRequest = calendarsViaNegotiationRequest.Union(recipientAddresses).Union(bookingRequestCustomerCalendars);
                 }
                 else
                 {
@@ -76,8 +79,10 @@ namespace KwasantWeb.Controllers
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     ActiveCalendarID = calendarID,
                     ClickEditEnabled = false,
-                    MergeEvents = true,
-                    RequiresConfirmation = false
+                    MergeEvents = mergeEvents,
+                    RequiresConfirmation = false,
+                    ShowMode = showMode,
+                    DefaultEventDescription = defaultEventDescription
                 });
             }
         }

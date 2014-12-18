@@ -84,14 +84,8 @@
                 return;
             }
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                url: '/Negotiation/ProcessSubmittedForm',
-                data: JSON.stringify(negotiation)
-            })
-            .success(function(result) {
+          
+            SubmitNegotiationForm(spinner,negotiation,function(result) {
                 Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
                 {
                     horizontalAlign: 'middle',

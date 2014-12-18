@@ -13,22 +13,6 @@ namespace KwasantCore.Services
 {
     public class Booker
     {
-        //VerifyOwnership
-        public string IsBookerValid(IUnitOfWork uow, int bookingRequestId, string currBooker)
-        {
-
-            BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-            if (bookingRequestDO.BookerID != currBooker)
-            {
-                if (bookingRequestDO.BookerID != null)
-                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
-
-                return "valid";
-            }
-            return "valid";
-
-        }
-
         public string ChangeBooker(IUnitOfWork uow, int bookingRequestId, string currBooker)
         {
             string result = "";
@@ -53,15 +37,10 @@ namespace KwasantCore.Services
 
         public string GetName(IUnitOfWork uow, string id)
         {
-            string bookerName = string.Empty;
-
             UserDO userDO = uow.UserRepository.GetByKey(id);
-
-            if (userDO.FirstName != null)
-                return bookerName = userDO.FirstName;
-            else
-                return bookerName = userDO.EmailAddress.Address;
-
+            if (userDO == null)
+                return "Unknown";
+            return userDO.DisplayName;
         }
     }
 }

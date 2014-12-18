@@ -40,10 +40,21 @@ namespace Data.Infrastructure
             if (stateProperties.Length > 0)
             {
                 entity.DetectUpdates(originalValues, currentValues, stateProperties,
-                    stateProperty => GetGenericInterface(ReflectionHelper.ForeignKeyNavitationProperty(entity, stateProperty).PropertyType, typeof(IStateTemplate<>)).GetGenericArguments()[0].Name,
-                    (stateProperty, stateKey) => stateKey != null 
-                        ? GetGenericInterface(ReflectionHelper.ForeignKeyNavitationProperty(entity, stateProperty).PropertyType, typeof(IStateTemplate<>)).GetGenericArguments()[0].GetFields().Single(f => Equals(f.GetValue(entity), stateKey)).Name
-                        : null);
+                                     (entityName, idValue, stateProperty) =>
+                                         {
+                                             var stateTemplateType =
+                                                 ReflectionHelper.ForeignKeyNavitationProperty(entity, stateProperty).
+                                                     PropertyType;
+                                             var stateType =
+                                                 GetGenericInterface(stateTemplateType, typeof (IStateTemplate<>))
+                                                     .GetGenericArguments()[0];
+                                             var stateName = stateType.Name;
+                                             var stateKey = currentValues[stateProperty.Name];
+                                             var stateValue = stateKey != null
+                                                                  ? stateType.GetFields().Single(f => Equals(f.GetValue(entity), stateKey)).Name
+                                                                  : null;
+                                             AlertManager.EntityStateChanged(entityName, idValue, stateName, stateValue);
+                                         });
             }
         }
 
@@ -54,22 +65,23 @@ namespace Data.Infrastructure
         /// <param name="originalValues">original properties values</param>
         /// <param name="currentValues">current properties values</param>
         /// <param name="properties">properties to track</param>
-        /// <param name="propertyNameFunc">optional function to manage property name for tracking. If null it takes PropertyInfo.Name value</param>
-        /// <param name="valueFunc">optional function to manage property value for tracking. If null it takes currentValues[propertyName] value</param>
+        /// <param name="updateCallback">action to call when update is detected. If it is null it defaults to AlertManager.TrackablePropertyChanged.</param>
         /// <remarks>
         /// This method would likely be called from <see cref="IModifyHook.OnModify">OnModify</see> implementation to track properties. 
         /// For tracking enum typed (state) properties see <see cref="DetectStateUpdates">DetectStateUpdates</see> method.
         /// </remarks>
         public static void DetectUpdates(this IBaseDO entity, 
             DbPropertyValues originalValues, DbPropertyValues currentValues, PropertyInfo[] properties,
-            Func<PropertyInfo, string> propertyNameFunc = null, Func<PropertyInfo, object, object> valueFunc = null)
+            Action<string, object, PropertyInfo> updateCallback = null)
         {
             if (properties == null || properties.Length == 0)
                 return;
-            if (propertyNameFunc == null)
-                propertyNameFunc = info => info.Name;
-            if (valueFunc == null)
-                valueFunc = (p, o) => o;
+            if (updateCallback == null)
+            {
+                updateCallback =
+                    (entityName, idValue, property) =>
+                    AlertManager.TrackablePropertyUpdated(entityName, property.Name, idValue, currentValues[property.Name]);
+            }
             var type = entity.GetType();
             var idProperty = type.GetProperty("Id");
             var id = idProperty != null ? idProperty.GetValue(entity) : null;
@@ -84,7 +96,7 @@ namespace Data.Infrastructure
                         entityName = type.BaseType.Name.Remove(type.BaseType.Name.Length - 2);
                     else
                         entityName = type.Name;
-                    AlertManager.TrackablePropertyUpdated(entityName, propertyNameFunc(property), id, valueFunc(property, currentValues[property.Name]));
+                    updateCallback(entityName, id, property);
                 }
             }
         }

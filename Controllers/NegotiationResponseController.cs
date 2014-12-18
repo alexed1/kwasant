@@ -7,10 +7,12 @@ using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.TempServicesHome;
 using KwasantWeb.ViewModels;
+using KwasantWeb.ViewModelServices;
 using StructureMap;
 using Utilities;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -20,11 +22,13 @@ namespace KwasantWeb.Controllers
         private IAttendee _attendee;
         private Negotiation _negotiation;
         private NegotiationResponse _negotiationResponse;
+        Booker _booker;
 
         public NegotiationResponseController()
         {
             _negotiationResponse = new NegotiationResponse();
             _negotiation = new Negotiation();
+            _booker = new Booker();
         }
 
 
@@ -43,7 +47,7 @@ namespace KwasantWeb.Controllers
                 var userDO = uow.UserRepository.GetByKey(userID);
 
                 _attendee = new Attendee(new EmailAddress(new ConfigRepository()));
-                
+
                 var curNegotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (curNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -119,15 +123,29 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationVM curNegotiationVM)
         {
-            if (!curNegotiationVM.Id.HasValue)
-                throw new HttpException(400, "Invalid parameter");
+            try
+            {
+                if (!curNegotiationVM.Id.HasValue)
+                    throw new HttpException(400, "Invalid parameter");
 
-            AuthenticateUser(curNegotiationVM.Id.Value);
+                AuthenticateUser(curNegotiationVM.Id.Value);
 
-            var userID = this.GetUserId();
-            _negotiationResponse.Process(curNegotiationVM, userID);
+                var userID = this.GetUserId();
+                _negotiationResponse.Process(curNegotiationVM, userID);
 
-            return View();
+                return Json(new
+                {
+                    Success = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error with negotiation response", ex);
+                return Json(new 
+                {
+                    Success = false,
+                });
+            }
         }
 
         [KwasantAuthorize(Roles = Roles.Customer)]

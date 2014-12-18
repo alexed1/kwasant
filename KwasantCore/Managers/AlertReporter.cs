@@ -10,6 +10,7 @@ using Data.States;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -25,12 +26,12 @@ namespace KwasantCore.Managers
         public void SubscribeToAlerts()
         {
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
+            AlertManager.AlertEntityStateChanged += EntityStateChanged;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += ReportEmailReceived;
             AlertManager.AlertEventBooked += ReportEventBooked;
             AlertManager.AlertEmailSent += ReportEmailSent;
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration += ReportUserRegistered;
@@ -46,12 +47,12 @@ namespace KwasantCore.Managers
         public void UnsubscribeFromAlerts()
         {
             AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
+            AlertManager.AlertEntityStateChanged -= EntityStateChanged;
             AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived -= ReportEmailReceived;
             AlertManager.AlertEventBooked -= ReportEventBooked;
             AlertManager.AlertEmailSent -= ReportEmailSent;
             AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange -= ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration -= ReportUserRegistered;
@@ -133,10 +134,28 @@ namespace KwasantCore.Managers
                 {
                     PrimaryCategory = entityName,
                     SecondaryCategory = propertyName,
-                    Activity = "RowUpdated",
+                    Activity = "PropertyUpdated",
                     ObjectId = id != null ? id.ToString() : null,
                     CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
                     Status = value != null ? value.ToString() : null,
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void EntityStateChanged(string entityName, object id, string stateName, string stateValue)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    PrimaryCategory = entityName,
+                    SecondaryCategory = stateName,
+                    Activity = "StateChanged",
+                    ObjectId = id != null ? id.ToString() : null,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = stateValue,
                 };
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
@@ -152,10 +171,10 @@ namespace KwasantCore.Managers
             {
                 var incidentDO = new IncidentDO
                 {
-                    ObjectId = emailID,
+                    ObjectId = emailID.ToString(),
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "Conversation",
-                    Notes = logMessage
+                    Data = logMessage
                 };
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
@@ -208,17 +227,15 @@ namespace KwasantCore.Managers
             {
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "User",
                         SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = curUserId,
                         ObjectId = null,
                         Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
-                        //Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                     };
-                AddFact(uow, curAction);
-                uow.SaveChanges();
+
+                SaveFact(curAction);
             }
         }
 
@@ -231,14 +248,13 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "Email",
                         SecondaryCategory = "",
                         Activity = "Received",
                         CustomerId = customerId,
                         ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
                     };
-                //curAction.Data = string.Format("{0} {1} {2}: ObjectId: {3} EmailAddress: {4} Subject: {5}", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+              
                 curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
 
                 SaveFact(curAction);
@@ -249,7 +265,6 @@ namespace KwasantCore.Managers
         {
             FactDO curAction = new FactDO
                 {
-                    Name = "",
                     PrimaryCategory = "Event",
                     SecondaryCategory = "",
                     Activity = "Booked",
@@ -262,7 +277,6 @@ namespace KwasantCore.Managers
         {
             FactDO curAction = new FactDO
                 {
-                    Name = "",
                     PrimaryCategory = "Email",
                     SecondaryCategory = "",
                     Activity = "Sent",
@@ -283,46 +297,15 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = bookingRequestDO.CustomerID,
                         ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
                     };
-                //curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
+              
                 curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
-        }
-
-        public void ReportBookingRequestStateChanged(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "BookingRequestState",
-                        Activity = "StateChange",
-                        CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                        Status = status,
-                    Data = string.Format("BookingRequest ID :{0},", bookingRequestDO.Id)
-                    };
-
-                AddFact(uow, curAction);
-
-                if (status == "Resolved")
-                    AlertManager.BookingRequestMarkedProcessed(bookingRequestDO.Id, bookingRequestDO.BookerID);
-
-                uow.SaveChanges();
+                SaveFact(curAction);
             }
         }
 
@@ -330,24 +313,10 @@ namespace KwasantCore.Managers
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AddFact(uow, curAction);
+                uow.FactRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }
-        private void AddFact(IUnitOfWork uow, FactDO curAction)
-        {
-            Debug.Assert(uow != null);
-            Debug.Assert(curAction != null);
-            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            
-            //curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-            curAction.Data += string.Format("{0} ID :{1}, EmailAddress: {2} ", curAction.PrimaryCategory ,curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-
-            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                Logger.GetLogger().Info(curAction.Data);
-            uow.FactRepository.Add(curAction);
-        }
-
 
         public void ReportUserRegistered(UserDO curUser)
         {
@@ -355,7 +324,6 @@ namespace KwasantCore.Managers
             {
                 FactDO curFactDO = new FactDO
                     {
-                        Name = "",
                         PrimaryCategory = "User",
                         SecondaryCategory = "",
                         Activity = "Registered",
@@ -378,7 +346,10 @@ namespace KwasantCore.Managers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var bookerDO = uow.UserRepository.GetByKey(bookerId);
+                if (bookerDO == null)
+                    throw new EntityNotFoundException<UserDO>(bookerId);
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
                     {
@@ -386,15 +357,17 @@ namespace KwasantCore.Managers
                         SecondaryCategory = "Ownership",
                         Activity = "Change",
                         CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
+                        ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
                         BookerId = bookerId,
                         Status = status,
-                    Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
+                        Data = string.Format(
+                            "BookingRequest ID :{0}, Booker EmailAddress: {1}",
+                            bookingRequestDO.Id,
+                            bookerDO.EmailAddress.Address)
                     };
 
-                AddFact(uow, curAction);
+                //AddFact(uow, curAction);
                 uow.SaveChanges();
-
             }
         }
     }

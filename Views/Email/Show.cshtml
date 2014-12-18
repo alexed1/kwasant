@@ -12,14 +12,32 @@
 <link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
 
 <style>
-    .view-popup-window {
+    .view-popup-window
+    {
         padding: 0px;
     }
 
-    td {
+    td
+    {
         font-weight: 200;
         line-height: 31.4285736083984px;
         height: 34px;
+    }
+
+    .timezoneDiv
+    {
+        float: left;
+    }
+
+        .timezoneDiv select
+        {
+            width: 30%;
+            margin-left: 10px;
+        }
+
+    .glyphicon
+    {
+        margin-left: 5px;
     }
 </style>
 
@@ -32,7 +50,35 @@
             <table width="100%">
                 <tr>
                     <td class="displayLabel">From:</td>
-                    <td>@Model.FromName</td>
+                    <td>
+                        <div class="timezoneDiv">
+                            @Model.FromName
+                            <select id="timezoneSelect">
+                                @{
+                                    foreach (var timeZone in TimeZoneInfo.GetSystemTimeZones().OrderBy(tz => tz.GetUtcOffset(DateTime.Now)))
+                                    {
+                                        if (timeZone.Id == Model.UserTimeZoneID)
+                                        {
+                                            var displayName = timeZone.DisplayName;
+                                                
+                                    <option value="@timeZone.Id" selected>@displayName</option>
+                                        }
+                                        else
+                                        {
+                                    <option value="@timeZone.Id">@timeZone.DisplayName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <!-- Tell the user it's a guessed timezone -->
+                            <span style="display: none" id="timezoneGuessed" class="glyphicon glyphicon-info-sign" title="This timezone has been guessed by our system, and may be incorrect."></span>
+                            <!-- Tell the user the timezone hasn't been saved -->
+                            <span style="display: none" id="timezoneNotSaved" class="glyphicon glyphicon-asterisk" title="Your changes to the timezone have not been saved"></span>
+                            <!-- Tell the user the timezone is okay -->
+                            <span style="display: none" id="timezoneOk" class="glyphicon glyphicon-ok" title="This timezone has been explicitly set by a booker."></span>
+                            <a id="btnSaveTimezone" style="margin-left: 10px;" href="javascript:void(0);">Save</a>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td class="displayLabel">To:</td>
@@ -85,7 +131,58 @@
         if('@Model.EmailAttachments' == "")
         { $('.emailAttachments').css('display','none');}
 
+
+        @{
+            if (Model.TimezoneGuessed)
+            {
+                @:$('#timezoneGuessed').show();
+            }
+        }
+
+        var timezoneGuessed = $('#timezoneGuessed');
+        var timezoneOk = $('#timezoneOk');
+        var timezoneNotSaved = $('#timezoneNotSaved');
+        var btnSaveTimezone = $('#btnSaveTimezone');
+        var timezoneSelect = $('#timezoneSelect');
+
+        var originalTimeZone = '@Model.UserTimeZoneID';
+        var isGuessedTimeZone = @(Model.TimezoneGuessed ? "true" : "false");
+
+        var updateTimezoneIcons = function() {
+            if (timezoneSelect.val() == originalTimeZone) {
+                if (isGuessedTimeZone) {
+                    timezoneOk.hide();
+                    timezoneNotSaved.hide();
+                    timezoneGuessed.show();
+                    btnSaveTimezone.show();
+                } else {
+                    timezoneOk.show();
+                    timezoneNotSaved.hide();
+                    timezoneGuessed.hide();
+                    btnSaveTimezone.hide();
+                }
+            } else {
+                timezoneOk.hide();
+                timezoneNotSaved.show();
+                timezoneGuessed.hide();
+                btnSaveTimezone.show();
+            }
+        };
+
+        timezoneSelect.change(updateTimezoneIcons);
+
+        btnSaveTimezone.click(function() {
+            Kwasant.IFrame.DispatchPostRequest('@Url.Action("UpdateUserTimezone", "User")', { userID: '@Model.FromUserID',  timezoneID: timezoneSelect.val() }, function(result) {
+                timezoneOk.show();
+                timezoneNotSaved.hide();
+                timezoneGuessed.hide();
+                btnSaveTimezone.hide();
+            });
+        });
+
+        updateTimezoneIcons();
     });
+    
     function refreshConversation() {
         $('#conversations').css('opacity', 0.5);
         $.post('@Url.Action("GetConversationMembers", "Email", new { emailID = Model.BookingRequestId })', function(result) {
@@ -96,7 +193,7 @@
             }
         });
     }
-    
+
     function displayConversation(conversationMembers) {
         var performedExplicitExpand = false;
 
@@ -117,9 +214,9 @@
 
             var resetStyles = function(expanded) {
                 if (expanded) {
-                    chevron.removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");    
+                    chevron.removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
                 } else {
-                    chevron.removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");                        
+                    chevron.removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
                 }
             };
 
@@ -136,7 +233,7 @@
                     convoBody.slideDown(function() { resetStyles(true); doingAnimation = false; });
                     isExpanded = true;
                 }
-                
+
             });
 
             //If we explicitly opened other conversations, don't open the last email by default

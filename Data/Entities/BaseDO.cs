@@ -24,7 +24,7 @@ namespace Data.Entities
         {
             LastUpdated = DateTimeOffset.Now;
         }
-        
+
         public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             this.DetectStateUpdates(originalValues, currentValues);

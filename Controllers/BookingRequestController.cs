@@ -73,7 +73,10 @@ namespace KwasantWeb.Controllers
             var currBooker = this.GetUserId();
             try
             {
-                _br.CheckOut(id.Value, currBooker);
+                if (Request != null && Request.UrlReferrer != null)
+                    if (Request.UrlReferrer.PathAndQuery == "/BookingRequest" || Request.UrlReferrer.PathAndQuery == "/BookingRequest/Index")
+                        _br.ConsiderAutoCheckout(id.Value, currBooker);
+
                 return RedirectToAction("Index", "Dashboard", new { id });
             }
             catch (EntityNotFoundException)
@@ -82,54 +85,47 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ProcessBookerChange(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var currBooker = this.GetUserId();
-                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
-                return Content(result);
-            }
-        }
+        //Removed. See https://maginot.atlassian.net/browse/KW-704
+        //[HttpGet]
+        //public ActionResult ProcessBookerChange(int bookingRequestId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var currBooker = this.GetUserId();
+        //        string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
+        //        return Content(result);
+        //    }
+        //}
 
         [HttpPost]
-        public ActionResult MarkAsProcessed(int id)
+        public ActionResult MarkAsProcessed(int curBRId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //call to VerifyOwnership 
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                //call to VerifyOwnership 
-                var currBooker = this.GetUserId();
-                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyBooker != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
-
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.State = BookingRequestState.Resolved;
-                uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-
+                _br.MarkAsProcessed(curBRId);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
-        public ActionResult Invalidate(int id)
+        public ActionResult Invalidate(int curBRId)
         {
+            //call to VerifyOwnership
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
+            {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //call to VerifyOwnership
-                var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
-
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
                 bookingRequestDO.State = BookingRequestState.Invalid;
                 uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
             }
+        }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
@@ -204,11 +200,7 @@ namespace KwasantWeb.Controllers
         {
             try
             {
-                var emailAddressDO = new EmailAddressDO(emailAddress);
-
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
+                RegexUtilities.ValidateEmailAddress(emailAddress);
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
@@ -289,6 +281,7 @@ namespace KwasantWeb.Controllers
             try
             {
                 _br.ReleaseBooker(bookingRequestId);
+                AlertManager.BRReleasedBooker(bookingRequestId);
                 return Json(true);
             }
             catch (EntityNotFoundException)
@@ -334,15 +327,23 @@ namespace KwasantWeb.Controllers
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
                     Body = "",
+                    BookingRequestId = bookingRequestDO.Id
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
                     {
                         emailDO.TagEmailToBookingRequest(bookingRequestDO);
 
+                        const string emailDescription = @"A booker sent the following email to these recipients: {0}<br/>
+<br/>
+{1}
+";
+
                         var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         var sendingUser = subUow.UserRepository.GetByKey(userID);
-                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
+                        var envelopeDO = subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
+                        
+                        envelopeDO.TemplateDescription = String.Format(emailDescription, String.Join(", ", emailDO.Recipients.Select(r => r.EmailAddress.ToDisplayName())), emailDO.HTMLText);
 
                         var currBookingRequest = new BookingRequest();
                         currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
@@ -430,9 +431,9 @@ namespace KwasantWeb.Controllers
         }
 
         public ActionResult AddNote(int bookingRequestId)
-        {
+                {
             return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
-        }
+            }
 
         [HttpPost]
         public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
@@ -440,6 +441,55 @@ namespace KwasantWeb.Controllers
             var communticationManager = ObjectFactory.GetInstance<CommunicationManager>();
             communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
             return Json(true);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CreateViaCustomer(string meetingInfo, string subject)
+        {
+            try
+            {
+                if (meetingInfo.Trim().Length < 30)
+                return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var currUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                    string userId = _br.Generate(uow, currUserDO.EmailAddress.Address, meetingInfo, "SubmitsViaCustomer", subject);
+                    return Json(new { Message = "A new booking requested created!", Result = "Success" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
+                return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
+            }
+        }
+
+        public ActionResult ShowMergeBRView(int bookingRequestID) 
+        {
+            ViewBag.BookingRequestId = bookingRequestID;
+            return View("MergeRelatedBR");
+        }
+
+        [HttpPost]
+        public ActionResult Merge(int originalBRId, int targetBRId)
+        {
+            //call to VerifyOwnership
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(targetBRId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
+            {
+                _br.Merge(originalBRId, targetBRId);
+                TempData["isMerged"] = true;
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Merged successfully" });
+            }
+            return Json(verifyCheckoutMessage);
+        }
+
+        public ActionResult DefaultActivityPopup(int bookingRequestId)
+        {
+            ViewBag.BookingRequestId = bookingRequestId;
+            return View();
         }
     }
 }

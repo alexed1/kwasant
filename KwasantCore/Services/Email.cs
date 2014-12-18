@@ -19,6 +19,7 @@ namespace KwasantCore.Services
 {
     public class Email
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
         private EventValidator _curEventValidator;
         private readonly EmailAddress _emailAddress;
 
@@ -43,18 +44,7 @@ namespace KwasantCore.Services
 
         #region Method
 
-        /// <summary>
-        /// This implementation of Send uses the SendGrid API
-        /// </summary>
-        public void SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
-        {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
-            uow.SaveChanges();
-        }
-
-        public void Send(IUnitOfWork uow, IEmailDO emailDO)
+        public void Send(IUnitOfWork uow, EmailDO emailDO)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -202,7 +192,7 @@ namespace KwasantCore.Services
         
         public EmailDO GenerateBasicMessage(IUnitOfWork uow, string subject, string message, string fromAddress ,string toRecipient)
         {
-            new EmailAddressValidator().Validate(new EmailAddressDO(toRecipient));
+            RegexUtilities.ValidateEmailAddress(toRecipient);
             EmailDO curEmail = new EmailDO
             {
                 Subject = subject,
@@ -226,13 +216,6 @@ namespace KwasantCore.Services
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
-        }
-        
-        public void ValidateEmailAddress(EmailAddressDO curEmailAddress)
-        {
-            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            emailAddressValidator.ValidateAndThrow(curEmailAddress);
-
         }
 
         public EmailDO AddSingleRecipient(IUnitOfWork uow, EmailDO curEmail, string toRecipient)
@@ -285,8 +268,8 @@ namespace KwasantCore.Services
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
             string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "e4da63fd-2459-4caf-8e4f-b4d6f457e95a",
-                    new Dictionary<string, string>
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
+                    new Dictionary<string, object>
                     {
                         {"credentials_string", credentials}
                     });
@@ -299,6 +282,28 @@ namespace KwasantCore.Services
             {
                 return Convert.ToString(uow.EmailRepository.GetByKey(emailId).ConversationId);
             }
+        }
+
+        public List<object> GetEmails(IUnitOfWork uow, DateRange dateRange, int start, int length, out int count)
+        {
+            var emailDO = uow.EmailRepository.GetAll()
+                .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+
+            count = emailDO.Count();
+
+            return emailDO.Skip(start).OrderByDescending(e => e.DateReceived).Take(length)
+                .Select(e => (object)new
+                {
+                    Id = e.Id,
+                    From = uow.EmailAddressRepository.GetByKey(e.FromID).Address, 
+                    Subject = e.Subject,
+                    Date = e.CreateDate.ToString(DateStandardFormat),
+                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
+                    //EmailStatus = "",
+                    ConversationId = e.ConversationId
+                }).ToList();
+
+            
         }
     }
 }

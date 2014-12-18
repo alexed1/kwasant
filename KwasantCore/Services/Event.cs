@@ -10,6 +10,8 @@ using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Interfaces.DataTypes;
+using KwasantICS.DDay.iCal.Structs;
 using Segment;
 using Utilities;
 using StructureMap;
@@ -44,8 +46,7 @@ namespace KwasantCore.Services
         //some info about the event is known.
         public void Create(EventDO curEventDO, IUnitOfWork uow)
         {
-            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) &&
-                                  curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
+            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.BookingRequest = bookingRequestDO;            
@@ -82,7 +83,8 @@ namespace KwasantCore.Services
                 {
                     var oldStatus = eventDO.EventStatus;
                     eventDO.EventStatus = EventState.Deleted;
-                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
+                    var hasSentEmails = eventDO.Emails.Any(e => e.EmailStatus == EmailState.Sent);
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted && hasSentEmails)
                     {
                         GenerateInvitations(uow, eventDO);
                     }
@@ -110,7 +112,54 @@ namespace KwasantCore.Services
                 invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
                 invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
             }
+
             
+            var firstInvitation = invitations.FirstOrDefault();
+            if (firstInvitation != null)
+            {
+                var quasiEmail = new EmailDO();
+                quasiEmail.From = firstInvitation.From;
+
+                const String templateDescriptionFormat =
+@"An invitation was sent by booker '{0}', inviting the following attendees: {1}
+
+Additional information:
+StartDate: {2}
+EndDate: {3}
+EventID: {4}
+
+The booker sent the following message with the event: '{5}'
+";
+
+                var guessedTimeZone = eventDO.BookingRequest.Customer.GetOrGuessTimeZone();
+
+                String timezone;
+
+                if (guessedTimeZone != null)
+                {
+                    timezone = guessedTimeZone.DisplayName;   
+                }
+                else
+                {
+                    timezone = "UTC" + (eventDO.StartDate.Offset.Ticks < 0 ? eventDO.StartDate.Offset.ToString() : "+" + eventDO.StartDate.Offset);
+                }
+
+                //recipientStartDate.ToString("ddd MMM d, yyyy hh:mm tt")
+                var templateDescription = String.Format(templateDescriptionFormat,
+                    eventDO.BookingRequest.Booker  == null ? "Unknown" :  eventDO.BookingRequest.Booker.DisplayName, //Booker name
+                    String.Join(", ", eventDO.Attendees.Select(a => a.Name)), //Attendees
+                    eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " " + timezone,
+                    eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt"),
+                    eventDO.Id,
+                    extraBodyMessage
+                ).Replace(Environment.NewLine, "<br />");
+
+                quasiEmail.HTMLText = quasiEmail.PlainText = templateDescription;
+                quasiEmail.TagEmailToBookingRequest(eventDO.BookingRequest);
+                quasiEmail.Subject = firstInvitation.Subject;
+
+                uow.EmailRepository.Add(quasiEmail);
+            }
             return invitations;
         }
 
@@ -155,12 +204,56 @@ namespace KwasantCore.Services
             fromName = String.Format(fromName, invitation.GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
+            
             DDayEvent dDayEvent = new DDayEvent();
+
+            TimeZoneInfo timeZone;
+            if (eventDO.BookingRequest != null)
+            {
+                timeZone = eventDO.BookingRequest.Customer.GetOrGuessTimeZone();
+            }
+            else
+            {
+                var possibleZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == eventDO.StartDate.Offset);
+                timeZone = possibleZones.FirstOrDefault();
+            }
 
             //configure start and end time
             dDayEvent.IsAllDay = eventDO.IsAllDay;
-            dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
-            dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+
+            IDateTime start;
+            IDateTime end;
+            if (timeZone != null) //If we find a potential timezone, use it
+            {
+                var calTimeZone = iCalTimeZone.FromSystemTimeZone(timeZone);
+                ddayCalendar.AddTimeZone(calTimeZone);
+
+                start = new iCalDateTime(eventDO.StartDate.DateTime)
+                {
+                    IsUniversalTime = false,
+                    TZID = calTimeZone.TZID
+                };
+
+                end = new iCalDateTime(eventDO.EndDate.DateTime)
+                {
+                    IsUniversalTime = false,
+                    TZID = calTimeZone.TZID
+                };
+            }
+            else //If we don't find a matching timezone, use UTC.
+            {
+                start = new iCalDateTime(eventDO.StartDate.ToUniversalTime().DateTime) { IsUniversalTime = true };
+                end = new iCalDateTime(eventDO.EndDate.ToUniversalTime().DateTime) { IsUniversalTime = true };
+            }
+
+            if (!eventDO.IsAllDay && !start.HasTime)
+                start.HasTime = true;
+            dDayEvent.DTStart = start;
+
+            if (!eventDO.IsAllDay && !end.HasTime)
+                end.HasTime = true;
+            dDayEvent.DTEnd = end;
+            
             dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
             dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
 

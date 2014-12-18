@@ -5,9 +5,9 @@ using KwasantCore.Services;
 using StructureMap;
 using Utilities;
 
-namespace KwasantWeb.AlertQueues
+namespace KwasantWeb.NotificationQueues
 {
-    public class BookingRequestReservedForUserQueue : SharedAlertQueue<NewBookingRequestForUserQueueData>
+    public class BookingRequestReservedForUserQueue : SharedNotificationQueue<NewBookingRequestForUserQueueData>
     {
         public BookingRequestReservedForUserQueue() 
         {

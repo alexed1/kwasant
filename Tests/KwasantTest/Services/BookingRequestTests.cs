@@ -394,6 +394,8 @@ namespace KwasantTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.Booker = bookingRequestDO.Customer;
 
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.Customer.Id);
@@ -406,6 +408,41 @@ namespace KwasantTest.Services
 
                 IEnumerable<BookingRequestDO> requests = (new BookingRequest()).GetCheckedOut(uow, bookingRequestDO.Customer.Id);
                 Assert.AreEqual(bookingRequestDO.Id, requests.FirstOrDefault().Id);
+            }
+        }
+
+        [Test]
+        public void CanMergeBookingRequests() 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixtureData = new FixtureData(uow);
+                var testUser = fixtureData.TestUser1();
+                testUser.Id = "1";
+                uow.UserRepository.Add(testUser);
+                uow.SaveChanges();
+
+                var originalBookingRequest = fixtureData.TestBookingRequest1();
+                var testEvent = fixtureData.TestEvent1();
+                testEvent.BookingRequestID = originalBookingRequest.Id;
+                uow.EventRepository.Add(testEvent);
+
+                originalBookingRequest.Negotiations = new List<NegotiationDO>() { fixtureData.TestNegotiation1(), fixtureData.TestNegotiation2() };
+                originalBookingRequest.ConversationMembers = new List<EmailDO>() { fixtureData.TestEmail1(), fixtureData.TestEmail3() };
+                uow.BookingRequestRepository.Add(originalBookingRequest);
+
+                var targetBookingRequest = fixtureData.TestBookingRequest2();
+                uow.BookingRequestRepository.Add(targetBookingRequest);
+                uow.SaveChanges();
+
+                (new BookingRequest()).Merge(originalBookingRequest.Id, targetBookingRequest.Id);
+
+                var finalBookingRequest = uow.BookingRequestRepository.GetByKey(targetBookingRequest.Id);
+                Assert.AreEqual(1, uow.EventRepository.GetQuery().Where(e => e.BookingRequestID == finalBookingRequest.Id).Count());
+                Assert.AreEqual(2, uow.NegotiationsRepository.GetQuery().Where(e => e.BookingRequestID == finalBookingRequest.Id).Count());
+                Assert.AreEqual(2, uow.EmailRepository.GetQuery().Where(e => e.ConversationId == finalBookingRequest.Id).Count());
+                Assert.AreEqual(BookingRequestState.Invalid, originalBookingRequest.State.Value);
+                Assert.AreEqual(BookingRequestState.AwaitingClient, finalBookingRequest.State.Value);
             }
         }
     }

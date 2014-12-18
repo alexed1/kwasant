@@ -33,7 +33,7 @@
                     </tr>
                     <tr>
                         <td class="displayLabel">From:</td>
-                        <td><%=GetFromPerson()%></td>
+                        <td><%=GetFromPerson()%> </td>
                     </tr>
                     <tr>
                         <td class="displayLabel">From:</td>

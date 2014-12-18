@@ -8,26 +8,23 @@ namespace Data.Entities
 {
 
     [Table("AspNetUserRoles")]
-    public class AspNetUserRolesDO : IdentityUserRole, IAspNetUserRolesDO, IBaseDO, ICreateHook, ISaveHook
+    public class AspNetUserRolesDO : IdentityUserRole, IAspNetUserRolesDO, ISaveHook
     {
         public virtual ICollection<AspNetRolesDO> Roles { get; set; }
 
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
 
-        void ICreateHook.BeforeCreate()
+        public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
                 CreateDate = DateTimeOffset.Now;
         }
 
-        void ICreateHook.AfterCreate()
-        {
-        }
-
-        void ISaveHook.BeforeSave()
+        public void BeforeSave()
         {
             LastUpdated = DateTimeOffset.Now;
         }
+
     }
 }

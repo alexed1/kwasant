@@ -51,7 +51,9 @@ namespace KwasantCore.Services
             curInvitation.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             //configure the sender information
-            curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            var from = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            curInvitation.From = from;
+            curInvitation.FromName = from.ToDisplayName();
 
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
             curInvitation.ReplyToAddress = replyToAddress.Address;
@@ -90,9 +92,29 @@ namespace KwasantCore.Services
             String subject;
             String templateName;
 
-            string endtime = curEvent.EndDate.ToString("hh:mm tt");
-            var timezone = curEvent.StartDate.Offset.Ticks < 0 ? curEvent.StartDate.Offset.ToString() : "+" + curEvent.StartDate.Offset;
-            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " " + timezone;
+            var toUserDO = uow.UserRepository.GetByKey(userID);
+            var guessedTimeZone = toUserDO.GetOrGuessTimeZone();
+
+            DateTimeOffset recipientStartDate;
+            DateTimeOffset recipientEndDate;
+            
+            String timezone;
+
+            if (guessedTimeZone != null)
+            {
+                timezone = guessedTimeZone.DisplayName;
+                recipientStartDate = curEvent.StartDate.ToOffset(guessedTimeZone.GetUtcOffset(DateTime.Now));
+                recipientEndDate = curEvent.EndDate.ToOffset(guessedTimeZone.GetUtcOffset(DateTime.Now));
+            }
+            else
+            {
+                recipientStartDate = curEvent.StartDate;
+                recipientEndDate = curEvent.EndDate;
+                timezone = "UTC" + (curEvent.StartDate.Offset.Ticks < 0 ? curEvent.StartDate.Offset.ToString() : "+" + curEvent.StartDate.Offset);
+            }
+            string endtime = recipientEndDate.ToString("hh:mm tt");
+
+            string subjectDate = recipientStartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime;
             
             if (type == InvitationType.InitialInvite)
             {
@@ -126,15 +148,18 @@ namespace KwasantCore.Services
             var whoListPlainText = String.Join(Environment.NewLine, curEvent.Attendees.Select(a => a.Name + " - " + a.EmailAddress.Address));
 
             curInvitation.Subject = subject;
+
+            curInvitation.TagEmailToBookingRequest(curEvent.BookingRequest, false);
+
             uow.EnvelopeRepository.ConfigureTemplatedEmail(
-                curInvitation, templateName, new Dictionary<string, string>
+                curInvitation, templateName, new Dictionary<string, object>
                 {
                     {"description", curEvent.Description},
                     {
                         "time", curEvent.IsAllDay
-                            ? "All day - " + curEvent.StartDate.ToString("ddd d MMM")
-                            : curEvent.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " +
-                              curEvent.EndDate.ToString("hh:mm tt")
+                            ? "All day - " + recipientStartDate.ToString("ddd d MMM")
+                            : recipientStartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " +
+                              recipientEndDate.ToString("hh:mm tt")
                     },
                     {"location", curEvent.Location},
                     {"wholist", String.Format(whoWrapper, whoList)},

@@ -11,11 +11,11 @@ namespace Data.Entities
         public EmailAddressDO()
         {
             Recipients = new List<RecipientDO>();
+            SentEmails = new List<EmailDO>();
         }
 
-        public EmailAddressDO(string emailAddress)
+        public EmailAddressDO(string emailAddress) : this()
         {
-            Recipients = new List<RecipientDO>();
             Address = emailAddress;
         }
 
@@ -28,6 +28,16 @@ namespace Data.Entities
 
         [InverseProperty("EmailAddress")]
         public virtual List<RecipientDO> Recipients { get; set; }
+
+        [InverseProperty("From")]
+        public virtual List<EmailDO> SentEmails { get; set; }
+
+        public String NameOrAddress()
+        {
+            if (!String.IsNullOrEmpty(Name))
+                return Name;
+            return Address;
+        }
 
         
         public String ToDisplayName()

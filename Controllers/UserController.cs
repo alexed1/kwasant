@@ -70,14 +70,14 @@ namespace KwasantWeb.Controllers
             {
                 return new RedirectResult(result.RedirectUri);
             }
-            return RedirectToAction("MyAccount", new {remoteCalendarAccessGranted = providerName});
+            return RedirectToAction("ShareCalendar", new {remoteCalendarAccessGranted = providerName});
         }
 
         public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IRemoteCalendarServiceAuthorizer>(providerName);
             await authorizer.RevokeAccessAsync(this.GetUserId(), CancellationToken.None);
-            return RedirectToAction("MyAccount", new { remoteCalendarAccessForbidden = providerName });
+            return RedirectToAction("ShareCalendar", new { remoteCalendarAccessForbidden = providerName });
         }
 
         [HttpPost]
@@ -94,25 +94,21 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult MyAccount(string remoteCalendarAccessGranted = null,
-            string remoteCalendarAccessForbidden = null)
+        [HttpPost]
+        public ActionResult UpdateUserTimezone(String userID, String timezoneID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserId = this.GetUserId();
-                var curUserDO = uow.UserRepository.GetByKey(curUserId);
-                if (curUserDO == null)
-                {
-                    // if we found no user then assume that this user doesn't exists any more and force log off action.
-                    return RedirectToAction("LogOff", "Account");
-                }
-                var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
-                var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
-
-                var curManageUserVM =
-                    AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
-                return View(curManageUserVM);
+                var userDO = uow.UserRepository.GetByKey(userID);
+                userDO.TimeZoneID = timezoneID;
+                uow.SaveChanges();
+                return Json(true);
             }
+        }
+
+        public ActionResult MyAccount()
+        {
+             return View();
         }
 
         public ActionResult ShowAddUser()
@@ -144,8 +140,9 @@ namespace KwasantWeb.Controllers
             }
             if (queryParams.EmailAddress != null)
             {
-                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
+                var ru = new RegexUtilities();
+
+                if (!(ru.IsValidEmailAddress(queryParams.EmailAddress)))
                 {
                     var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }));
                     return jsonErrorResult;
@@ -318,5 +315,35 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
+        public ActionResult MakeNewBookingRequest()
+        {
+            return View();
+        }
+
+        public ActionResult ShareCalendar(string remoteCalendarAccessGranted = null,
+            string remoteCalendarAccessForbidden = null)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserId = this.GetUserId();
+                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                if (curUserDO == null)
+                {
+                    // if we found no user then assume that this user doesn't exists any more and force log off action.
+                    return RedirectToAction("LogOff", "Account");
+                }
+                var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
+                var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
+
+                var curManageUserVM =
+                    AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
+                return View(curManageUserVM);
+            }
+        }
+
+        public ActionResult LearnHowToUseKwasant()
+        {
+            return View();
+        }
     }
 }
