@@ -543,6 +543,7 @@ namespace KwasantCore.Services
             {
                 Reserve(uow, bookingRequestDO, bookingRequestDO.PreferredBooker);
             }
+            AlertManager.BRReactivate(bookingRequestDO.Id);
         }
 
         public void Reserve(IUnitOfWork uow, BookingRequestDO bookingRequestDO, UserDO booker)

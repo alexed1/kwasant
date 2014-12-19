@@ -25,6 +25,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertUserRegistrationError += ReportUserRegistrationError;
             AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             AlertManager.AlertBRReleasedBooker += BRReleasedBooker;
+            AlertManager.AlertBRReactivate += BRReactivate;
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -304,6 +305,33 @@ namespace KwasantCore.Managers
                 uow.IncidentRepository.Add(incidentDO);
                 Logger.GetLogger().Info(incidentDO.Data);
                 uow.SaveChanges();
+            }
+        }
+
+        public void BRReactivate(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "BookingRequest";
+                incidentDO.SecondaryCategory = "BookerAction";
+                incidentDO.Activity = "Reactivate";
+                incidentDO.CustomerId = bookingRequestDO.Customer.Id;
+                incidentDO.ObjectId = bookingRequestId.ToString();
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+
+                string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                       incidentDO.PrimaryCategory,
+                       incidentDO.SecondaryCategory,
+                       incidentDO.Activity,
+                       incidentDO.ObjectId,
+                       incidentDO.CustomerId);
+                Logger.GetLogger().Info(logData);
             }
         }
     }
