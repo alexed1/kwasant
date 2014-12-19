@@ -27,6 +27,7 @@ namespace KwasantCore.Services
         private readonly IEmailAddress _emailAddress;
         private readonly Email _email;
         private readonly INegotiationResponse _negotiationResponse;
+        private readonly Notification _notification;
 
         public BookingRequest()
         {
@@ -34,6 +35,7 @@ namespace KwasantCore.Services
             _email = ObjectFactory.GetInstance<Email>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
             _negotiationResponse = ObjectFactory.GetInstance<INegotiationResponse>();
+            _notification = new Notification();
         }
 
         public static void ProcessNewBR(MailMessage message)
@@ -205,6 +207,9 @@ namespace KwasantCore.Services
 
             AlertManager.BookingRequestProcessingTimeout(bookingRequestDO.Id, bookerId);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
+
+            _notification.Generate(bookerId, "The BR \"" + bookingRequestDO.Subject + "\" has timed out for lack of activity. please return to the queue and check it out again if you need to keep working on it.");
+
             // Send mail to Booker
             var curbooker = uow.UserRepository.GetByKey(bookerId);
             string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " +

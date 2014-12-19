@@ -6,6 +6,8 @@ using System.Linq;
 namespace KwasantWeb.NotificationQueues
 {
     /*
+     * How-to guide on notifications may be found here: https://maginot.atlassian.net/wiki/display/SH/How+To+Create+Notifications
+     *
      * The following classes define queues for alerts to be displayed to users while they browse the wesbite.
      * There are two types of queues:
      * 1. PersonalNotificationQueue<T>
