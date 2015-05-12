@@ -46,7 +46,7 @@ namespace Data.Infrastructure
         public static event EmailReceivedHandler AlertEmailReceived;
 
         public delegate void EventBookedHandler(int eventId, string customerId);
-        public static event EventBookedHandler AlertEventBooked;
+        public static event EventBookedHandler AlertEventBookedOrChanged;
 
         public delegate void EmailSentHandler(int emailId, string customerId);
         public static event EmailSentHandler AlertEmailSent;
@@ -177,10 +177,10 @@ namespace Data.Infrastructure
             if (AlertEmailReceived != null)
                 AlertEmailReceived(emailId, customerId);
         }
-        public static void EventBooked(int eventId, string customerId)
+        public static void EventBookedOrChanged(int eventId, string customerId)
         {
-            if (AlertEventBooked != null)
-                AlertEventBooked(eventId, customerId);
+            if (AlertEventBookedOrChanged != null)
+                AlertEventBookedOrChanged(eventId, customerId);
         }
         public static void EmailSent(int emailId, string customerId)
         {

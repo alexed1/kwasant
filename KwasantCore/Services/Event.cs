@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
@@ -161,6 +162,125 @@ The booker sent the following message with the event: '{5}'
                 uow.EmailRepository.Add(quasiEmail);
             }
             return invitations;
+        }
+
+        public EventDO ProcessChanges(IUnitOfWork uow, EventDO updatedEventInfo, bool mergeEvents, out List<AttendeeDO> newAttendees)
+        {
+            if (updatedEventInfo.Id == 0)
+                throw new ApplicationException(
+                    "event should have been created and saved in #new, so Id should not be zero");
+            var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
+            if (curEventDO == null)
+                throw new EntityNotFoundException<EventDO>();
+
+            if (updatedEventInfo.Summary == null)
+                updatedEventInfo.Summary = String.Empty;
+
+            newAttendees = Update(uow, curEventDO, updatedEventInfo);
+
+            curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT")
+                                         ? EventState.Draft
+                                         : EventState.ReadyForDispatch;
+
+            if (mergeEvents)
+                MergeTimeSlots(uow, curEventDO);
+
+            uow.SaveChanges();
+
+            foreach (var attendeeDO in updatedEventInfo.Attendees)
+            {
+                var user = new User();
+                var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
+                if (user.GetMode(userDO) == CommunicationMode.Delegate)
+                {
+                    ObjectFactory.GetInstance<ITracker>()
+                        .Track(userDO, "Customer", "InvitedAsPreCustomerAttendee",
+                               new Dictionary<string, object>
+                                   {
+                                       {"BookingRequestId", curEventDO.BookingRequestID},
+                                       {"EventID", curEventDO.Id}
+                                   });
+                }
+            }
+
+            uow.SaveChanges();
+
+            AlertManager.EventBookedOrChanged(curEventDO.Id, curEventDO.BookingRequest.CustomerID);
+
+            return curEventDO;
+        }
+
+
+        public void MergeTimeSlots(IUnitOfWork uow, EventDO updatedEvent)
+        {
+            //We want to merge existing events so we get continous blocks whenever they're 'filled in'.
+
+            //We want to merge in the following situtations:
+
+            //We have an existing event window ending at the same time as our new window starts.
+            //This looks like this:
+            //[Old--Event][New--Event]
+            //With a merge result of this:
+            //[New--------------Event]
+
+            //We have an existing event window start at the same time as our new window ends.
+            //This looks like this:
+            //[New--Event][Old--Event]
+            //With a merge result of this:
+            //[New--------------Event]
+
+            //We have an existing event window that partially overlaps our event from the beginning
+            //This looks like this:
+            //[Old--Event]
+            //   [New--Event]
+            //With a merge result of this:
+            //[New-----Event]
+
+            //We have an existing event window that partially overlaps our event from the end
+            //This looks like this:
+            //      [Old--Event]
+            //   [New--Event]
+            //With a merge result of this:
+            //   [New-----Event]
+
+            //We have an existing event that's fully contained within our event window
+            //This looks like this:
+            //    [Old--Event]
+            //[New-----------Event]
+            //With a merge result of this:
+            //[New-----------Event]
+
+            //All overlapping event windows are deleted from the system, with our new/modified event being expanded to encompass the overlaps.
+
+
+            var overlaps =
+                uow.EventRepository.GetQuery()
+                    .Where(ew =>
+                        //Don't include deleted events
+                        ew.EventStatus != EventState.Deleted &&
+
+                        ew.Id != updatedEvent.Id && ew.CalendarID == updatedEvent.CalendarID &&
+                            //If the existing event starts at or before our start date, and ends at or after our start date
+                        ((ew.StartDate <= updatedEvent.StartDate && ew.EndDate >= updatedEvent.StartDate) ||
+                            //If the existing event starts at or after our end date, and ends at or before our end date
+                         (ew.StartDate <= updatedEvent.EndDate && ew.EndDate >= updatedEvent.EndDate) ||
+                            //If the existing event is entirely within our new date
+                         (ew.StartDate >= updatedEvent.StartDate && ew.EndDate <= updatedEvent.EndDate)
+                         )).ToList();
+
+            //We want to get the min/max start dates _including_ our new event window
+            var fullSet = overlaps.Union(new[] { updatedEvent }).ToList();
+
+            var newStart = fullSet.Min(ew => ew.StartDate);
+            var newEnd = fullSet.Max(ew => ew.EndDate);
+
+            //Delete all overlaps
+            foreach (var overlap in overlaps)
+                uow.EventRepository.Remove(overlap);
+
+            //Potentially expand our new/modified event window
+            updatedEvent.StartDate = newStart;
+            updatedEvent.EndDate = newEnd;
         }
 
         public List<AttendeeDO> Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo)

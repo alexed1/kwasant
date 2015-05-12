@@ -29,7 +29,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertEntityStateChanged += EntityStateChanged;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += ReportEmailReceived;
-            AlertManager.AlertEventBooked += ReportEventBooked;
+            AlertManager.AlertEventBookedOrChanged += ReportEventBookedOrChanged;
             AlertManager.AlertEmailSent += ReportEmailSent;
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
@@ -50,7 +50,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertEntityStateChanged -= EntityStateChanged;
             AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived -= ReportEmailReceived;
-            AlertManager.AlertEventBooked -= ReportEventBooked;
+            AlertManager.AlertEventBookedOrChanged -= ReportEventBookedOrChanged;
             AlertManager.AlertEmailSent -= ReportEmailSent;
             AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
             AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
@@ -261,13 +261,13 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void ReportEventBooked(int eventId, string customerId)
+        public void ReportEventBookedOrChanged(int eventId, string customerId)
         {
             FactDO curAction = new FactDO
                 {
                     PrimaryCategory = "Event",
                     SecondaryCategory = "",
-                    Activity = "Booked",
+                    Activity = "BookedOrChanged",
                     CustomerId = customerId,
                     ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
                 };
