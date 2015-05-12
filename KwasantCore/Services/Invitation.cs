@@ -44,6 +44,8 @@ namespace KwasantCore.Services
                 curEvent.Attendees = new List<AttendeeDO>();
 
             InvitationDO curInvitation = new InvitationDO();
+            curInvitation.ConversationId = curEvent.BookingRequestID;
+            curInvitation.Conversation = curEvent.BookingRequest;
             curInvitation.ConfirmationStatus = ConfirmationStatus.Unnecessary;
 
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(curAttendee.EmailAddress.Address);
