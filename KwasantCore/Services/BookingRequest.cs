@@ -312,9 +312,9 @@ namespace KwasantCore.Services
         public List<BookingRequestDO> GetAwaitingResponse(IUnitOfWork uow, string currBooker)
         {
             return
-                uow.BookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetQuery()
                     .Where(
-                        e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
+                        e => (e.State == BookingRequestState.AwaitingClient) && currBooker == e.PreferredBookerID)
                     .OrderByDescending(e => e.DateReceived).ToList();
         }
 
